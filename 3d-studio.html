@@ -1,0 +1,1884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MMA 3D Studio — Interactive Experience Center</title>
+  <!-- SEO & Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- CSS Styles -->
+  <style>
+    :root {
+      --gold: #C9A961;
+      --gold-light: #E2C98A;
+      --gold-dark: #A07A35;
+      --charcoal: #0a0a09;
+      --charcoal-2: #121210;
+      --charcoal-3: #1c1c19;
+      --cream: #F5F2EC;
+      --white: #FAFAF8;
+      --glass: rgba(18, 18, 16, 0.75);
+      --border-glass: rgba(201, 169, 97, 0.15);
+      --font-display: 'Cormorant Garamond', serif;
+      --font-body: 'Outfit', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background: var(--charcoal);
+      color: var(--cream);
+      font-family: var(--font-body);
+      font-weight: 300;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      cursor: default;
+    }
+
+    /* Custom scrollbars inside dropdown panels */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(10,10,9,0.1);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--gold-dark);
+      border-radius: 2px;
+    }
+
+    /* ── CANVAS VIEWPORT ── */
+    #canvas-container {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      transition: filter 0.4s ease;
+    }
+    
+    #three-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Camera Feed for AR Mode */
+    #camera-feed {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      display: none;
+      transform: scaleX(-1); /* mirror webcam */
+    }
+
+    /* ── STUNNING GLASSMORPHISM TOP HEADER ── */
+    header {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+      background: linear-gradient(to bottom, rgba(10,10,9,0.85) 0%, transparent 100%);
+      pointer-events: none;
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    
+    .logo-text {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 300;
+      letter-spacing: 2px;
+      color: var(--white);
+    }
+    
+    .logo-text em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .back-btn {
+      pointer-events: auto;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--cream);
+      padding: 10px 24px;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      backdrop-filter: blur(12px);
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    .back-btn:hover {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--charcoal);
+      transform: translateX(-4px);
+    }
+
+    /* ── LEFT COLLECTION DRAWER ── */
+    .drawer-left {
+      position: absolute;
+      top: 100px; bottom: 100px; left: 30px;
+      width: 280px;
+      background: var(--glass);
+      border: 1px solid var(--border-glass);
+      backdrop-filter: blur(24px);
+      z-index: 8;
+      border-radius: 8px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(0);
+      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      box-shadow: 0 12px 48px rgba(0,0,0,0.5);
+    }
+
+    .drawer-left.hidden {
+      transform: translateX(-340px);
+    }
+
+    .section-eyebrow {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .section-eyebrow::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(201, 169, 97, 0.25);
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 300;
+      color: var(--white);
+      margin-bottom: 24px;
+    }
+
+    .product-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+      flex: 1;
+      padding-right: 4px;
+    }
+
+    .product-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .product-item:hover {
+      background: rgba(201, 169, 97, 0.05);
+      border-color: rgba(201, 169, 97, 0.25);
+    }
+
+    .product-item.active {
+      background: rgba(201, 169, 97, 0.1);
+      border-color: var(--gold);
+      box-shadow: 0 4px 20px rgba(201, 169, 97, 0.15);
+    }
+
+    .product-item h3 {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .product-item p {
+      font-size: 11px;
+      color: rgba(245, 242, 236, 0.45);
+      line-height: 1.4;
+    }
+
+    /* ── RIGHT CONFIGURATION DRAWER ── */
+    .drawer-right {
+      position: absolute;
+      top: 100px; bottom: 100px; right: 30px;
+      width: 320px;
+      background: var(--glass);
+      border: 1px solid var(--border-glass);
+      backdrop-filter: blur(24px);
+      z-index: 8;
+      border-radius: 8px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(0);
+      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      box-shadow: 0 12px 48px rgba(0,0,0,0.5);
+    }
+
+    .drawer-right.hidden {
+      transform: translateX(380px);
+    }
+
+    .config-scroller {
+      overflow-y: auto;
+      flex: 1;
+      padding-right: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .config-group-title {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      margin-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 6px;
+    }
+
+    /* Swatches Grid */
+    .swatches-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .swatch-item {
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      background-size: cover;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .swatch-item:hover {
+      transform: scale(1.1);
+    }
+
+    .swatch-item.active {
+      border-color: var(--white);
+      box-shadow: 0 0 0 2px var(--gold), inset 0 2px 4px rgba(0,0,0,0.4);
+    }
+
+    .swatch-label {
+      position: absolute;
+      bottom: -18px; left: 50%;
+      transform: translateX(-50%);
+      font-size: 8px;
+      color: rgba(245, 242, 236, 0.5);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+
+    .swatch-item:hover .swatch-label {
+      opacity: 1;
+    }
+
+    /* Environment preset cards */
+    .presets-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .preset-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 6px;
+      padding: 10px 4px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(245,242,236,0.6);
+      transition: all 0.3s;
+    }
+
+    .preset-card:hover {
+      border-color: rgba(201, 169, 97, 0.35);
+      color: var(--white);
+    }
+
+    .preset-card.active {
+      background: rgba(201, 169, 97, 0.1);
+      border-color: var(--gold);
+      color: var(--gold-light);
+      font-weight: 500;
+    }
+
+    /* Audio Mute button */
+    .sound-control {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 6px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .sound-control:hover {
+      background: rgba(201,169,97,0.04);
+    }
+    
+    .sound-control span {
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* ── BOTTOM CONTROL BAR ── */
+    .control-bar {
+      position: absolute;
+      bottom: 24px; left: 50%;
+      transform: translateX(-50%);
+      background: var(--glass);
+      border: 1px solid var(--border-glass);
+      backdrop-filter: blur(24px);
+      z-index: 8;
+      border-radius: 30px;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.6);
+      transition: transform 0.4s ease, opacity 0.4s ease;
+    }
+    
+    .control-bar.hidden {
+      transform: translate(-50%, 80px);
+      opacity: 0;
+    }
+
+    .bar-btn {
+      background: transparent;
+      border: none;
+      color: rgba(245, 242, 236, 0.6);
+      padding: 10px 20px;
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 20px;
+      transition: all 0.3s;
+    }
+
+    .bar-btn:hover {
+      color: var(--white);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .bar-btn.active {
+      color: var(--charcoal);
+      background: var(--gold);
+      font-weight: 500;
+    }
+
+    .bar-btn-separator {
+      width: 1px;
+      height: 24px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* ── TOGGLE INTERFACE ARROWS ── */
+    .drawer-toggle {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 56px;
+      background: var(--glass);
+      border: 1px solid var(--border-glass);
+      backdrop-filter: blur(12px);
+      z-index: 9;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: var(--gold);
+      transition: all 0.3s;
+    }
+    
+    .toggle-left {
+      left: 310px;
+      border-radius: 0 4px 4px 0;
+      border-left: none;
+    }
+    .toggle-left.collapsed {
+      left: 0;
+    }
+    
+    .toggle-right {
+      right: 344px;
+      border-radius: 4px 0 0 4px;
+      border-right: none;
+    }
+    .toggle-right.collapsed {
+      right: 0;
+    }
+
+    /* ── VR/AR SPLIT VIEWPORTS ── */
+    #vr-overlay-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 6;
+      display: none;
+      grid-template-columns: 1fr 1fr;
+      mix-blend-mode: screen;
+      opacity: 0.25;
+    }
+
+    .vr-lens {
+      border: 1px solid rgba(255,255,255,0.03);
+      position: relative;
+    }
+    
+    .vr-lens::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.65) 100%);
+    }
+
+    /* AR Viewport Guides */
+    #ar-guide {
+      position: absolute;
+      top: 25%; left: 50%;
+      transform: translate(-50%, -50%);
+      border: 1px dashed rgba(201, 169, 97, 0.4);
+      padding: 16px 28px;
+      border-radius: 8px;
+      z-index: 5;
+      pointer-events: none;
+      text-align: center;
+      display: none;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      background: rgba(10,10,9,0.6);
+      backdrop-filter: blur(4px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      animation: fadeInOut 3s infinite;
+    }
+
+    @keyframes fadeInOut {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    /* UI Animation Helper */
+    .fade-out {
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    /* ── MOBILE RESPONSIVENESS ── */
+    @media (max-width: 768px) {
+      header {
+        padding: 16px 20px;
+      }
+      .logo-text {
+        font-size: 20px;
+      }
+      .back-btn {
+        padding: 8px 16px;
+        font-size: 9px;
+      }
+      .drawer-left {
+        left: 10px; right: 10px;
+        width: auto;
+        height: 250px;
+        top: auto;
+        bottom: 90px;
+        transform: translateY(0);
+      }
+      .drawer-left.hidden {
+        transform: translateY(380px);
+      }
+      .drawer-right {
+        left: 10px; right: 10px;
+        width: auto;
+        height: 320px;
+        top: auto;
+        bottom: 90px;
+        transform: translateY(0);
+      }
+      .drawer-right.hidden {
+        transform: translateY(450px);
+      }
+      /* Hide arrows on mobile, just overlay */
+      .drawer-toggle {
+        display: none;
+      }
+      .control-bar {
+        bottom: 16px;
+        border-radius: 20px;
+        padding: 4px 8px;
+        width: calc(100% - 20px);
+        justify-content: space-around;
+        overflow-x: auto;
+      }
+      .bar-btn {
+        padding: 8px 10px;
+        font-size: 8px;
+        letter-spacing: 1px;
+      }
+    }
+  </style>
+  
+  <!-- CDN Dependencies -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+
+  <!-- CAMERA FEED FOR WEB AR -->
+  <video id="camera-feed" autoplay playsinline muted></video>
+
+  <!-- VR SPLIT EYE GUIDES -->
+  <div id="vr-overlay-container">
+    <div class="vr-lens"></div>
+    <div class="vr-lens"></div>
+  </div>
+
+  <!-- AR GUIDE OVERLAY -->
+  <div id="ar-guide">
+    Place furniture on flat surface · Drag to position
+  </div>
+
+  <!-- TOP HEADER -->
+  <header id="app-header">
+    <div class="logo-container" onclick="window.location.href='mmadesign Sample (1).html'">
+      <div class="logo-text">MMA <em>3D Studio</em></div>
+    </div>
+    <button class="back-btn" onclick="window.location.href='mmadesign Sample (1).html'">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform: rotate(180deg);"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      Back to Home
+    </button>
+  </header>
+
+  <!-- LEFT DRAWER — MODELS -->
+  <div class="drawer-left" id="drawerLeft">
+    <div class="section-eyebrow">Collections</div>
+    <div class="section-title">Select Design</div>
+    
+    <div class="product-list">
+      <div class="product-item active" data-model="chair">
+        <h3>Meuse Chair</h3>
+        <p>Premium executive seating. Contoured ergonomic support with polished chrome chassis.</p>
+      </div>
+      <div class="product-item" data-model="sofa">
+        <h3>Diablo Sofa</h3>
+        <p>Collaborative modular lounge. Deep plush fabric cushions with brass tipped steel frame.</p>
+      </div>
+      <div class="product-item" data-model="table">
+        <h3>Loire Table</h3>
+        <p>Massive conference table. Chamfered walnut slab supported by architectural slate legs.</p>
+      </div>
+      <div class="product-item" data-model="lounge">
+        <h3>Flamingo Lounge</h3>
+        <p>Iconic swivel lounge. Sculptural walnut plywood shell with luxurious leather finish.</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- LEFT TOGGLE BUTTON -->
+  <div class="drawer-toggle toggle-left" id="toggleLeft" title="Toggle Collections">‹</div>
+
+  <!-- THREE.JS WEBGL RENDER PORT -->
+  <div id="canvas-container">
+    <canvas id="three-canvas"></canvas>
+  </div>
+
+  <!-- RIGHT DRAWER — MATERIALS & ENVIRONMENT -->
+  <div class="drawer-right" id="drawerRight">
+    <div class="section-eyebrow">Studio Studio</div>
+    <div class="section-title">Customize</div>
+    
+    <div class="config-scroller">
+      
+      <!-- Cushion Color (Leather/Fabric) -->
+      <div class="config-group" id="group-cushion">
+        <div class="config-group-title">Upholstery / Finish</div>
+        <div class="swatches-grid">
+          <!-- Swatches dynamically loaded by model type -->
+        </div>
+      </div>
+
+      <!-- Metal Base Finish -->
+      <div class="config-group" id="group-base">
+        <div class="config-group-title">Structure Finish</div>
+        <div class="swatches-grid" id="base-metal-swatches">
+          <div class="swatch-item active" data-base="chrome" style="background-color: #E6E6E6;" title="Polished Chrome"><div class="swatch-label">Chrome</div></div>
+          <div class="swatch-item" data-base="brass" style="background-color: #D4AF37;" title="Brushed Brass"><div class="swatch-label">Brass</div></div>
+          <div class="swatch-item" data-base="bronze" style="background-color: #7B7059;" title="Oil Bronze"><div class="swatch-label">Bronze</div></div>
+          <div class="swatch-item" data-base="black" style="background-color: #222;" title="Matte Black"><div class="swatch-label">Matte Black</div></div>
+        </div>
+      </div>
+
+      <!-- Lighting & Background environment -->
+      <div class="config-group">
+        <div class="config-group-title">Visual Environment</div>
+        <div class="presets-row">
+          <div class="preset-card active" data-preset="studio">Studio</div>
+          <div class="preset-card" data-preset="office">Office</div>
+          <div class="preset-card" data-preset="lounge">Lounge</div>
+        </div>
+      </div>
+
+      <!-- Synthesized Audio Control -->
+      <div class="config-group">
+        <div class="config-group-title">Sound Experience</div>
+        <div class="sound-control" id="btnSound">
+          <span>Audio Synthesizer</span>
+          <span id="soundStatus" style="color: var(--gold-light); font-weight: 500;">Active</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  
+  <!-- RIGHT TOGGLE BUTTON -->
+  <div class="drawer-toggle toggle-right" id="toggleRight" title="Toggle Customizations">›</div>
+
+  <!-- BOTTOM CONTROL BAR -->
+  <div class="control-bar" id="bottomControlBar">
+    <button class="bar-btn" id="btnExplode">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+      Explode View
+    </button>
+    <button class="bar-btn" id="btnDimensions">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7M12 19l7-7-7-7" style="transform: rotate(90deg); transform-origin: center;"/></svg>
+      Dimensions
+    </button>
+    <div class="bar-btn-separator"></div>
+    <button class="bar-btn" id="btnAR">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      AR View
+    </button>
+    <button class="bar-btn" id="btnVR">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/></svg>
+      VR Mode
+    </button>
+  </div>
+
+  <!-- Three.js App Logic -->
+  <script>
+    // ── AUDIO SYNTHESIZER (Web Audio API) ──
+    let soundEnabled = true;
+    function playSynthSound(type) {
+      if (!soundEnabled) return;
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        const now = ctx.currentTime;
+        
+        if (type === 'click') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(450, now);
+          osc.frequency.exponentialRampToValueAtTime(150, now + 0.08);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.005, now + 0.08);
+          osc.start();
+          osc.stop(now + 0.08);
+        } else if (type === 'success') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(329.63, now); // E4
+          osc.frequency.setValueAtTime(493.88, now + 0.08); // B4
+          osc.frequency.setValueAtTime(659.25, now + 0.16); // E5
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.005, now + 0.35);
+          osc.start();
+          osc.stop(now + 0.35);
+        } else if (type === 'sweep') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.exponentialRampToValueAtTime(400, now + 0.2);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.002, now + 0.2);
+          osc.start();
+          osc.stop(now + 0.2);
+        } else if (type === 'shimmer') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(600, now);
+          osc.frequency.exponentialRampToValueAtTime(1200, now + 0.4);
+          gain.gain.setValueAtTime(0.05, now);
+          gain.gain.exponentialRampToValueAtTime(0.002, now + 0.4);
+          osc.start();
+          osc.stop(now + 0.4);
+        }
+      } catch (e) {
+        console.warn('Audio Context Blocked', e);
+      }
+    }
+
+    // ── APP STATE ──
+    const state = {
+      model: 'chair',
+      preset: 'studio',
+      ar: false,
+      vr: false,
+      exploded: false,
+      dimensions: false,
+      colors: {
+        chair: 'charcoal',
+        sofa: 'felt-green',
+        table: 'walnut',
+        lounge: 'tan-leather'
+      },
+      baseMetal: 'chrome'
+    };
+
+    // Color Swatches Config
+    const colorSwatches = {
+      chair: [
+        { id: 'charcoal', name: 'Premium Charcoal', value: '#1C1C19', fabric: false },
+        { id: 'camel', name: 'Camel Leather', value: '#C19A6B', fabric: false },
+        { id: 'cognac', name: 'Cognac Saddle', value: '#9A4F2A', fabric: false },
+        { id: 'emerald', name: 'Imperial Green', value: '#123524', fabric: true }
+      ],
+      sofa: [
+        { id: 'felt-green', name: 'Felt Olive', value: '#4A5D4E', fabric: true },
+        { id: 'boucle-cream', name: 'Cream Bouclé', value: '#ECE9E2', fabric: true },
+        { id: 'terracotta', name: 'Terracotta Weave', value: '#C36241', fabric: true },
+        { id: 'slate', name: 'Indigo Slate', value: '#2C3E4C', fabric: true }
+      ],
+      table: [
+        { id: 'walnut', name: 'Royal Walnut', value: '#432C1B', wood: true },
+        { id: 'oak', name: 'Nordic White Oak', value: '#C6A984', wood: true },
+        { id: 'ebony', name: 'Ebonized Ash', value: '#181818', wood: true },
+        { id: 'teak', name: 'Burmese Teak', value: '#8A5A2B', wood: true }
+      ],
+      lounge: [
+        { id: 'tan-leather', name: 'Tan Plywood Leather', value: '#A0522D', fabric: false },
+        { id: 'black-leather', name: 'Black Royal Leather', value: '#0f0f0f', fabric: false },
+        { id: 'white-leather', name: 'Ivory Soft Leather', value: '#FAFAF8', fabric: false },
+        { id: 'oxblood', name: 'Oxblood Velvet', value: '#7A1C1C', fabric: true }
+      ]
+    };
+
+    // ── PROCEDURAL TEXTURE GENERATION (Dynamic HTML5 Canvas textures) ──
+    const textureCache = {};
+    
+    function getProceduralTexture(type, hexColor) {
+      const key = `${type}-${hexColor}`;
+      if (textureCache[key]) return textureCache[key];
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      if (type === 'fabric') {
+        canvas.width = 128;
+        canvas.height = 128;
+        ctx.fillStyle = hexColor;
+        ctx.fillRect(0, 0, 128, 128);
+        
+        // Fine thread patterns
+        ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 128; i += 4) {
+          ctx.beginPath();
+          ctx.moveTo(i, 0); ctx.lineTo(i, 128);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(0, i); ctx.lineTo(128, i);
+          ctx.stroke();
+        }
+        // Sub noise
+        for (let i = 0; i < 2000; i++) {
+          const x = Math.random() * 128;
+          const y = Math.random() * 128;
+          ctx.fillStyle = 'rgba(0,0,0,0.08)';
+          ctx.fillRect(x, y, 1, 1);
+        }
+      } 
+      else if (type === 'wood') {
+        canvas.width = 512;
+        canvas.height = 512;
+        ctx.fillStyle = hexColor;
+        ctx.fillRect(0, 0, 512, 512);
+        
+        // Base grain lines
+        ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+        ctx.lineWidth = 2;
+        for (let i = 0; i < 60; i++) {
+          ctx.beginPath();
+          let y = Math.random() * 512;
+          ctx.moveTo(0, y);
+          // Sinusoidal grain curvature
+          for (let x = 0; x <= 512; x += 10) {
+            const curve = Math.sin(x * 0.015) * 12 + Math.sin(x * 0.05) * 3;
+            ctx.lineTo(x, y + curve);
+          }
+          ctx.stroke();
+        }
+        
+        // Velvet knots
+        for (let k = 0; k < 3; k++) {
+          const kx = Math.random() * 512;
+          const ky = Math.random() * 512;
+          const r = Math.random() * 15 + 10;
+          ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+          for (let i = 0; i < r; i += 3) {
+            ctx.beginPath();
+            ctx.arc(kx, ky, i, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+        }
+      } 
+      else if (type === 'leather') {
+        canvas.width = 128;
+        canvas.height = 128;
+        ctx.fillStyle = hexColor;
+        ctx.fillRect(0, 0, 128, 128);
+        
+        // Tiny cell leather grain
+        ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 400; i++) {
+          ctx.beginPath();
+          const cx = Math.random() * 128;
+          const cy = Math.random() * 128;
+          const r = Math.random() * 3 + 2;
+          ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      
+      if (type === 'fabric') {
+        texture.repeat.set(12, 12);
+      } else if (type === 'leather') {
+        texture.repeat.set(8, 8);
+      } else if (type === 'wood') {
+        texture.repeat.set(1, 1);
+      }
+      
+      textureCache[key] = texture;
+      return texture;
+    }
+
+    // ── CORE THREE.JS ENGINE SETUP ──
+    let scene, camera, renderer, controls;
+    let mainGroup; // Parent folder containing current custom chair/table mesh
+    let environmentLights = {};
+    let gridHelper;
+    let floorShadowPlane;
+
+    const viewportContainer = document.getElementById('canvas-container');
+    const canvas = document.getElementById('three-canvas');
+
+    function initEngine() {
+      // 1. Scene
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0a0a09);
+      scene.fog = new THREE.FogExp2(0x0a0a09, 0.05);
+
+      // 2. Camera
+      camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
+      camera.position.set(4, 2.5, 4.5);
+
+      // 3. Renderer
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.05;
+
+      // 4. Controls
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.minDistance = 2;
+      controls.maxDistance = 15;
+      controls.maxPolarAngle = Math.PI / 2 - 0.02; // restrict going beneath floor
+
+      // 5. Parent Group
+      mainGroup = new THREE.Group();
+      scene.add(mainGroup);
+
+      // 6. Base Grid & Shadow Floor
+      gridHelper = new THREE.GridHelper(20, 40, 0xC9A961, 0x1A1A18);
+      gridHelper.position.y = -0.01;
+      gridHelper.material.opacity = 0.15;
+      gridHelper.material.transparent = true;
+      scene.add(gridHelper);
+
+      // Shadow receiver plane
+      const floorGeo = new THREE.PlaneGeometry(30, 30);
+      const floorMat = new THREE.ShadowMaterial({ opacity: 0.35 });
+      floorShadowPlane = new THREE.Mesh(floorGeo, floorMat);
+      floorShadowPlane.rotation.x = -Math.PI / 2;
+      floorShadowPlane.position.y = 0;
+      floorShadowPlane.receiveShadow = true;
+      scene.add(floorShadowPlane);
+
+      // 7. Lighting Infrastructure
+      setupLights();
+
+      // Start rendering loop
+      animate();
+    }
+
+    function setupLights() {
+      // Create presets
+      // A. STUDIO PRESET
+      const studioGroup = new THREE.Group();
+      
+      const ambient = new THREE.AmbientLight(0xffffff, 0.35);
+      studioGroup.add(ambient);
+      
+      const mainLight = new THREE.DirectionalLight(0xfff8f2, 1.25);
+      mainLight.position.set(5, 8, 3);
+      mainLight.castShadow = true;
+      mainLight.shadow.mapSize.width = 2048;
+      mainLight.shadow.mapSize.height = 2048;
+      mainLight.shadow.bias = -0.0001;
+      mainLight.shadow.camera.near = 0.5;
+      mainLight.shadow.camera.far = 20;
+      mainLight.shadow.camera.left = -2;
+      mainLight.shadow.camera.right = 2;
+      mainLight.shadow.camera.top = 2;
+      mainLight.shadow.camera.bottom = -2;
+      studioGroup.add(mainLight);
+
+      const fillLight = new THREE.DirectionalLight(0xe8f0ff, 0.5);
+      fillLight.position.set(-5, 4, -3);
+      studioGroup.add(fillLight);
+
+      const rimLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      rimLight.position.set(0, 5, -8);
+      studioGroup.add(rimLight);
+
+      scene.add(studioGroup);
+      environmentLights.studio = studioGroup;
+
+      // B. WORKSPACE / OFFICE PRESET
+      const officeGroup = new THREE.Group();
+      const officeAmb = new THREE.AmbientLight(0xdbe7ff, 0.5);
+      officeGroup.add(officeAmb);
+
+      const cellingLight1 = new THREE.PointLight(0xfffbeb, 1.8, 12);
+      cellingLight1.position.set(0, 4.5, 0);
+      cellingLight1.castShadow = true;
+      cellingLight1.shadow.bias = -0.001;
+      officeGroup.add(cellingLight1);
+      
+      const windowLight = new THREE.DirectionalLight(0xfffdf6, 1.4);
+      windowLight.position.set(10, 4, 8);
+      windowLight.castShadow = true;
+      officeGroup.add(windowLight);
+
+      scene.add(officeGroup);
+      officeGroup.visible = false;
+      environmentLights.office = officeGroup;
+
+      // C. WARM GOLDEN HOUR / COZY LOUNGE PRESET
+      const loungeGroup = new THREE.Group();
+      const loungeAmb = new THREE.AmbientLight(0xfff0dd, 0.3);
+      loungeGroup.add(loungeAmb);
+
+      const hearthLight = new THREE.PointLight(0xffaa44, 2.5, 15);
+      hearthLight.position.set(3, 1, 3);
+      hearthLight.castShadow = true;
+      loungeGroup.add(hearthLight);
+
+      const rimGold = new THREE.DirectionalLight(0xffbb77, 1.2);
+      rimGold.position.set(-6, 3, -6);
+      loungeGroup.add(rimGold);
+
+      scene.add(loungeGroup);
+      loungeGroup.visible = false;
+      environmentLights.lounge = loungeGroup;
+    }
+
+    // Dynamic environment swap
+    function setEnvironmentPreset(presetName) {
+      playSynthSound('click');
+      Object.keys(environmentLights).forEach(name => {
+        environmentLights[name].visible = (name === presetName);
+      });
+      
+      // Update background and fog
+      let bgColor, fogColor;
+      if (presetName === 'studio') {
+        bgColor = new THREE.Color(0x0a0a09);
+        fogColor = 0x0a0a09;
+        gridHelper.material.opacity = 0.15;
+      } else if (presetName === 'office') {
+        bgColor = new THREE.Color(0x101318);
+        fogColor = 0x101318;
+        gridHelper.material.opacity = 0.08;
+      } else if (presetName === 'lounge') {
+        bgColor = new THREE.Color(0x160f0a);
+        fogColor = 0x160f0a;
+        gridHelper.material.opacity = 0.2;
+      }
+
+      if (!state.ar) {
+        scene.background = bgColor;
+        scene.fog.color = bgColor;
+      }
+      
+      // Glow transition
+      gsap.to(camera.position, {
+        x: camera.position.x * 1.05,
+        z: camera.position.z * 1.05,
+        duration: 0.4,
+        yoyo: true,
+        repeat: 1,
+        ease: 'power2.out'
+      });
+    }
+
+    // ── PROCEDURAL 3D FURNITURE MODEL GENERATOR ──
+    const explodedTweens = [];
+    const dimensionMeshes = [];
+
+    // Helper: Shared physical materials
+    function getChassisMaterial(baseMetal) {
+      const mat = new THREE.MeshPhysicalMaterial({
+        roughness: 0.14,
+        metalness: 0.95,
+        clearcoat: 0.8,
+        clearcoatRoughness: 0.08
+      });
+      
+      if (baseMetal === 'chrome') {
+        mat.color.setHex(0xE6E6E6);
+      } else if (baseMetal === 'brass') {
+        mat.color.setHex(0xD4AF37);
+        mat.roughness = 0.22;
+      } else if (baseMetal === 'bronze') {
+        mat.color.setHex(0x7B7059);
+        mat.roughness = 0.3;
+      } else if (baseMetal === 'black') {
+        mat.color.setHex(0x161616);
+        mat.metalness = 0.4;
+        mat.roughness = 0.55;
+      }
+      return mat;
+    }
+
+    function buildFurniture() {
+      // Clear current model children and animations
+      explodedTweens.forEach(t => t.kill());
+      explodedTweens.length = 0;
+      
+      while(mainGroup.children.length > 0){
+        scene.remove(mainGroup.children[0]);
+        mainGroup.remove(mainGroup.children[0]);
+      }
+      
+      clearDimensions();
+
+      const activeColor = colorSwatches[state.model].find(c => c.id === state.colors[state.model]);
+      const hexColor = activeColor ? activeColor.value : '#fff';
+      
+      let cushionMaterial;
+      if (state.model === 'chair') {
+        cushionMaterial = new THREE.MeshStandardMaterial({
+          roughness: 0.7,
+          metalness: 0.05,
+          map: getProceduralTexture('leather', hexColor),
+          bumpMap: getProceduralTexture('leather', hexColor),
+          bumpScale: 0.005
+        });
+      } else if (state.model === 'sofa') {
+        cushionMaterial = new THREE.MeshStandardMaterial({
+          roughness: 0.9,
+          metalness: 0.01,
+          map: getProceduralTexture('fabric', hexColor),
+          bumpMap: getProceduralTexture('fabric', hexColor),
+          bumpScale: 0.015
+        });
+      } else if (state.model === 'table') {
+        cushionMaterial = new THREE.MeshStandardMaterial({
+          roughness: 0.35,
+          metalness: 0.05,
+          map: getProceduralTexture('wood', hexColor)
+        });
+      } else if (state.model === 'lounge') {
+        cushionMaterial = new THREE.MeshStandardMaterial({
+          roughness: 0.6,
+          metalness: 0.08,
+          map: getProceduralTexture(activeColor.fabric ? 'fabric' : 'leather', hexColor),
+          bumpMap: getProceduralTexture(activeColor.fabric ? 'fabric' : 'leather', hexColor),
+          bumpScale: 0.008
+        });
+      }
+
+      const metalMat = getChassisMaterial(state.baseMetal);
+
+      // Define exploded parts
+      const parts = [];
+
+      if (state.model === 'chair') {
+        // --- CHAIR ASSEMBLY ---
+        // Part 1: Wheel Base
+        const baseGroup = new THREE.Group();
+        const cylinderHub = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.25, 12), metalMat);
+        baseGroup.add(cylinderHub);
+        
+        // 5 Star rays
+        for (let i = 0; i < 5; i++) {
+          const angle = (i / 5) * Math.PI * 2;
+          const ray = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.04, 0.7, 8, 1, 1), metalMat);
+          ray.position.set(Math.sin(angle) * 0.32, -0.06, Math.cos(angle) * 0.32);
+          ray.rotation.y = angle;
+          ray.rotation.x = 0.08;
+          baseGroup.add(ray);
+          
+          // Casters / Wheels
+          const caster = new THREE.Mesh(new THREE.SphereGeometry(0.05, 12, 12), new THREE.MeshBasicMaterial({ color: 0x111111 }));
+          caster.position.set(Math.sin(angle) * 0.65, -0.15, Math.cos(angle) * 0.65);
+          baseGroup.add(caster);
+        }
+        baseGroup.position.y = 0.16;
+        parts.push({ mesh: baseGroup, offset: new THREE.Vector3(0, -0.22, 0) });
+
+        // Part 2: Hydraulic Cylinder stem
+        const cylinderLift = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.45, 12), metalMat);
+        cylinderLift.position.y = 0.45;
+        parts.push({ mesh: cylinderLift, offset: new THREE.Vector3(0, -0.1, 0) });
+
+        // Part 3: Cushion Seat (contoured executive style)
+        const seatGroup = new THREE.Group();
+        const seatCushion = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.1, 0.54, 10, 1, 10), cushionMaterial);
+        seatCushion.castShadow = true;
+        seatCushion.receiveShadow = true;
+        seatGroup.add(seatCushion);
+        
+        // Control levers under seat
+        const lever = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.02, 0.02), metalMat);
+        lever.position.set(0.2, -0.07, 0);
+        seatGroup.add(lever);
+        
+        seatGroup.position.y = 0.72;
+        parts.push({ mesh: seatGroup, offset: new THREE.Vector3(0, 0.08, 0) });
+
+        // Part 4: High ergonomic Backrest
+        const backrestGroup = new THREE.Group();
+        const backCushion = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.7, 0.08, 10, 10, 1), cushionMaterial);
+        backCushion.castShadow = true;
+        backrestGroup.add(backCushion);
+        
+        // Chrome back spline
+        const spline = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.52, 0.04), metalMat);
+        spline.position.set(0, -0.12, -0.06);
+        backrestGroup.add(spline);
+        
+        backrestGroup.position.set(0, 1.12, -0.24);
+        backrestGroup.rotation.x = -0.12; // tilt
+        parts.push({ mesh: backrestGroup, offset: new THREE.Vector3(0, 0.28, -0.25) });
+
+        // Part 5: Left Armrest
+        const armLGroup = new THREE.Group();
+        const armLSpur = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.28, 0.04), metalMat);
+        const armLPad = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.04, 0.32), cushionMaterial);
+        armLPad.position.set(0, 0.14, 0.1);
+        armLGroup.add(armLSpur);
+        armLGroup.add(armLPad);
+        armLGroup.position.set(-0.32, 0.92, -0.02);
+        parts.push({ mesh: armLGroup, offset: new THREE.Vector3(-0.25, 0.08, 0) });
+
+        // Part 6: Right Armrest
+        const armRGroup = new THREE.Group();
+        const armRSpur = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.28, 0.04), metalMat);
+        const armRPad = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.04, 0.32), cushionMaterial);
+        armRPad.position.set(0, 0.14, 0.1);
+        armRGroup.add(armRSpur);
+        armRGroup.add(armRPad);
+        armRGroup.position.set(0.32, 0.92, -0.02);
+        parts.push({ mesh: armRGroup, offset: new THREE.Vector3(0.25, 0.08, 0) });
+
+      } 
+      else if (state.model === 'sofa') {
+        // --- DIABLO SOFA ASSEMBLY ---
+        // Part 1: Metal Leg frame
+        const frameGroup = new THREE.Group();
+        const baseRail1 = new THREE.Mesh(new THREE.BoxGeometry(1.68, 0.04, 0.04), metalMat);
+        baseRail1.position.z = -0.32;
+        const baseRail2 = new THREE.Mesh(new THREE.BoxGeometry(1.68, 0.04, 0.04), metalMat);
+        baseRail2.position.z = 0.32;
+        frameGroup.add(baseRail1);
+        frameGroup.add(baseRail2);
+        
+        // 4 Slender round legs
+        const legGeo = new THREE.CylinderGeometry(0.022, 0.012, 0.38, 12);
+        const tipGeo = new THREE.CylinderGeometry(0.013, 0.012, 0.08, 12);
+        const goldMat = new THREE.MeshPhysicalMaterial({ color: 0xD4AF37, roughness: 0.1, metalness: 1 });
+        
+        const legOffsets = [[-0.8, -0.32], [0.8, -0.32], [-0.8, 0.32], [0.8, 0.32]];
+        legOffsets.forEach(pos => {
+          const leg = new THREE.Mesh(legGeo, metalMat);
+          leg.position.set(pos[0], -0.16, pos[1]);
+          leg.rotation.z = pos[0] > 0 ? -0.12 : 0.12;
+          frameGroup.add(leg);
+          
+          // gold tips
+          const tip = new THREE.Mesh(tipGeo, goldMat);
+          tip.position.set(pos[0] * 1.025, -0.34, pos[1]);
+          frameGroup.add(tip);
+        });
+        frameGroup.position.y = 0.38;
+        parts.push({ mesh: frameGroup, offset: new THREE.Vector3(0, -0.22, 0) });
+
+        // Part 2: Inner support chassis
+        const chassis = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.06, 0.76), new THREE.MeshBasicMaterial({ color: 0x1e1e1a }));
+        chassis.position.y = 0.42;
+        parts.push({ mesh: chassis, offset: new THREE.Vector3(0, -0.06, 0) });
+
+        // Part 3: Cushion Seats (3 cushion split)
+        const cushionsGroup = new THREE.Group();
+        for (let i = 0; i < 3; i++) {
+          const seat = new THREE.Mesh(new THREE.BoxGeometry(0.53, 0.22, 0.68, 8, 4, 8), cushionMaterial);
+          seat.position.x = (i - 1) * 0.56;
+          seat.castShadow = true;
+          seat.receiveShadow = true;
+          cushionsGroup.add(seat);
+        }
+        cushionsGroup.position.y = 0.54;
+        parts.push({ mesh: cushionsGroup, offset: new THREE.Vector3(0, 0.18, 0) });
+
+        // Part 4: Sofa backrest slab
+        const backrestGroup = new THREE.Group();
+        const backSlab = new THREE.Mesh(new THREE.BoxGeometry(1.68, 0.48, 0.14, 20, 8, 2), cushionMaterial);
+        backSlab.castShadow = true;
+        backrestGroup.add(backSlab);
+        backrestGroup.position.set(0, 0.82, -0.38);
+        parts.push({ mesh: backrestGroup, offset: new THREE.Vector3(0, 0.28, -0.28) });
+
+        // Part 5: Left Arm panel
+        const armL = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.44, 0.72, 4, 8, 8), cushionMaterial);
+        armL.castShadow = true;
+        armL.position.set(-0.9, 0.64, 0);
+        parts.push({ mesh: armL, offset: new THREE.Vector3(-0.25, 0.05, 0) });
+
+        // Part 6: Right Arm panel
+        const armR = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.44, 0.72, 4, 8, 8), cushionMaterial);
+        armR.castShadow = true;
+        armR.position.set(0.9, 0.64, 0);
+        parts.push({ mesh: armR, offset: new THREE.Vector3(0.25, 0.05, 0) });
+
+      } 
+      else if (state.model === 'table') {
+        // --- LOIRE SLAO TABLE ASSEMBLY ---
+        // Part 1: Solid Walnut wood tabletop
+        const tabletopGroup = new THREE.Group();
+        const mainTop = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.08, 1.1, 20, 1, 10), cushionMaterial);
+        mainTop.castShadow = true;
+        mainTop.receiveShadow = true;
+        tabletopGroup.add(mainTop);
+        
+        // Metallic Central grommet outlet box
+        const grommetOutline = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.09, 0.15), metalMat);
+        grommetOutline.position.set(0, 0.005, 0);
+        const grommetLid = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.092, 0.11), new THREE.MeshBasicMaterial({ color: 0x1a1a17 }));
+        grommetLid.position.set(0, 0.005, 0);
+        tabletopGroup.add(grommetOutline);
+        tabletopGroup.add(grommetLid);
+
+        tabletopGroup.position.y = 0.76;
+        parts.push({ mesh: tabletopGroup, offset: new THREE.Vector3(0, 0.28, 0) });
+
+        // Part 2: Heavy Geometric Slate Leg left
+        const legLeftGroup = new THREE.Group();
+        const supportLegL = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.72, 0.8), metalMat);
+        supportLegL.castShadow = true;
+        legLeftGroup.add(supportLegL);
+        legLeftGroup.position.set(-0.76, 0.36, 0);
+        parts.push({ mesh: legLeftGroup, offset: new THREE.Vector3(-0.35, -0.15, 0) });
+
+        // Part 3: Heavy Geometric Slate Leg right
+        const legRightGroup = new THREE.Group();
+        const supportLegR = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.72, 0.8), metalMat);
+        supportLegR.castShadow = true;
+        legRightGroup.add(supportLegR);
+        legRightGroup.position.set(0.76, 0.36, 0);
+        parts.push({ mesh: legRightGroup, offset: new THREE.Vector3(0.35, -0.15, 0) });
+
+        // Part 4: Center tension rail
+        const rail = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.06, 0.06), metalMat);
+        rail.position.set(0, 0.54, 0);
+        parts.push({ mesh: rail, offset: new THREE.Vector3(0, -0.1, 0) });
+
+      } 
+      else if (state.model === 'lounge') {
+        // --- FLAMINGO LOUNGE ASSEMBLY ---
+        // Part 1: Heavy steel Swivel disc base
+        const baseGroup = new THREE.Group();
+        const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.36, 0.03, 24), metalMat);
+        const column = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.32, 16), metalMat);
+        column.position.y = 0.16;
+        baseGroup.add(disc);
+        baseGroup.add(column);
+        baseGroup.position.y = 0.015;
+        parts.push({ mesh: baseGroup, offset: new THREE.Vector3(0, -0.18, 0) });
+
+        // Part 2: Contoured plywood shell (Outer layer)
+        const shellGroup = new THREE.Group();
+        const woodMat = new THREE.MeshStandardMaterial({
+          roughness: 0.25,
+          map: getProceduralTexture('wood', '#5c3e29') // walnut plywood
+        });
+        
+        const outerShell = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.6, 0.6, 12, 12, 1), woodMat);
+        outerShell.rotation.x = 0.2;
+        outerShell.castShadow = true;
+        shellGroup.add(outerShell);
+        shellGroup.position.set(0, 0.58, -0.06);
+        parts.push({ mesh: shellGroup, offset: new THREE.Vector3(0, 0.08, -0.1) });
+
+        // Part 3: Plush inner leather cushion seat
+        const seatCush = new THREE.Mesh(new THREE.BoxGeometry(0.64, 0.16, 0.52, 10, 4, 10), cushionMaterial);
+        seatCush.castShadow = true;
+        seatCush.position.set(0, 0.5, 0.02);
+        parts.push({ mesh: seatCush, offset: new THREE.Vector3(0, 0.18, 0.1) });
+
+        // Part 4: Plush backrest cushion
+        const backCush = new THREE.Mesh(new THREE.BoxGeometry(0.58, 0.44, 0.1, 10, 10, 2), cushionMaterial);
+        backCush.castShadow = true;
+        backCush.position.set(0, 0.78, -0.16);
+        backCush.rotation.x = -0.1;
+        parts.push({ mesh: backCush, offset: new THREE.Vector3(0, 0.26, -0.18) });
+      }
+
+      // Add to main group and establish initial animations
+      parts.forEach(part => {
+        mainGroup.add(part.mesh);
+        
+        // save original coordinate vectors for Explode/Assemble toggling
+        part.mesh.userData.origin = part.mesh.position.clone();
+        part.mesh.userData.offset = part.offset;
+        
+        // Initial drop-down assembly entry stagger
+        part.mesh.position.y += 2.2;
+        part.mesh.scale.set(0.01, 0.01, 0.01);
+        
+        gsap.to(part.mesh.position, {
+          y: part.mesh.userData.origin.y,
+          duration: 1.1,
+          delay: Math.random() * 0.35,
+          ease: 'power3.out'
+        });
+        
+        gsap.to(part.mesh.scale, {
+          x: 1, y: 1, z: 1,
+          duration: 0.9,
+          delay: Math.random() * 0.2,
+          ease: 'back.out(1.5)'
+        });
+      });
+      
+      mainGroup.position.set(0, 0, 0);
+
+      // Trigger structural dimensions
+      if (state.dimensions) {
+        setTimeout(renderDimensions, 1000);
+      }
+    }
+
+    // ── INTERACTIVE EXPLODE AND RE-ASSEMBLE CONTROLS ──
+    function toggleExplodedView() {
+      state.exploded = !state.exploded;
+      
+      // Play synthesis sound
+      playSynthSound(state.exploded ? 'sweep' : 'click');
+
+      const btn = document.getElementById('btnExplode');
+      btn.classList.toggle('active', state.exploded);
+      
+      explodedTweens.forEach(t => t.kill());
+      explodedTweens.length = 0;
+
+      mainGroup.children.forEach(child => {
+        const origin = child.userData.origin;
+        const offset = child.userData.offset;
+        
+        if (!origin || !offset) return;
+
+        const target = state.exploded 
+          ? new THREE.Vector3().addVectors(origin, offset)
+          : origin;
+
+        const t = gsap.to(child.position, {
+          x: target.x,
+          y: target.y,
+          z: target.z,
+          duration: 0.9,
+          ease: state.exploded ? 'back.out(1.1)' : 'power3.inOut'
+        });
+        explodedTweens.push(t);
+      });
+    }
+
+    // ── DIMENSIONS OVERLAY DRAWING ──
+    function clearDimensions() {
+      dimensionMeshes.forEach(mesh => scene.remove(mesh));
+      dimensionMeshes.length = 0;
+    }
+
+    function renderDimensions() {
+      clearDimensions();
+      if (!state.dimensions) return;
+      
+      playSynthSound('shimmer');
+
+      // Define bounding values based on model
+      let w = 0.68, h = 1.25, d = 0.65; // default chair
+      if (state.model === 'sofa') { w = 1.92; h = 0.88; d = 0.88; }
+      else if (state.model === 'table') { w = 2.3; h = 0.78; d = 1.1; }
+      else if (state.model === 'lounge') { w = 0.76; h = 0.92; d = 0.72; }
+
+      const lineMaterial = new THREE.LineDashedMaterial({
+        color: 0xC9A961,
+        dashSize: 0.05,
+        gapSize: 0.03,
+        linewidth: 1
+      });
+
+      // Width Line (Bottom Front)
+      drawDimensionLine(
+        new THREE.Vector3(-w/2, 0.05, d/2 + 0.15),
+        new THREE.Vector3(w/2, 0.05, d/2 + 0.15),
+        `W: ${Math.round(w*100)}cm`,
+        lineMaterial
+      );
+
+      // Height Line (Back Left)
+      drawDimensionLine(
+        new THREE.Vector3(-w/2 - 0.15, 0, -d/2),
+        new THREE.Vector3(-w/2 - 0.15, h, -d/2),
+        `H: ${Math.round(h*100)}cm`,
+        lineMaterial
+      );
+
+      // Depth Line (Bottom Side)
+      drawDimensionLine(
+        new THREE.Vector3(w/2 + 0.15, 0.05, -d/2),
+        new THREE.Vector3(w/2 + 0.15, 0.05, d/2),
+        `D: ${Math.round(d*100)}cm`,
+        lineMaterial
+      );
+    }
+
+    function drawDimensionLine(start, end, text, material) {
+      // Line
+      const geom = new THREE.BufferGeometry().setFromPoints([start, end]);
+      const line = new THREE.Line(geom, material);
+      line.computeLineDistances(); // for dashed
+      scene.add(line);
+      dimensionMeshes.push(line);
+
+      // Small end ticks
+      const tickL = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.06, 0.01), new THREE.MeshBasicMaterial({ color: 0xC9A961 }));
+      tickL.position.copy(start);
+      if(start.x !== end.x) tickL.rotation.z = Math.PI/2;
+      scene.add(tickL);
+      dimensionMeshes.push(tickL);
+
+      const tickR = tickL.clone();
+      tickR.position.copy(end);
+      scene.add(tickR);
+      dimensionMeshes.push(tickR);
+
+      // Text Sprite
+      const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+      
+      const spriteCanvas = document.createElement('canvas');
+      spriteCanvas.width = 128;
+      spriteCanvas.height = 64;
+      const sCtx = spriteCanvas.getContext('2d');
+      sCtx.fillStyle = '#0a0a09';
+      sCtx.fillRect(14, 16, 100, 32);
+      sCtx.strokeStyle = '#C9A961';
+      sCtx.lineWidth = 1.5;
+      sCtx.strokeRect(14, 16, 100, 32);
+      sCtx.fillStyle = '#F5F2EC';
+      sCtx.font = 'bold 12px sans-serif';
+      sCtx.textAlign = 'center';
+      sCtx.fillText(text, 64, 36);
+
+      const spriteTex = new THREE.CanvasTexture(spriteCanvas);
+      const spriteMat = new THREE.SpriteMaterial({ map: spriteTex, transparent: true });
+      const sprite = new THREE.Sprite(spriteMat);
+      sprite.position.copy(mid);
+      sprite.position.y += 0.08;
+      sprite.scale.set(0.45, 0.22, 1);
+      scene.add(sprite);
+      dimensionMeshes.push(sprite);
+    }
+
+    function toggleDimensions() {
+      state.dimensions = !state.dimensions;
+      const btn = document.getElementById('btnDimensions');
+      btn.classList.toggle('active', state.dimensions);
+      
+      if (state.dimensions) {
+        renderDimensions();
+      } else {
+        clearDimensions();
+        playSynthSound('click');
+      }
+    }
+
+    // ── STEREOSCOPIC VR SUITE & GYROSCOPE HEAD TRACKING ──
+    function toggleVRMode() {
+      state.vr = !state.vr;
+      playSynthSound('success');
+      
+      const btn = document.getElementById('btnVR');
+      btn.classList.toggle('active', state.vr);
+      
+      const header = document.getElementById('app-header');
+      const drawerL = document.getElementById('drawerLeft');
+      const drawerR = document.getElementById('drawerRight');
+      const toggleL = document.getElementById('toggleLeft');
+      const toggleR = document.getElementById('toggleRight');
+      const vrOverlay = document.getElementById('vr-overlay-container');
+
+      if (state.vr) {
+        // Hide standard interface
+        header.classList.add('fade-out');
+        drawerL.classList.add('fade-out');
+        drawerR.classList.add('fade-out');
+        toggleL.classList.add('fade-out');
+        toggleR.classList.add('fade-out');
+        vrOverlay.style.display = 'grid';
+        
+        // Push camera in and lock controls
+        controls.enabled = false;
+        camera.position.set(0, 1.2, 3.2);
+        
+        // Register Head Orientation Sensors
+        window.addEventListener('deviceorientation', handleGyroScope, true);
+        
+        // Desktop guide pop
+        alert("VR Viewport stereoscopic splitting active.\nGyro head-tracking active on mobiles.\n(Press ESC to exit VR Mode)");
+      } else {
+        // Restore standard interface
+        header.classList.remove('fade-out');
+        drawerL.classList.remove('fade-out');
+        drawerR.classList.remove('fade-out');
+        toggleL.classList.remove('fade-out');
+        toggleR.classList.remove('fade-out');
+        vrOverlay.style.display = 'none';
+        
+        controls.enabled = true;
+        window.removeEventListener('deviceorientation', handleGyroScope);
+      }
+    }
+
+    // Gyroscope tracking logic
+    function handleGyroScope(e) {
+      if (!state.vr) return;
+      // Map alpha, beta, gamma to camera rotational Euler angles
+      const alpha = e.alpha ? THREE.MathUtils.degToRad(e.alpha) : 0; // z axis compass
+      const beta  = e.beta  ? THREE.MathUtils.degToRad(e.beta)  : 0; // x axis tilt front-back
+      const gamma = e.gamma ? THREE.MathUtils.degToRad(e.gamma) : 0; // y axis tilt left-right
+      
+      // Smooth look-at mapping
+      camera.rotation.set(beta - 0.25, gamma, alpha, 'YXZ');
+    }
+
+    // Esc key exit helper
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (state.vr) toggleVRMode();
+        if (state.ar) toggleARMode();
+      }
+    });
+
+    // ── WEBCAM AR IMMERSIVE SUITE ──
+    let cameraStream = null;
+    
+    function toggleARMode() {
+      state.ar = !state.ar;
+      playSynthSound('success');
+      
+      const btn = document.getElementById('btnAR');
+      btn.classList.toggle('active', state.ar);
+      
+      const video = document.getElementById('camera-feed');
+      const arGuide = document.getElementById('ar-guide');
+
+      if (state.ar) {
+        // Access webcam
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+          .then(stream => {
+            cameraStream = stream;
+            video.srcObject = stream;
+            video.style.display = 'block';
+            arGuide.style.display = 'block';
+            
+            // Set renderer canvas transparent
+            renderer.setClearColor(0x000000, 0);
+            scene.background = null;
+            scene.fog = null;
+            
+            // Hide grid helper for realism, keep shadow plane
+            gridHelper.visible = false;
+            
+            // Position camera slightly lower for couch projection
+            camera.position.set(0, 1.2, 3);
+            controls.target.set(0, 0.4, 0);
+          })
+          .catch(err => {
+            console.error('Camera failed', err);
+            alert('Webcam permission denied or camera not found. Camera stream simulation enabled.');
+            // simulate overlay with static canvas filter
+            video.style.display = 'block';
+            video.style.background = 'url("https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80") no-repeat center/cover';
+          });
+      } else {
+        // Shut down webcam
+        if (cameraStream) {
+          cameraStream.getTracks().forEach(track => track.stop());
+          cameraStream = null;
+        }
+        video.srcObject = null;
+        video.style.display = 'none';
+        video.style.background = 'none';
+        arGuide.style.display = 'none';
+        
+        // Restore renderer canvas background
+        renderer.setClearColor(0x0a0a09, 1);
+        setEnvironmentPreset(state.preset);
+        gridHelper.visible = true;
+      }
+    }
+
+    // ── RENDER ENGINE LOOP ──
+    function animate() {
+      requestAnimationFrame(animate);
+      
+      // Update Orbit controls damping
+      controls.update();
+
+      if (state.vr) {
+        // STEREOSCOPIC SPLIT-SCREEN CAMERA VIEWPORT RENDER
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        
+        // Left Eye
+        renderer.setViewport(0, 0, w / 2, h);
+        renderer.setScissor(0, 0, w / 2, h);
+        renderer.setScissorTest(true);
+        camera.aspect = (w / 2) / h;
+        camera.updateProjectionMatrix();
+        
+        camera.position.x -= 0.035; // inter-pupillary distance offset left
+        renderer.render(scene, camera);
+        
+        // Right Eye
+        renderer.setViewport(w / 2, 0, w / 2, h);
+        renderer.setScissor(w / 2, 0, w / 2, h);
+        renderer.setScissorTest(true);
+        
+        camera.position.x += 0.07; // offset right
+        renderer.render(scene, camera);
+        
+        camera.position.x -= 0.035; // restore center
+      } else {
+        // STANDARD RENDER
+        renderer.setViewport(0, 0, window.innerWidth, window.innerHeight);
+        renderer.setScissorTest(false);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.render(scene, camera);
+      }
+    }
+
+    // ── UI SWATCHES BINDING ──
+    const swatchesContainer = document.querySelector('#group-cushion .swatches-grid');
+    
+    function loadSwatches(modelName) {
+      swatchesContainer.innerHTML = '';
+      const list = colorSwatches[modelName];
+      
+      list.forEach((color, i) => {
+        const swatch = document.createElement('div');
+        swatch.className = 'swatch-item' + (color.id === state.colors[modelName] ? ' active' : '');
+        swatch.style.backgroundColor = color.value;
+        swatch.title = color.name;
+        swatch.dataset.id = color.id;
+        
+        const label = document.createElement('div');
+        label.className = 'swatch-label';
+        label.textContent = color.name.split(' ')[0];
+        swatch.appendChild(label);
+        
+        swatch.addEventListener('click', () => {
+          document.querySelectorAll('#group-cushion .swatch-item').forEach(s => s.classList.remove('active'));
+          swatch.classList.add('active');
+          state.colors[modelName] = color.id;
+          playSynthSound('click');
+          buildFurniture();
+        });
+        
+        swatchesContainer.appendChild(swatch);
+      });
+    }
+
+    // ── EVENT BINDINGS & INITS ──
+    window.addEventListener('load', () => {
+      initEngine();
+      loadSwatches('chair');
+      buildFurniture();
+
+      // Audio Synthetic synth activation click
+      document.getElementById('btnSound').addEventListener('click', () => {
+        soundEnabled = !soundEnabled;
+        const status = document.getElementById('soundStatus');
+        status.textContent = soundEnabled ? 'Active' : 'Muted';
+        status.style.color = soundEnabled ? 'var(--gold-light)' : 'rgba(245, 242, 236, 0.3)';
+        if (soundEnabled) playSynthSound('success');
+      });
+
+      // Product switcher
+      document.querySelectorAll('.product-item').forEach(item => {
+        item.addEventListener('click', () => {
+          document.querySelectorAll('.product-item').forEach(p => p.classList.remove('active'));
+          item.classList.add('active');
+          
+          state.model = item.dataset.model;
+          
+          // Audio feedback
+          playSynthSound('sweep');
+          
+          loadSwatches(state.model);
+          buildFurniture();
+        });
+      });
+
+      // Metal base switcher
+      document.querySelectorAll('#base-metal-swatches .swatch-item').forEach(item => {
+        item.addEventListener('click', () => {
+          document.querySelectorAll('#base-metal-swatches .swatch-item').forEach(s => s.classList.remove('active'));
+          item.classList.add('active');
+          
+          state.baseMetal = item.dataset.base;
+          playSynthSound('click');
+          buildFurniture();
+        });
+      });
+
+      // Environment preset cards
+      document.querySelectorAll('.preset-card').forEach(card => {
+        card.addEventListener('click', () => {
+          document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+          
+          state.preset = card.dataset.preset;
+          setEnvironmentPreset(state.preset);
+        });
+      });
+
+      // Drawer panel collapsers (left and right)
+      const dl = document.getElementById('drawerLeft');
+      const dr = document.getElementById('drawerRight');
+      const tl = document.getElementById('toggleLeft');
+      const tr = document.getElementById('toggleRight');
+      
+      tl.addEventListener('click', () => {
+        const collapsed = dl.classList.toggle('hidden');
+        tl.classList.toggle('collapsed', collapsed);
+        tl.textContent = collapsed ? '›' : '‹';
+        playSynthSound('click');
+      });
+      
+      tr.addEventListener('click', () => {
+        const collapsed = dr.classList.toggle('hidden');
+        tr.classList.toggle('collapsed', collapsed);
+        tr.textContent = collapsed ? '‹' : '›';
+        playSynthSound('click');
+      });
+
+      // Bottom Bar controls
+      document.getElementById('btnExplode').addEventListener('click', toggleExplodedView);
+      document.getElementById('btnDimensions').addEventListener('click', toggleDimensions);
+      document.getElementById('btnAR').addEventListener('click', toggleARMode);
+      document.getElementById('btnVR').addEventListener('click', toggleVRMode);
+    });
+
+    // Window resize helper
+    window.addEventListener('resize', () => {
+      if (camera && renderer) {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }
+    });
+  </script>
+</body>
+</html>

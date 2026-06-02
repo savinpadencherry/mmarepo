@@ -1,0 +1,2564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MMA Design — Flagship 3D & AR/VR Workspace Experience</title>
+  
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- CSS Design System -->
+  <style>
+    :root {
+      --gold: #C9A961;
+      --gold-light: #E2C98A;
+      --gold-dark: #A07A35;
+      --charcoal: #0a0a09;
+      --charcoal-2: #121210;
+      --charcoal-3: #1c1c19;
+      --cream: #F5F2EC;
+      --cream-2: #EDE9E0;
+      --text-muted: #8A8880;
+      --text-body: #a2a098;
+      --white: #FAFAF8;
+      
+      --font-display: 'Cormorant Garamond', serif;
+      --font-body: 'Outfit', sans-serif;
+      --glass: rgba(18, 18, 16, 0.82);
+      --border-glass: rgba(201, 169, 97, 0.16);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    body {
+      background: var(--charcoal);
+      color: var(--cream);
+      font-family: var(--font-body);
+      font-weight: 300;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--charcoal);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--gold-dark);
+      border-radius: 3px;
+    }
+
+    /* ── CUSTOM CURSOR ── */
+    #cursor {
+      position: fixed; top: 0; left: 0; z-index: 9999;
+      pointer-events: none;
+    }
+    #cursor-dot {
+      width: 8px; height: 8px;
+      background: var(--gold);
+      border-radius: 50%;
+      position: absolute;
+      transform: translate(-50%, -50%);
+      transition: width .3s, height .3s, background .3s;
+    }
+    #cursor-ring {
+      width: 40px; height: 40px;
+      border: 1px solid rgba(201,169,97,0.5);
+      border-radius: 50%;
+      position: absolute;
+      transform: translate(-50%, -50%);
+      transition: width .4s cubic-bezier(.25,.46,.45,.94),
+                  height .4s cubic-bezier(.25,.46,.45,.94),
+                  border-color .3s;
+    }
+    #cursor-label {
+      position: absolute;
+      transform: translate(20px, -50%);
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0;
+      transition: opacity .3s;
+      white-space: nowrap;
+    }
+    body.hovering-cta #cursor-dot { width: 14px; height: 14px; }
+    body.hovering-cta #cursor-ring { width: 70px; height: 70px; border-color: var(--gold); }
+    body.hovering-cta #cursor-label { opacity: 1; }
+
+    /* ── SCROLL PROGRESS BAR ── */
+    #progress-bar {
+      position: fixed; top: 0; left: 0; z-index: 1000;
+      height: 2px; width: 0%;
+      background: linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-light));
+      transition: width .1s linear;
+    }
+
+    /* ── NAVIGATION ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+      padding: 20px 60px;
+      display: flex; justify-content: space-between; align-items: center;
+      transition: background .4s, padding .4s, box-shadow .4s;
+      background: rgba(10, 10, 9, 0.7);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(201, 169, 97, 0.1);
+    }
+    nav.scrolled {
+      background: rgba(10, 10, 9, 0.96);
+      padding: 14px 60px;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+    }
+    .nav-logo {
+      display: flex; align-items: center;
+      cursor: pointer;
+    }
+    .nav-logo img { height: 36px; }
+    .nav-links { display: flex; gap: 40px; list-style: none; }
+    .nav-links a {
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--cream);
+      text-decoration: none;
+      transition: color .3s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 1px; background: var(--gold);
+      transition: width .3s;
+    }
+    .nav-links a:hover { color: var(--gold-light); }
+    .nav-links a:hover::after { width: 100%; }
+    
+    .nav-cta {
+      background: transparent;
+      border: 1px solid rgba(201,169,97,0.6);
+      color: var(--gold-light);
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 2px; text-transform: uppercase;
+      padding: 10px 24px;
+      cursor: none;
+      transition: all 0.3s;
+      border-radius: 4px;
+    }
+    .nav-cta:hover { background: var(--gold); color: var(--charcoal); }
+
+    .hamburger {
+      display: none;
+      flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: none; padding: 4px;
+    }
+    .hamburger span {
+      display: block; width: 24px; height: 1px;
+      background: var(--cream); transition: transform .3s, opacity .3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(10,10,9,0.98); backdrop-filter: blur(20px);
+      z-index: 800; flex-direction: column;
+      align-items: center; justify-content: center; gap: 36px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      font-family: var(--font-display); font-size: 38px;
+      font-weight: 300; color: var(--cream); text-decoration: none;
+      letter-spacing: 1px; transition: color .3s;
+    }
+    .mobile-menu a:hover { color: var(--gold); }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      background: var(--gold);
+      color: var(--charcoal);
+      font-family: var(--font-body);
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 2px; text-transform: uppercase;
+      padding: 16px 40px; border: none;
+      cursor: none;
+      transition: background .3s, transform .3s;
+      position: relative; overflow: hidden;
+      border-radius: 4px;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-primary:hover { background: var(--gold-light); }
+    
+    .btn-secondary {
+      background: transparent;
+      color: rgba(245,242,236,0.8);
+      font-family: var(--font-body);
+      font-size: 11px; font-weight: 400;
+      letter-spacing: 2px; text-transform: uppercase;
+      padding: 16px 40px;
+      border: 1px solid rgba(245,242,236,0.25);
+      cursor: none;
+      transition: border-color .3s, color .3s;
+      border-radius: 4px;
+    }
+    .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ── SPLASH INTRO ── */
+    #splash {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #0a0a09; display: flex; align-items: center; justify-content: center;
+      transform: translateY(0); will-change: transform;
+      transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+    }
+    .splash-bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 55% at 50% 60%, rgba(201,169,97,0.08) 0%, transparent 70%);
+    }
+    .splash-inner { text-align: center; max-width: 800px; padding: 0 40px; z-index: 2; }
+    .splash-eyebrow {
+      font-size: 10px; letter-spacing: 6px; text-transform: uppercase; color: var(--gold);
+      margin-bottom: 24px; display: flex; align-items: center; justify-content: center; gap: 16px;
+    }
+    .splash-eyebrow::before, .splash-eyebrow::after { content: ''; width: 32px; height: 1px; background: rgba(201,169,97,0.4); }
+    .splash-headline { font-family: var(--font-display); font-size: clamp(48px, 7vw, 92px); font-weight: 300; line-height: 1.1; color: var(--cream); margin-bottom: 24px; }
+    .splash-headline em { font-style: italic; color: var(--gold); }
+    .splash-sub { font-size: 15px; color: rgba(245,242,236,0.5); line-height: 1.7; margin-bottom: 40px; }
+    .splash-btn { padding: 18px 44px; background: var(--gold); color: var(--charcoal); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; border: none; cursor: none; transition: background 0.3s; }
+    .splash-btn:hover { background: var(--gold-light); }
+    .splash-progress-bar { position: absolute; bottom: 0; left: 0; height: 2px; width: 0%; background: var(--gold); }
+
+    /* ═══════════════════════════════════════════════
+       HERO — CINEMATIC LIVE VIDEO LANDING
+    ════════════════════════════════════════════════ */
+    #hero {
+      height: 100vh; min-height: 650px; width: 100%;
+      position: relative; display: flex; align-items: center;
+      background: #0a0a09; padding: 0 10%;
+      overflow: hidden;
+    }
+    /* YouTube Iframe as Background */
+    .hero-video-wrap {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 100vw;
+      height: 56.25vw;
+      min-height: 100vh;
+      min-width: 177.77vh;
+      transform: translate(-50%, -50%) scale(1.15);
+      z-index: 1;
+      pointer-events: none;
+      overflow: hidden;
+      /* Fallback animated gradient if YouTube doesn't load */
+      background: linear-gradient(135deg, #0a0a09 0%, #1a1510 25%, #0d0b08 50%, #151009 75%, #0a0a09 100%);
+      background-size: 400% 400%;
+      animation: heroGradientShift 12s ease infinite;
+    }
+    @keyframes heroGradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .hero-video-wrap iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: none;
+      opacity: 0.5;
+    }
+    /* Particle canvas overlay */
+    .hero-particles-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(10,10,9,0.92) 0%, rgba(10,10,9,0.65) 40%, rgba(10,10,9,0.4) 70%, rgba(10,10,9,0.75) 100%);
+      z-index: 2; pointer-events: none;
+    }
+    .hero-content {
+      position: relative; z-index: 3;
+      max-width: 680px;
+    }
+    .hero-eyebrow {
+      font-size: 10px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; color: var(--gold);
+      margin-bottom: 16px; display: flex; align-items: center; gap: 12px;
+    }
+    .hero-eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--gold); opacity: 0.6; }
+    .hero-title {
+      font-family: var(--font-display); font-size: clamp(42px, 5.5vw, 84px);
+      font-weight: 300; line-height: 1.08; color: var(--white); margin-bottom: 24px;
+    }
+    .hero-title em { font-style: italic; color: var(--gold); }
+    .hero-desc {
+      font-size: 16px; color: rgba(245,242,236,0.6); line-height: 1.7;
+      margin-bottom: 40px; max-width: 540px;
+    }
+    .hero-ctas { display: flex; gap: 20px; }
+    
+    .btn-pulse-dot {
+      width: 8px; height: 8px; background: #fff; border-radius: 50%;
+      display: inline-block; animation: pulse-gold 1.5s infinite;
+    }
+    @keyframes pulse-gold {
+      0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(255,255,255,0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(255,255,255,0); }
+      100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+    }
+
+    .hero-scroll-hint {
+      position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 2;
+    }
+    .hero-scroll-hint span { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: rgba(201,169,97,0.6); }
+    .scroll-line { width: 1px; height: 50px; background: linear-gradient(to bottom, var(--gold), transparent); }
+
+    /* ── CLIENTS TRUST MARQUEE ── */
+    #clients {
+      background: var(--charcoal-2);
+      padding: 56px 0; overflow: hidden; position: relative;
+      border-top: 1px solid rgba(201,169,97,0.06);
+      border-bottom: 1px solid rgba(201,169,97,0.06);
+    }
+    #clients::before, #clients::after { content: ''; position: absolute; top: 0; bottom: 0; width: 150px; z-index: 2; pointer-events: none; }
+    #clients::before { left: 0; background: linear-gradient(to right, var(--charcoal-2), transparent); }
+    #clients::after  { right: 0; background: linear-gradient(to left,  var(--charcoal-2), transparent); }
+    
+    .marquee-track { display: flex; width: max-content; will-change: transform; animation: marquee 30s linear infinite; }
+    .marquee-track:hover { animation-play-state: paused; }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    
+    .client-item {
+      padding: 10px 50px; display: flex; align-items: center; justify-content: center;
+      opacity: 0.45; transition: opacity .4s, transform .3s; height: 60px;
+    }
+    .client-item:hover { opacity: 1; transform: translateY(-2px); }
+    .client-logo-svg { height: 26px; fill: var(--cream); }
+
+    /* ═══════════════════════════════════════════════
+       INTERACTIVE 3D EXPERIENCE STUDIO (EMBEDDED)
+    ════════════════════════════════════════════════ */
+    #studio-section {
+      background: var(--charcoal);
+      padding: 100px 0 60px;
+      position: relative;
+    }
+    .studio-header {
+      max-width: 1200px; margin: 0 auto 52px; padding: 0 60px;
+    }
+    
+    /* Configurator Workspace */
+    #studio-container {
+      position: relative;
+      height: 720px;
+      max-width: 1320px;
+      margin: 0 auto;
+      border: 1px solid var(--border-glass);
+      background: var(--charcoal-2);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+    }
+
+    #three-viewport {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+    #three-canvas {
+      width: 100%; height: 100%; display: block;
+    }
+
+    #camera-feed {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; z-index: 0; display: none; transform: scaleX(-1);
+    }
+    #vr-overlay-container {
+      position: absolute; inset: 0; pointer-events: none; z-index: 6;
+      display: none; grid-template-columns: 1fr 1fr; mix-blend-mode: screen; opacity: 0.25;
+    }
+    .vr-lens { border: 1px solid rgba(255,255,255,0.03); position: relative; }
+    .vr-lens::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.65) 100%); }
+    #ar-guide {
+      position: absolute; top: 20%; left: 50%; transform: translate(-50%, -50%);
+      border: 1px dashed rgba(201,169,97,0.4); padding: 12px 24px; border-radius: 6px;
+      z-index: 5; pointer-events: none; text-align: center; display: none;
+      font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-light);
+      background: rgba(10,10,9,0.85); backdrop-filter: blur(8px);
+    }
+
+    /* Embedded Glass Panels */
+    .studio-panel {
+      position: absolute;
+      background: var(--glass);
+      border: 1px solid var(--border-glass);
+      backdrop-filter: blur(20px);
+      z-index: 8;
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.4);
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    .panel-left {
+      top: 24px; bottom: 24px; left: 24px; width: 260px;
+    }
+    .panel-left.hidden { transform: translateX(-310px); }
+    
+    .panel-right {
+      top: 24px; bottom: 24px; right: 24px; width: 280px;
+    }
+    .panel-right.hidden { transform: translateX(330px); }
+
+    .panel-title-sm {
+      font-size: 10px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold);
+      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    }
+    .panel-title-sm::after { content: ''; flex: 1; height: 1px; background: rgba(201, 169, 97, 0.2); }
+
+    .studio-product-list {
+      display: flex; flex-direction: column; gap: 10px; overflow-y: auto; flex: 1;
+    }
+    .studio-product-item {
+      background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 6px; padding: 12px 14px; cursor: pointer; transition: all 0.3s;
+    }
+    .studio-product-item:hover { background: rgba(201,169,97,0.04); border-color: rgba(201,169,97,0.2); }
+    .studio-product-item.active { background: rgba(201,169,97,0.08); border-color: var(--gold); }
+    .studio-product-item h4 { font-family: var(--font-display); font-size: 16px; color: var(--white); margin-bottom: 2px; }
+    .studio-product-item p { font-size: 11px; color: var(--text-muted); line-height: 1.35; }
+
+    .studio-config-scroller {
+      overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 20px;
+    }
+    .config-title-inner { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-light); margin-bottom: 8px; }
+    
+    /* Swatch grids */
+    .swatches-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .swatch-btn {
+      aspect-ratio: 1; border-radius: 50%; border: 2px solid transparent; cursor: pointer;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); transition: transform 0.2s;
+    }
+    .swatch-btn:hover { transform: scale(1.08); }
+    .swatch-btn.active { border-color: var(--white); box-shadow: 0 0 0 2px var(--gold); }
+
+    .presets-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .preset-btn {
+      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 4px; padding: 8px 2px; text-align: center; cursor: pointer; font-size: 9px;
+      text-transform: uppercase; color: rgba(245,242,236,0.6); transition: all 0.3s;
+    }
+    .preset-btn:hover { border-color: rgba(201,169,97,0.3); color: var(--white); }
+    .preset-btn.active { background: rgba(201,169,97,0.1); border-color: var(--gold); color: var(--gold-light); }
+
+    .sound-toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 6px; padding: 10px 12px; cursor: pointer; font-size: 10px; text-transform: uppercase;
+    }
+
+    /* Embedded Bottom control bar */
+    .studio-bar {
+      position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: var(--glass); border: 1px solid var(--border-glass);
+      backdrop-filter: blur(20px); z-index: 8; border-radius: 24px;
+      padding: 4px 8px; display: flex; align-items: center; gap: 6px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    .studio-bar.fade-out { opacity: 0; pointer-events: none; }
+    .studio-bar-btn {
+      background: transparent; border: none; color: rgba(245, 242, 236, 0.6);
+      padding: 8px 16px; font-family: var(--font-body); font-size: 10px;
+      letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer;
+      display: flex; align-items: center; gap: 6px; border-radius: 16px; transition: all 0.3s;
+    }
+    .studio-bar-btn:hover { color: var(--white); background: rgba(255,255,255,0.04); }
+    .studio-bar-btn.active { color: var(--charcoal); background: var(--gold); font-weight: 500; }
+    .studio-bar-sep { width: 1px; height: 16px; background: rgba(255,255,255,0.1); }
+
+    /* Side drawer toggles */
+    .panel-toggle {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 20px; height: 50px; background: var(--glass); border: 1px solid var(--border-glass);
+      backdrop-filter: blur(10px); z-index: 9; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--gold);
+    }
+    .pt-left { left: 284px; border-radius: 0 4px 4px 0; border-left: none; }
+    .pt-left.collapsed { left: 0; }
+    .pt-right { right: 304px; border-radius: 4px 0 0 4px; border-right: none; }
+    .pt-right.collapsed { right: 0; }
+
+    /* ═══════════════════════════════════════════════
+       ARCHITECTURAL PORTFOLIO GRID (ANDREU WORLD STYLE)
+    ════════════════════════════════════════════════ */
+    #portfolio {
+      background: var(--charcoal);
+      padding: 120px 8%;
+    }
+    .portfolio-header {
+      max-width: 1200px; margin: 0 auto 72px;
+      display: flex; justify-content: space-between; align-items: flex-end;
+    }
+    .portfolio-title-group { max-width: 600px; }
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 32px;
+      max-width: 1200px; margin: 0 auto;
+    }
+    .portfolio-item {
+      position: relative; cursor: pointer; overflow: hidden;
+      background: var(--charcoal-3);
+      border-radius: 8px;
+    }
+    .portfolio-item img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.8s;
+      filter: brightness(0.75) saturate(0.9);
+    }
+    .portfolio-item:hover img { transform: scale(1.06); filter: brightness(1) saturate(1.1); }
+    .portfolio-item::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(201,169,97,0.08) 0%, transparent 50%);
+      opacity: 0; transition: opacity 0.6s; z-index: 2; pointer-events: none;
+    }
+    .portfolio-item:hover::after { opacity: 1; }
+    
+    /* Asymmetrical columns */
+    .port-item-1 { grid-column: span 7; height: 480px; }
+    .port-item-2 { grid-column: span 5; height: 380px; margin-top: 100px; }
+    .port-item-3 { grid-column: span 5; height: 420px; }
+    .port-item-4 { grid-column: span 7; height: 520px; margin-top: -100px; }
+
+    .port-item-content {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 30px 24px; background: linear-gradient(to top, rgba(10,10,9,0.95) 0%, rgba(10,10,9,0.6) 60%, transparent 100%);
+      z-index: 3; transform: translateY(10px); transition: transform 0.5s;
+    }
+    .portfolio-item:hover .port-item-content { transform: translateY(0); }
+    .port-item-title { font-family: var(--font-display); font-size: clamp(20px, 2.2vw, 28px); color: var(--white); margin-bottom: 4px; }
+    .port-item-loc { font-size: 11px; color: rgba(245,242,236,0.5); letter-spacing: 1.5px; text-transform: uppercase; }
+    /* View Project badge on hover */
+    .portfolio-item .port-view-badge {
+      position: absolute; top: 20px; right: 20px; z-index: 4;
+      background: rgba(201,169,97,0.9); color: var(--charcoal); padding: 6px 14px;
+      font-size: 9px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+      border-radius: 20px; opacity: 0; transform: translateY(-10px); transition: all 0.4s;
+    }
+    .portfolio-item:hover .port-view-badge { opacity: 1; transform: translateY(0); }
+
+    /* ═══════════════════════════════════════════════
+       INTERACTIVE COLLECTIONS SERIES (BO CONCEPT / BOSS DESIGN)
+    ════════════════════════════════════════════════ */
+    #collections {
+      background: var(--charcoal-2);
+      padding: 120px 8%;
+      position: relative;
+    }
+    #collections::before {
+      content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 1px; height: 80px; background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+    }
+    .collections-header { max-width: 1200px; margin: 0 auto 64px; text-align: center; }
+    .collections-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      max-width: 1200px; margin: 0 auto;
+    }
+    .collection-card {
+      background: linear-gradient(145deg, rgba(28,28,25,0.9), rgba(18,18,16,0.95));
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 12px;
+      padding: 28px 24px;
+      display: flex; flex-direction: column;
+      transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+      position: relative; overflow: hidden;
+    }
+    .collection-card::before {
+      content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: conic-gradient(from 0deg, transparent 0%, rgba(201,169,97,0.06) 10%, transparent 20%);
+      animation: shimmer-rotate 8s linear infinite;
+      opacity: 0; transition: opacity 0.5s;
+    }
+    .collection-card:hover::before { opacity: 1; }
+    @keyframes shimmer-rotate { 100% { transform: rotate(360deg); } }
+    .collection-card:hover {
+      border-color: rgba(201,169,97,0.3);
+      transform: translateY(-8px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 30px rgba(201,169,97,0.05);
+    }
+    .col-card-icon {
+      font-size: 36px; color: var(--gold); margin-bottom: 20px;
+      filter: drop-shadow(0 0 8px rgba(201,169,97,0.3));
+    }
+    .col-card-title {
+      font-family: var(--font-display); font-size: 24px; color: var(--white); margin-bottom: 10px;
+      position: relative; z-index: 1;
+    }
+    .col-card-desc {
+      font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; flex: 1;
+      position: relative; z-index: 1;
+    }
+    .col-card-action {
+      background: transparent; border: 1px solid rgba(201,169,97,0.3);
+      color: var(--gold-light); font-size: 10px; font-weight: 500; letter-spacing: 2px;
+      text-transform: uppercase; padding: 12px 0; cursor: none; transition: all 0.4s;
+      border-radius: 6px; text-align: center; text-decoration: none;
+      position: relative; z-index: 1; overflow: hidden;
+    }
+    .col-card-action::before {
+      content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(201,169,97,0.15), transparent);
+      transition: left 0.6s;
+    }
+    .col-card-action:hover::before { left: 100%; }
+    .collection-card:hover .col-card-action {
+      background: var(--gold); color: var(--charcoal); border-color: var(--gold);
+    }
+
+    /* ═══════════════════════════════════════════════
+       WORKPLACE SERVICES ACCORDION
+    ════════════════════════════════════════════════ */
+    #services {
+      background: var(--charcoal);
+      padding: 100px 0 0;
+    }
+    .services-header { max-width: 1200px; margin: 0 auto; padding: 0 8% 48px; }
+    .svc-accordion { display: flex; height: 600px; overflow: hidden; }
+    .svc-panel {
+      position: relative; overflow: hidden; flex: 0 0 80px;
+      transition: flex .7s cubic-bezier(.77,0,.175,1);
+    }
+    .svc-panel.active { flex: 1 1 auto; }
+    .svc-panel-bg {
+      position: absolute; inset: 0; background-size: cover; background-position: center;
+      filter: brightness(0.28); transition: transform .7s, filter .7s;
+    }
+    .svc-panel.active .svc-panel-bg { filter: brightness(0.5); transform: scale(1.02); }
+    .svc-panel::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--gold);
+      transform: scaleY(0); transform-origin: bottom; transition: transform .5s .3s; z-index: 4;
+    }
+    .svc-panel.active::before { transform: scaleY(1); }
+    
+    .svc-label {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-90deg);
+      white-space: nowrap; font-family: var(--font-display); font-size: 20px;
+      color: rgba(245,242,236,0.45); letter-spacing: 2px; transition: opacity 0.3s; z-index: 3;
+    }
+    .svc-panel.active .svc-label { opacity: 0; }
+    
+    .svc-content {
+      position: absolute; bottom: 0; left: 0; right: 0; padding: 48px; z-index: 3;
+      transform: translateY(30px); opacity: 0; transition: all 0.5s .2s; pointer-events: none;
+    }
+    .svc-panel.active .svc-content { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .svc-cat { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; display: block; }
+    .svc-title { font-family: var(--font-display); font-size: clamp(28px, 3.5vw, 48px); color: var(--white); margin-bottom: 16px; }
+    .svc-desc { font-size: 14px; color: rgba(245,242,236,0.65); line-height: 1.7; max-width: 440px; }
+
+    /* ═══════════════════════════════════════════════
+       PREMIUM TESTIMONIALS CAROUSEL
+    ════════════════════════════════════════════════ */
+    #testimonials {
+      background: var(--charcoal-2);
+      padding: 100px 8%; position: relative; overflow: hidden;
+      display: flex; align-items: center; min-height: 520px;
+    }
+    #testimonials::before {
+      content: '\201C'; position: absolute; top: 60px; left: 8%;
+      font-family: var(--font-display); font-size: 300px; color: rgba(201,169,97,0.04);
+      line-height: 1; pointer-events: none;
+    }
+    .testimonials-inner { max-width: 1000px; margin: 0 auto; width: 100%; position: relative; z-index: 2; }
+    .testimonial-slide {
+      display: none; flex-direction: column; gap: 16px;
+      animation: fadeSlideIn 0.6s ease-out;
+    }
+    @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .testimonial-slide.active { display: flex; }
+    .testimonial-quote { font-family: var(--font-display); font-size: clamp(22px, 2.5vw, 34px); font-style: italic; color: var(--cream); line-height: 1.5; }
+    .testimonial-quote em { color: var(--gold); }
+    .testimonial-author { display: flex; align-items: center; gap: 16px; border-top: 1px solid rgba(201,169,97,0.15); padding-top: 20px; margin-top: 16px; }
+    .testimonial-avatar {
+      width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--gold);
+      display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 18px; color: var(--gold);
+      background: rgba(201,169,97,0.08); box-shadow: 0 0 20px rgba(201,169,97,0.1);
+    }
+    .testimonial-info h4 { font-size: 14px; color: var(--white); }
+    .testimonial-info p { font-size: 11px; color: var(--text-muted); }
+    
+    .testimonials-nav { display: flex; align-items: center; gap: 20px; margin-top: 40px; }
+    .t-dots { display: flex; gap: 8px; }
+    .t-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(201,169,97,0.2); cursor: pointer; transition: all 0.3s; }
+    .t-dot.active { background: var(--gold); transform: scale(1.4); box-shadow: 0 0 8px rgba(201,169,97,0.4); }
+    
+    .t-progress { flex: 1; height: 1px; background: rgba(201,169,97,0.1); position: relative; overflow: hidden; }
+    .t-progress-fill { position: absolute; top: 0; left: 0; bottom: 0; background: var(--gold); width: 0%; }
+    .t-arrow {
+      width: 40px; height: 40px; border: 1px solid rgba(201,169,97,0.25); background: transparent;
+      color: var(--gold); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;
+      border-radius: 50%;
+    }
+    .t-arrow:hover { background: var(--gold); color: var(--charcoal); border-color: var(--gold); box-shadow: 0 0 20px rgba(201,169,97,0.2); }
+
+    /* ═══════════════════════════════════════════════
+       GLASSMORPHIC CONTACT & SHOWROOM LOCATIONS
+    ════════════════════════════════════════════════ */
+    #contact {
+      background: var(--cream); color: var(--charcoal); padding: 120px 8%;
+      position: relative; overflow: hidden;
+    }
+    #contact::before {
+      content: ''; position: absolute; top: -200px; right: -200px;
+      width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,169,97,0.08), transparent 70%);
+      pointer-events: none;
+    }
+    .contact-headline { font-family: var(--font-display); font-size: clamp(38px, 6vw, 76px); font-weight: 300; line-height: 1.1; margin-bottom: 56px; text-align: center; position: relative; }
+    .contact-headline em { font-style: italic; color: var(--gold-dark); }
+    .contact-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 82px; max-width: 1200px; margin: 0 auto; }
+    
+    .form-row { margin-bottom: 28px; position: relative; }
+    .form-input {
+      width: 100%; padding: 16px 0; background: transparent; border: none; border-bottom: 1px solid rgba(74,72,69,0.2);
+      font-family: var(--font-body); font-size: 15px; color: var(--charcoal); outline: none; transition: border-color .3s;
+    }
+    .form-input:focus { border-bottom-color: var(--gold-dark); }
+    .form-label { position: absolute; top: 16px; left: 0; font-size: 12px; color: rgba(74,72,69,0.5); pointer-events: none; transition: all 0.2s; }
+    .form-input:focus + .form-label, .form-input:not(:placeholder-shown) + .form-label { top: -12px; font-size: 10px; color: var(--gold-dark); text-transform: uppercase; letter-spacing: 1.5px; }
+    .form-underline { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 0; height: 2px; background: var(--gold-dark); transition: width .4s; }
+    .form-input:focus ~ .form-underline { width: 100%; }
+    
+    .btn-submit {
+      background: var(--charcoal); color: var(--gold); font-family: var(--font-body); font-size: 11px; font-weight: 500;
+      letter-spacing: 2.5px; text-transform: uppercase; padding: 16px 40px; border: none; cursor: none; transition: all 0.4s;
+      border-radius: 6px; position: relative; overflow: hidden;
+    }
+    .btn-submit::before {
+      content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(201,169,97,0.2), transparent);
+      transition: left 0.6s;
+    }
+    .btn-submit:hover::before { left: 100%; }
+    .btn-submit:hover { background: var(--gold-dark); color: var(--white); box-shadow: 0 8px 30px rgba(160,122,53,0.3); }
+
+    .office-cards { display: flex; flex-direction: column; gap: 24px; }
+    .office-card {
+      padding: 28px 30px; border: 1px solid rgba(74,72,69,0.12); background: rgba(255,255,255,0.5);
+      border-radius: 10px; transition: all 0.4s; backdrop-filter: blur(10px);
+    }
+    .office-card:hover { background: white; box-shadow: 0 15px 40px rgba(0,0,0,0.08); transform: translateY(-3px); }
+    .office-city { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-dark); margin-bottom: 6px; font-weight: 600; }
+    .office-address { font-size: 13px; color: rgba(74,72,69,0.85); line-height: 1.6; }
+
+    /* ── SCROLL REVEAL ANIMATIONS ── */
+    .reveal-up {
+      opacity: 0; transform: translateY(40px);
+      transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1), transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .reveal-up.revealed {
+      opacity: 1; transform: translateY(0);
+    }
+    .reveal-scale {
+      opacity: 0; transform: scale(0.95);
+      transition: opacity 0.8s, transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .reveal-scale.revealed {
+      opacity: 1; transform: scale(1);
+    }
+    .stagger-1 { transition-delay: 0.1s; }
+    .stagger-2 { transition-delay: 0.2s; }
+    .stagger-3 { transition-delay: 0.3s; }
+    .stagger-4 { transition-delay: 0.4s; }
+
+    /* ── FOOTER ── */
+    footer { background: var(--charcoal); padding: 80px 8% 40px; border-top: 1px solid rgba(255,255,255,0.04); position: relative; }
+    footer::before {
+      content: ''; position: absolute; top: 0; left: 8%; right: 8%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+    .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px; margin-bottom: 60px; }
+    .footer-brand h3 { font-family: var(--font-display); font-size: 26px; color: var(--gold); font-weight: 300; margin-bottom: 16px; }
+    .footer-tagline { font-size: 13px; color: var(--text-muted); line-height: 1.7; max-width: 260px; }
+    .footer-col-title { font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+    .footer-links { list-style: none; }
+    .footer-links li { margin-bottom: 12px; }
+    .footer-links a { font-size: 13px; color: var(--text-muted); text-decoration: none; transition: color .3s, padding-left .3s; }
+    .footer-links a:hover { color: var(--cream); padding-left: 6px; }
+    
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.04); padding-top: 32px; display: flex; justify-content: space-between; align-items: center; }
+    .footer-copy { font-size: 12px; color: rgba(138,136,128,0.4); }
+
+    /* ── RESPONSIVE ADAPTATIONS ── */
+    @media (max-width: 1024px) {
+      nav { padding: 20px 40px; }
+      .portfolio-grid { gap: 20px; }
+      .portfolio-item { height: 350px !important; margin-top: 0 !important; grid-column: span 6 !important; }
+      .collections-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      body { cursor: auto; }
+      #cursor { display: none; }
+      nav { padding: 16px 20px; }
+      .nav-links { display: none; }
+      .nav-cta { display: none; }
+      .hamburger { display: flex; }
+      
+      #hero { padding: 0 24px; text-align: center; }
+      .hero-eyebrow { justify-content: center; }
+      .hero-ctas { flex-direction: column; align-items: center; }
+      .hero-ctas button, .hero-ctas a { width: 100%; max-width: 280px; justify-content: center; }
+      
+      #studio-container { height: 600px; }
+      .studio-panel { left: 10px; right: 10px; width: auto; height: 180px; top: auto; bottom: 80px; }
+      .panel-left.hidden { transform: translateY(280px); }
+      .panel-right.hidden { transform: translateY(280px); }
+      .panel-toggle { display: none; }
+      .studio-bar { width: calc(100% - 20px); overflow-x: auto; border-radius: 12px; padding: 4px; bottom: 10px; }
+      
+      .portfolio-item { grid-column: span 12 !important; height: 280px !important; }
+      .collections-grid { grid-template-columns: 1fr; }
+      
+      .svc-accordion { flex-direction: column; height: auto; }
+      .svc-panel { flex: 0 0 60px; height: 60px; }
+      .svc-panel.active { flex: 0 0 350px; height: 350px; }
+      .svc-label { display: none; }
+      
+      .contact-grid { grid-template-columns: 1fr; gap: 48px; }
+      .footer-top { grid-template-columns: 1fr; gap: 40px; }
+      .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+    }
+  </style>
+  
+  <!-- CDN Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+
+  <!-- SCROLL PROGRESS -->
+  <div id="progress-bar"></div>
+
+  <!-- CURSOR -->
+  <div id="cursor">
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+    <div id="cursor-label">Explore</div>
+  </div>
+
+  <!-- SPLASH SCREEN -->
+  <div id="splash">
+    <div class="splash-bg"></div>
+    <div class="splash-inner">
+      <div class="splash-eyebrow">MMA Design · Luxury Workspaces</div>
+      <h1 class="splash-headline">Architectural Seating<br><em>&amp; Workspace Systems</em></h1>
+      <p class="splash-sub">Designed for modern corporate leaders, R&amp;D hubs, and collaborative sanctuaries. Discover state-of-the-art 3D configurations, AR overlays, and VR headset viewports.</p>
+      <button class="splash-btn" id="btnSplashEnter">Explore Space</button>
+    </div>
+    <div class="splash-progress-bar" id="splashProgress"></div>
+  </div>
+
+  <!-- TOP HEADER -->
+  <nav id="navbar">
+    <div class="nav-logo" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+      <img src="https://www.mmadesign.in/assets/images/logo/mmadesignlogo.png" alt="MMA Design" onerror="this.style.display='none'; this.parentNode.innerHTML='<span style=\'font-family:var(--font-display);font-size:22px;color:var(--gold);font-weight:300;letter-spacing:2px;\'>MMA Design</span>'">
+    </div>
+    <ul class="nav-links">
+      <li><a href="#studio-section" style="color: var(--gold); font-weight: bold;">3D CONFIGURATOR</a></li>
+      <li><a href="#portfolio">PORTFOLIO</a></li>
+      <li><a href="#collections">COLLECTIONS</a></li>
+      <li><a href="#services">SERVICES</a></li>
+      <li><a href="#testimonials">CLIENTS</a></li>
+      <li><a href="#contact">CONTACT</a></li>
+    </ul>
+    <button class="nav-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Enquire Now</button>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- MOBILE NAVIGATION MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#studio-section" class="mm-link" style="color: var(--gold);">3D Configurator</a>
+    <a href="#portfolio" class="mm-link">Portfolio</a>
+    <a href="#collections" class="mm-link">Collections</a>
+    <a href="#services" class="mm-link">Services</a>
+    <a href="#testimonials" class="mm-link">Clients</a>
+    <a href="#contact" class="mm-link">Contact</a>
+  </div>
+
+  <!-- HERO SECTION -->
+  <section id="hero">
+    <!-- YouTube Video Background (muted, autoplay, loop) -->
+    <div class="hero-video-wrap">
+      <iframe id="ytPlayerFrame"
+        src="https://www.youtube.com/embed/ppEXUypTquY?autoplay=1&mute=1&loop=1&playlist=ppEXUypTquY&controls=0&showinfo=0&modestbranding=1&rel=0&iv_load_policy=3&playsinline=1&enablejsapi=1&disablekb=1"
+        allow="autoplay; encrypted-media"
+        allowfullscreen>
+      </iframe>
+    </div>
+    <!-- Cinematic Particle Canvas -->
+    <canvas id="hero-motion-canvas" class="hero-particles-canvas"></canvas>
+    <div class="hero-overlay">
+      <div style="position: absolute; bottom: 40px; right: 40px; font-family: var(--font-body); font-size: 10px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: rgba(201, 169, 97, 0.45); border: 1px solid rgba(201, 169, 97, 0.25); padding: 8px 16px; border-radius: 4px; backdrop-filter: blur(12px); z-index: 2; pointer-events: none;">MMA Flagship Studio</div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">MMA Design · Workspace Solutions</div>
+      <h1 class="hero-title">Immersive <em>3D &amp; AR/VR</em><br>Workspace Gallery</h1>
+      <p class="hero-desc">Experience our furniture lines like never before. Customize materials procedurally, measure structural dimensions in real-time, explode mechanics, and project custom seating directly into your room with AR.</p>
+      <div class="hero-ctas">
+        <a href="#studio-section" class="btn-primary">
+          <span>Configure in 3D</span>
+          <span class="btn-pulse-dot"></span>
+        </a>
+        <a href="#portfolio" class="btn-secondary">View Showcase</a>
+      </div>
+    </div>
+    <div class="hero-scroll-hint">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- TRUSTED CLIENTS TRUST STRIP -->
+  <section id="clients">
+    <div class="marquee-track">
+      <!-- Mastercard -->
+      <div class="client-item">
+        <svg class="client-logo-svg" viewBox="0 0 131 80" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="40" r="28" fill="#EB001B" opacity="0.9"/><circle cx="81" cy="40" r="28" fill="#F79E1B" opacity="0.9"/>
+          <path d="M65.5 18.2a28 28 0 0 1 0 43.6A28 28 0 0 1 65.5 18.2z" fill="#FF5F00" opacity="0.9"/>
+        </svg>
+      </div>
+      <!-- Dell -->
+      <div class="client-item">
+        <span style="font-family:var(--font-body); font-weight:700; font-size:24px; color:rgba(255,255,255,0.7); letter-spacing:-1px;">DELL</span>
+      </div>
+      <!-- TMF Group -->
+      <div class="client-item">
+        <span style="font-family:var(--font-body); font-weight:700; font-size:22px; color:rgba(255,255,255,0.7);">TMF GROUP</span>
+      </div>
+      <!-- Vesuvius -->
+      <div class="client-item">
+        <span style="font-family:var(--font-display); font-weight:500; font-size:24px; color:var(--gold);">VESUVIUS</span>
+      </div>
+      <!-- DWP Interics -->
+      <div class="client-item">
+        <span style="font-family:var(--font-body); font-size:18px; color:rgba(255,255,255,0.6);">DWP INTERICS</span>
+      </div>
+      <!-- Contrast Global -->
+      <div class="client-item">
+        <span style="font-family:var(--font-body); font-size:16px; color:rgba(255,255,255,0.6);">CONTRAST GLOBAL</span>
+      </div>
+      <!-- Repeat list for seamless loop -->
+      <div class="client-item">
+        <svg class="client-logo-svg" viewBox="0 0 131 80" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="40" r="28" fill="#EB001B" opacity="0.9"/><circle cx="81" cy="40" r="28" fill="#F79E1B" opacity="0.9"/>
+          <path d="M65.5 18.2a28 28 0 0 1 0 43.6A28 28 0 0 1 65.5 18.2z" fill="#FF5F00" opacity="0.9"/>
+        </svg>
+      </div>
+      <div class="client-item"><span style="font-family:var(--font-body); font-weight:700; font-size:24px; color:rgba(255,255,255,0.7); letter-spacing:-1px;">DELL</span></div>
+      <div class="client-item"><span style="font-family:var(--font-body); font-weight:700; font-size:22px; color:rgba(255,255,255,0.7);">TMF GROUP</span></div>
+      <div class="client-item"><span style="font-family:var(--font-display); font-weight:500; font-size:24px; color:var(--gold);">VESUVIUS</span></div>
+      <div class="client-item"><span style="font-family:var(--font-body); font-size:18px; color:rgba(255,255,255,0.6);">DWP INTERICS</span></div>
+      <div class="client-item"><span style="font-family:var(--font-body); font-size:16px; color:rgba(255,255,255,0.6);">CONTRAST GLOBAL</span></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       THE MMA 3D INTERACTIVE STUDIO CONFIGURATOR SECTION
+  ════════════════════════════════════════════════ -->
+  <section id="studio-section">
+    <div class="studio-header">
+      <div class="hero-eyebrow">Interactive Space Configurator</div>
+      <h2 class="splash-headline" style="font-size: clamp(32px, 4vw, 56px);">MMA <em>3D Experience</em> Studio</h2>
+      <p style="color: var(--text-body); max-width: 580px; font-size: 14px; line-height: 1.6;">Rotate, zoom, and customize materials dynamically in real-time. Project configurations into physical rooms via AR, or activate mobile head-tracked VR cardboard modes.</p>
+    </div>
+
+    <!-- The 3D Workspace -->
+    <div id="studio-container">
+      
+      <!-- Webcam Feed for AR -->
+      <video id="camera-feed" autoplay playsinline muted></video>
+
+      <!-- VR Stereoscopic Eyeguides -->
+      <div id="vr-overlay-container">
+        <div class="vr-lens"></div>
+        <div class="vr-lens"></div>
+      </div>
+
+      <!-- AR Placement Guide -->
+      <div id="ar-guide">
+        Place seating on flat surface · Pinch to rotate
+      </div>
+
+      <!-- WebGL Render Canvas -->
+      <div id="three-viewport">
+        <canvas id="three-canvas"></canvas>
+      </div>
+
+      <!-- LEFT DRAWER — MODELS -->
+      <div class="studio-panel panel-left" id="panelLeft">
+        <div class="panel-title-sm">Collections</div>
+        <div class="studio-product-list">
+          <div class="studio-product-item active" data-model="chair">
+            <h4>Meuse Executive</h4>
+            <p>Ergonomic mesh, hydraulic gas lift, solid structural frame.</p>
+          </div>
+          <div class="studio-product-item" data-model="sofa">
+            <h4>Diablo Collaborative</h4>
+            <p>Plush modular felt cushions with architectural brass tipped frame.</p>
+          </div>
+          <div class="studio-product-item" data-model="table">
+            <h4>Loire Boardroom</h4>
+            <p>Chamfered walnut wood slab table with steel modular legs.</p>
+          </div>
+          <div class="studio-product-item" data-model="lounge">
+            <h4>Flamingo Lounge</h4>
+            <p>Swivelling premium plywood lounge seat lined in smooth royal leather.</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- LEFT TOGGLE -->
+      <div class="panel-toggle pt-left" id="ptLeft">‹</div>
+
+      <!-- RIGHT DRAWER — CUSTOMIZER -->
+      <div class="studio-panel panel-right" id="panelRight">
+        <div class="panel-title-sm">Customization</div>
+        <div class="studio-config-scroller">
+          
+          <!-- Cushion/Shell Swatches -->
+          <div class="config-inner-group">
+            <div class="config-title-inner" id="swatch-title-label">Upholstery Color</div>
+            <div class="swatches-row" id="upholstery-swatches-grid">
+              <!-- Swatches injected dynamically by JS -->
+            </div>
+          </div>
+
+          <!-- Base metals -->
+          <div class="config-inner-group">
+            <div class="config-title-inner">Structure Finish</div>
+            <div class="swatches-row" id="base-swatches-grid">
+              <div class="swatch-btn active" data-base="chrome" style="background-color: #E6E6E6;" title="Chrome"><div class="swatch-label"></div></div>
+              <div class="swatch-btn" data-base="brass" style="background-color: #D4AF37;" title="Brass"><div class="swatch-label"></div></div>
+              <div class="swatch-btn" data-base="bronze" style="background-color: #7B7059;" title="Bronze"><div class="swatch-label"></div></div>
+              <div class="swatch-btn" data-base="black" style="background-color: #222;" title="Matte Black"><div class="swatch-label"></div></div>
+            </div>
+          </div>
+
+          <!-- Environmental Lighting presets -->
+          <div class="config-inner-group">
+            <div class="config-title-inner">Visual Atmosphere</div>
+            <div class="presets-grid">
+              <div class="preset-btn active" data-preset="studio">Studio</div>
+              <div class="preset-btn" data-preset="office">Office</div>
+              <div class="preset-btn" data-preset="lounge">Lounge</div>
+            </div>
+          </div>
+
+          <!-- Synthesizer Audio volume switcher -->
+          <div class="sound-toggle-row" id="btnAppSound">
+            <span>Audio Synthesizer</span>
+            <span id="appSoundStatus" style="color: var(--gold-light); font-weight: 500;">Active</span>
+          </div>
+
+        </div>
+      </div>
+      
+      <!-- RIGHT TOGGLE -->
+      <div class="panel-toggle pt-right" id="ptRight">›</div>
+
+      <!-- BOTTOM CONTROL BAR -->
+      <div class="studio-bar" id="studioBottomBar">
+        <button class="studio-bar-btn" id="btnAppExplode">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+          Explode View
+        </button>
+        <button class="studio-bar-btn" id="btnAppDimensions">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7M12 19l7-7-7-7" style="transform: rotate(90deg); transform-origin: center;"/></svg>
+          Dimensions
+        </button>
+        <div class="studio-bar-sep"></div>
+        <button class="studio-bar-btn" id="btnAppAR">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          AR View
+        </button>
+        <button class="studio-bar-btn" id="btnAppVR">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/></svg>
+          VR Mode
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PORTFOLIO SECTION -->
+  <section id="portfolio">
+    <div class="portfolio-header reveal-up">
+      <div class="portfolio-title-group">
+        <div class="hero-eyebrow">Architectural Portfolios</div>
+        <h2 class="splash-headline" style="font-size: clamp(30px, 3.8vw, 52px);">Workspace <em>Showcase</em></h2>
+      </div>
+      <p style="color: var(--text-muted); max-width: 400px; font-size: 13px; line-height: 1.65; margin-bottom: 8px;">Explore high-end physical room strategies completed by MMA Design, drawing dynamic bounds between material efficiency and premium corporate luxury.</p>
+    </div>
+    
+    <div class="portfolio-grid">
+      <!-- Item 1 -->
+      <div class="portfolio-item port-item-1 reveal-scale stagger-1">
+        <span class="port-view-badge">View Project</span>
+        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1000&q=80" alt="Verizon Lounge">
+        <div class="port-item-content">
+          <h3 class="port-item-title">Verizon Lounges</h3>
+          <p class="port-item-loc">◎ New Delhi, India</p>
+        </div>
+      </div>
+      <!-- Item 2 -->
+      <div class="portfolio-item port-item-2 reveal-scale stagger-2">
+        <span class="port-view-badge">View Project</span>
+        <img src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=800&q=80" alt="Mastercard Boardroom">
+        <div class="port-item-content">
+          <h3 class="port-item-title">Mastercard Boardrooms</h3>
+          <p class="port-item-loc">◎ Gurgaon, India</p>
+        </div>
+      </div>
+      <!-- Item 3 -->
+      <div class="portfolio-item port-item-3 reveal-scale stagger-3">
+        <span class="port-view-badge">View Project</span>
+        <img src="https://images.unsplash.com/photo-1539635278303-d4002c07eae3?auto=format&fit=crop&w=800&q=80" alt="Dell Collaborative Hanger">
+        <div class="port-item-content">
+          <h3 class="port-item-title">Dell Hanger</h3>
+          <p class="port-item-loc">◎ Bangalore, India</p>
+        </div>
+      </div>
+      <!-- Item 4 -->
+      <div class="portfolio-item port-item-4 reveal-scale stagger-4">
+        <span class="port-view-badge">View Project</span>
+        <img src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=1000&q=80" alt="TMF Corporate Offices">
+        <div class="port-item-content">
+          <h3 class="port-item-title">TMF Workspace</h3>
+          <p class="port-item-loc">◎ Pune, India</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLLECTIONS SECTION -->
+  <section id="collections">
+    <div class="collections-header reveal-up">
+      <div class="hero-eyebrow">Design Series</div>
+      <h2 class="splash-headline" style="font-size: clamp(32px, 4vw, 56px);">Seating <em>Collections</em></h2>
+      <p style="color: var(--text-body); max-width: 500px; margin: 12px auto 0; font-size: 14px;">Select any structural range below to instantly configure its geometries inside the 3D Configurator studio.</p>
+    </div>
+    
+    <div class="collections-grid">
+      <!-- Chair -->
+      <div class="collection-card reveal-up stagger-1">
+        <div class="col-card-icon">🪑</div>
+        <h3 class="col-card-title">Meuse Executive</h3>
+        <p class="col-card-desc">Sleek contoured mesh seating styled with physical arm cushions and high performance hydraulic gas lift spline assemblies.</p>
+        <button class="col-card-action" data-target="chair">Configure in 3D</button>
+      </div>
+      <!-- Sofa -->
+      <div class="collection-card reveal-up stagger-2">
+        <div class="col-card-icon">🛋️</div>
+        <h3 class="col-card-title">Diablo Collaborative</h3>
+        <p class="col-card-desc">Warm, modular collaborative felt cushions tailored with fine structural backrest stitching and tapered slender steel legs.</p>
+        <button class="col-card-action" data-target="sofa">Configure in 3D</button>
+      </div>
+      <!-- Table -->
+      <div class="collection-card reveal-up stagger-3">
+        <div class="col-card-icon">🪵</div>
+        <h3 class="col-card-title">Loire Boardroom</h3>
+        <p class="col-card-desc">Heavy slab boardroom conference table displaying beautiful walnut wood grain patterns and center cord grommets.</p>
+        <button class="col-card-action" data-target="table">Configure in 3D</button>
+      </div>
+      <!-- Lounge -->
+      <div class="collection-card reveal-up stagger-4">
+        <div class="col-card-icon">👑</div>
+        <h3 class="col-card-title">Flamingo Lounge</h3>
+        <p class="col-card-desc">High-end swivelling lounge seating shaped with architectural walnut plywood shell backing and premium leather cushioning.</p>
+        <button class="col-card-action" data-target="lounge">Configure in 3D</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ACCORDION SERVICES SECTION -->
+  <section id="services">
+    <div class="services-header reveal-up">
+      <div class="hero-eyebrow">Workplace Strategy</div>
+      <h2 class="splash-headline" style="font-size: clamp(30px, 3.8vw, 52px);">Modular <em>Acoustics</em> &amp; Design</h2>
+    </div>
+    
+    <div class="svc-accordion" id="accordionContainer">
+      <!-- Strategic Panel 1 -->
+      <div class="svc-panel active">
+        <div class="svc-panel-bg" style="background-image: url('https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="svc-label">Workspace strategy</div>
+        <div class="svc-content">
+          <span class="svc-cat">Strategy</span>
+          <h3 class="svc-title">Workspace <em>Strategy</em></h3>
+          <p class="svc-desc">We structure office layouts that catalyze employee productivity, promote cross-functional communication, and adapt seamlessly to high-growth scaling constraints.</p>
+        </div>
+      </div>
+      <!-- Strategic Panel 2 -->
+      <div class="svc-panel">
+        <div class="svc-panel-bg" style="background-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="svc-label">Executive Cabins</div>
+        <div class="svc-content">
+          <span class="svc-cat">Executive Cabin</span>
+          <h3 class="svc-title">Boss <em>Cabins</em></h3>
+          <p class="svc-desc">Sophisticated, high-end designs crafted with solid hardwood tables, reflective clearcoat lacquers, and ergonomic royal leather seating ranges.</p>
+        </div>
+      </div>
+      <!-- Strategic Panel 3 -->
+      <div class="svc-panel">
+        <div class="svc-panel-bg" style="background-image: url('https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="svc-label">Collaboration Cafés</div>
+        <div class="svc-content">
+          <span class="svc-cat">Cafeteria / Social</span>
+          <h3 class="svc-title">Dining &amp; <em>Social</em></h3>
+          <p class="svc-desc">Vibrant informal social zones, tall high-end cafe tables, comfortable bench banquettes, and acoustic felt baffles mapping rich workplace boundaries.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PREMIUM TESTIMONIALS SECTION -->
+  <section id="testimonials">
+    <div class="testimonials-inner">
+      <div class="hero-eyebrow">Client Validation</div>
+      
+      <!-- Slide 1 -->
+      <div class="testimonial-slide active" data-slide="0">
+        <div class="testimonial-quote">"MMA Design did not just deliver furniture; they engineered an interactive <em>collaborative culture</em> inside our NCR office towers. The Meuse chair customizer was flawless."</div>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">M</div>
+          <div class="testimonial-info">
+            <h4>Mastercard Workspace Ops</h4>
+            <p>VP Corporate Real Estate · New Delhi</p>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 2 -->
+      <div class="testimonial-slide" data-slide="1">
+        <div class="testimonial-quote">"We configured our entire lounge spaces in 3D before committing to ordering physical samples. The <em>Loire walnut slab table</em> looks magnificent inside our main boardrooms."</div>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">D</div>
+          <div class="testimonial-info">
+            <h4>Dell India Procurement</h4>
+            <p>Executive Director · Bangalore Hub</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation indicators -->
+      <div class="testimonials-nav">
+        <button class="t-arrow" id="btnTestimonialPrev">‹</button>
+        <div class="t-dots" id="testimonialDotsContainer">
+          <div class="t-dot active" data-index="0"></div>
+          <div class="t-dot" data-index="1"></div>
+        </div>
+        <div class="t-progress">
+          <div class="t-progress-fill" id="testimonialProgressFill"></div>
+        </div>
+        <button class="t-arrow" id="btnTestimonialNext">›</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- GLASSMORPHIC CONTACT & SHOWROOM LOCATIONS -->
+  <section id="contact">
+    <div class="contact-headline">Configure Your <em>Next Space</em></div>
+    
+    <div class="contact-grid">
+      <!-- Left: Form -->
+      <div class="contact-form-panel">
+        <form id="enquireForm" onsubmit="event.preventDefault(); alert('MMA Design Workspace Enquiry Received!\nWe will get back to you shortly.');">
+          <div class="form-row">
+            <input type="text" class="form-input" id="inpName" placeholder=" " required>
+            <label class="form-label" for="inpName">Your Name</label>
+            <div class="form-underline"></div>
+          </div>
+          <div class="form-row">
+            <input type="email" class="form-input" id="inpEmail" placeholder=" " required>
+            <label class="form-label" for="inpEmail">Email Address</label>
+            <div class="form-underline"></div>
+          </div>
+          <div class="form-row">
+            <input type="text" class="form-input" id="inpProject" placeholder=" ">
+            <label class="form-label" for="inpProject">Corporate Project Name</label>
+            <div class="form-underline"></div>
+          </div>
+          <button type="submit" class="btn-submit">Submit Enquiry</button>
+        </form>
+      </div>
+
+      <!-- Right: Offices -->
+      <div class="office-cards">
+        <div class="office-card">
+          <div class="office-city">Gurugram Corporate Showroom</div>
+          <div class="office-address">Plot 44, Sector 18, Electronic City,<br>Gurugram, Haryana - 122015</div>
+        </div>
+        <div class="office-card">
+          <div class="office-city">Bangalore Design Lab</div>
+          <div class="office-address">Level 6, Pebble Bay Tech Park,<br>Outer Ring Road, Bangalore - 560103</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <h3>MMA DESIGN</h3>
+        <p class="footer-tagline">Architectural workspace seating and customizable boardroom systems crafted for modern corporate real estate.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Configurator</div>
+        <ul class="footer-links">
+          <li><a href="#studio-section">Interactive 3D Studio</a></li>
+          <li><a href="#collections">Meuse Executive Seating</a></li>
+          <li><a href="#collections">Diablo Collaborative Lounge</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <ul class="footer-links">
+          <li><a href="#portfolio">Our Work</a></li>
+          <li><a href="#services">Corporate Services</a></li>
+          <li><a href="#contact">Contact Offices</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">&copy; 2026 MMA Design Private Limited. All Rights Reserved. Immersive 3D Engine.</div>
+    </div>
+  </footer>
+
+  <!-- ── APP CODE & THREEJS CONFIGURATOR SCRIPTS ── -->
+  <script>
+    // ── SYNTHESIZED WEB AUDIO ENGINE ──
+    let appSoundEnabled = true;
+    function playSynthSound(type) {
+      if (!appSoundEnabled) return;
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        const now = ctx.currentTime;
+        
+        if (type === 'click') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(400, now);
+          osc.frequency.exponentialRampToValueAtTime(120, now + 0.08);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.005, now + 0.08);
+          osc.start(); osc.stop(now + 0.08);
+        } else if (type === 'success') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(261.63, now); // C4
+          osc.frequency.setValueAtTime(329.63, now + 0.08); // E4
+          osc.frequency.setValueAtTime(392.00, now + 0.16); // G4
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.002, now + 0.35);
+          osc.start(); osc.stop(now + 0.35);
+        } else if (type === 'sweep') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(150, now);
+          osc.frequency.exponentialRampToValueAtTime(500, now + 0.25);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.002, now + 0.25);
+          osc.start(); osc.stop(now + 0.25);
+        } else if (type === 'shimmer') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(600, now);
+          osc.frequency.exponentialRampToValueAtTime(1300, now + 0.35);
+          gain.gain.setValueAtTime(0.05, now);
+          gain.gain.exponentialRampToValueAtTime(0.002, now + 0.35);
+          osc.start(); osc.stop(now + 0.35);
+        }
+      } catch (e) {
+        console.warn('Audio Context blocked', e);
+      }
+    }
+
+    // ── APP CUSTOM CURSOR AND NAVBAR SCROLL ──
+    const cursor = document.getElementById('cursor');
+    const dot = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    const nav = document.getElementById('navbar');
+
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+    });
+
+    // Handle interactive hover items
+    const hoverables = 'a, button, .studio-product-item, .swatch-btn, .preset-btn, .svc-panel, .portfolio-item, .col-card-action';
+    document.addEventListener('mouseover', (e) => {
+      if (e.target.closest(hoverables)) {
+        document.body.classList.add('hovering-cta');
+      }
+    });
+    document.addEventListener('mouseout', (e) => {
+      if (e.target.closest(hoverables)) {
+        document.body.classList.remove('hovering-cta');
+      }
+    });
+
+    // Navbar scrolled class
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 40) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+      
+      // Scroll progress
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (window.scrollY / scrollHeight) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    });
+
+    // Mobile hamburger menu toggle
+    const hamburger = document.getElementById('hamburgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+      playSynthSound('click');
+    });
+    document.querySelectorAll('.mm-link').forEach(link => {
+      link.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        mobileMenu.classList.remove('open');
+      });
+    });
+
+    // ── SPLASH SCREEN AUTO DISMISSAL ──
+    const splash = document.getElementById('splash');
+    const prog = document.getElementById('splashProgress');
+    
+    gsap.to(prog, {
+      width: '100%', duration: 3, ease: 'none', onComplete: dismissSplash
+    });
+
+    document.getElementById('btnSplashEnter').addEventListener('click', dismissSplash);
+    function dismissSplash() {
+      if (splash.style.pointerEvents === 'none') return;
+      playSynthSound('success');
+      splash.style.transform = 'translateY(-101%)';
+      splash.style.pointerEvents = 'none';
+      setTimeout(() => splash.remove(), 1000);
+    }
+
+    // ── CONFIGURATOR STATE ENGINE ──
+    const appState = {
+      model: 'chair',
+      preset: 'studio',
+      ar: false,
+      vr: false,
+      exploded: false,
+      dimensions: false,
+      colors: {
+        chair: 'charcoal',
+        sofa: 'felt-green',
+        table: 'walnut',
+        lounge: 'tan-leather'
+      },
+      baseMetal: 'chrome'
+    };
+
+    const colorPresets = {
+      chair: [
+        { id: 'charcoal', name: 'Charcoal Soft', value: '#1C1C19', fabric: false },
+        { id: 'camel', name: 'Camel Leather', value: '#C19A6B', fabric: false },
+        { id: 'cognac', name: 'Cognac Leather', value: '#9A4F2A', fabric: false },
+        { id: 'emerald', name: 'Green Velvet', value: '#123524', fabric: true }
+      ],
+      sofa: [
+        { id: 'felt-green', name: 'Olive Felt', value: '#4A5D4E', fabric: true },
+        { id: 'boucle-cream', name: 'Cream Bouclé', value: '#ECE9E2', fabric: true },
+        { id: 'terracotta', name: 'Terracotta', value: '#C36241', fabric: true },
+        { id: 'slate', name: 'Slate Indigo', value: '#2C3E4C', fabric: true }
+      ],
+      table: [
+        { id: 'walnut', name: 'Royal Walnut', value: '#432C1B', wood: true },
+        { id: 'oak', name: 'Nordic Oak', value: '#C6A984', wood: true },
+        { id: 'ebony', name: 'Ebony Ash', value: '#181818', wood: true },
+        { id: 'teak', name: 'Burmese Teak', value: '#8A5A2B', wood: true }
+      ],
+      lounge: [
+        { id: 'tan-leather', name: 'Tan Leather', value: '#A0522D', fabric: false },
+        { id: 'black-leather', name: 'Royal Black', value: '#0f0f0f', fabric: false },
+        { id: 'white-leather', name: 'Ivory Hide', value: '#FAFAF8', fabric: false },
+        { id: 'oxblood', name: 'Oxblood Red', value: '#7A1C1C', fabric: true }
+      ]
+    };
+
+    // ── PROCEDURAL CANVAS CANVAS TEXTURES ──
+    const canvasTextureCache = {};
+    function getCanvasProceduralTexture(type, colorHex) {
+      const key = `${type}-${colorHex}`;
+      if (canvasTextureCache[key]) return canvasTextureCache[key];
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = 128;
+      canvas.height = 128;
+      ctx.fillStyle = colorHex;
+      ctx.fillRect(0, 0, 128, 128);
+
+      if (type === 'fabric') {
+        ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 128; i += 4) {
+          ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 128); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(128, i); ctx.stroke();
+        }
+        for (let i = 0; i < 1200; i++) {
+          ctx.fillStyle = 'rgba(0,0,0,0.08)';
+          ctx.fillRect(Math.random() * 128, Math.random() * 128, 1, 1);
+        }
+      } 
+      else if (type === 'wood') {
+        canvas.width = 512; canvas.height = 512;
+        ctx.fillStyle = colorHex; ctx.fillRect(0, 0, 512, 512);
+        ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+        ctx.lineWidth = 2.5;
+        for (let i = 0; i < 55; i++) {
+          ctx.beginPath();
+          let y = Math.random() * 512;
+          ctx.moveTo(0, y);
+          for (let x = 0; x <= 512; x += 15) {
+            const curve = Math.sin(x * 0.012) * 14 + Math.sin(x * 0.06) * 3;
+            ctx.lineTo(x, y + curve);
+          }
+          ctx.stroke();
+        }
+      } 
+      else if (type === 'leather') {
+        ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 300; i++) {
+          ctx.beginPath();
+          ctx.arc(Math.random() * 128, Math.random() * 128, Math.random() * 3 + 1.5, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      
+      if (type === 'fabric') texture.repeat.set(10, 10);
+      else if (type === 'leather') texture.repeat.set(6, 6);
+      else if (type === 'wood') texture.repeat.set(1, 1);
+      
+      canvasTextureCache[key] = texture;
+      return texture;
+    }
+
+    // ── CONFIGURATOR ENGINE LOGIC ──
+    let studioScene, studioCamera, studioRenderer, studioControls;
+    let studioGroup;
+    let lightsPresets = {};
+    let studioGrid, studioShadowPlane;
+
+    function initStudio() {
+      const port = document.getElementById('three-viewport');
+      const w = port.clientWidth;
+      const h = port.clientHeight;
+
+      // 1. Scene
+      studioScene = new THREE.Scene();
+      studioScene.background = new THREE.Color(0x0a0a09);
+      studioScene.fog = new THREE.FogExp2(0x0a0a09, 0.04);
+
+      // 2. Camera
+      studioCamera = new THREE.PerspectiveCamera(38, w / h, 0.1, 100);
+      studioCamera.position.set(3.8, 2.2, 4.2);
+
+      // 3. Renderer
+      studioRenderer = new THREE.WebGLRenderer({ canvas: document.getElementById('three-canvas'), antialias: true, alpha: true });
+      studioRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      studioRenderer.setSize(w, h);
+      studioRenderer.shadowMap.enabled = true;
+      studioRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      studioRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+      studioRenderer.toneMappingExposure = 1.05;
+
+      // 4. Controls
+      studioControls = new THREE.OrbitControls(studioCamera, studioRenderer.domElement);
+      studioControls.enableDamping = true;
+      studioControls.dampingFactor = 0.05;
+      studioControls.minDistance = 2.2;
+      studioControls.maxDistance = 10;
+      studioControls.maxPolarAngle = Math.PI / 2 - 0.02;
+
+      // 5. Anchor Group
+      studioGroup = new THREE.Group();
+      studioScene.add(studioGroup);
+
+      // 6. Helpers
+      studioGrid = new THREE.GridHelper(16, 32, 0xC9A961, 0x1A1A18);
+      studioGrid.position.y = -0.01;
+      studioGrid.material.opacity = 0.16;
+      studioGrid.material.transparent = true;
+      studioScene.add(studioGrid);
+
+      const floorGeo = new THREE.PlaneGeometry(24, 24);
+      const floorMat = new THREE.ShadowMaterial({ opacity: 0.35 });
+      studioShadowPlane = new THREE.Mesh(floorGeo, floorMat);
+      studioShadowPlane.rotation.x = -Math.PI / 2;
+      studioShadowPlane.receiveShadow = true;
+      studioScene.add(studioShadowPlane);
+
+      // 7. Lighting
+      initializeStudioLights();
+
+      // Render loop
+      animateStudio();
+    }
+
+    function initializeStudioLights() {
+      // 1. Studio Lights
+      const gStudio = new THREE.Group();
+      gStudio.add(new THREE.AmbientLight(0xffffff, 0.35));
+      const l1 = new THREE.DirectionalLight(0xfff5ea, 1.2);
+      l1.position.set(5, 7, 3);
+      l1.castShadow = true;
+      l1.shadow.mapSize.width = 1024;
+      l1.shadow.mapSize.height = 1024;
+      l1.shadow.bias = -0.0001;
+      gStudio.add(l1);
+      gStudio.add(new THREE.DirectionalLight(0xe5efff, 0.45), new THREE.Vector3(-4, 3, -3));
+      studioScene.add(gStudio);
+      lightsPresets.studio = gStudio;
+
+      // 2. Office lights
+      const gOffice = new THREE.Group();
+      gOffice.add(new THREE.AmbientLight(0xd9e5ff, 0.55));
+      const pt1 = new THREE.PointLight(0xfffaf0, 1.6, 12);
+      pt1.position.set(0, 4, 0);
+      pt1.castShadow = true;
+      gOffice.add(pt1);
+      studioScene.add(gOffice);
+      gOffice.visible = false;
+      lightsPresets.office = gOffice;
+
+      // 3. Lounge Lights
+      const gLounge = new THREE.Group();
+      gLounge.add(new THREE.AmbientLight(0xffedd5, 0.3));
+      const pt2 = new THREE.PointLight(0xffa244, 2.4, 15);
+      pt2.position.set(3, 1, 3);
+      pt2.castShadow = true;
+      gLounge.add(pt2);
+      studioScene.add(gLounge);
+      gLounge.visible = false;
+      lightsPresets.lounge = gLounge;
+    }
+
+    function setVisualEnvironment(preset) {
+      playSynthSound('click');
+      Object.keys(lightsPresets).forEach(name => {
+        lightsPresets[name].visible = (name === preset);
+      });
+
+      let bgColor = 0x0a0a09;
+      if (preset === 'office') bgColor = 0x101217;
+      else if (preset === 'lounge') bgColor = 0x160f0b;
+
+      if (!appState.ar) {
+        studioScene.background = new THREE.Color(bgColor);
+        studioScene.fog.color = new THREE.Color(bgColor);
+      }
+    }
+
+    // ── FURNITURE GENERATORS ──
+    const animationTweens = [];
+    const measurementLines = [];
+
+    function buildCustomFurniture() {
+      // Clear
+      animationTweens.forEach(t => t.kill());
+      animationTweens.length = 0;
+      
+      while(studioGroup.children.length > 0){
+        studioScene.remove(studioGroup.children[0]);
+        studioGroup.remove(studioGroup.children[0]);
+      }
+      
+      clearAppDimensions();
+
+      const activeColor = colorPresets[appState.model].find(c => c.id === appState.colors[appState.model]);
+      const hexColor = activeColor ? activeColor.value : '#FFF';
+      
+      let seatMaterial;
+      if (appState.model === 'chair') {
+        seatMaterial = new THREE.MeshStandardMaterial({
+          roughness: 0.65, metalness: 0.05,
+          map: getCanvasProceduralTexture('leather', hexColor),
+          bumpMap: getCanvasProceduralTexture('leather', hexColor),
+          bumpScale: 0.005
+        });
+      } else if (appState.model === 'sofa') {
+        seatMaterial = new THREE.MeshStandardMaterial({
+          roughness: 0.85, metalness: 0.01,
+          map: getCanvasProceduralTexture('fabric', hexColor),
+          bumpMap: getCanvasProceduralTexture('fabric', hexColor),
+          bumpScale: 0.012
+        });
+      } else if (appState.model === 'table') {
+        seatMaterial = new THREE.MeshStandardMaterial({
+          roughness: 0.3, metalness: 0.05,
+          map: getCanvasProceduralTexture('wood', hexColor)
+        });
+      } else if (appState.model === 'lounge') {
+        seatMaterial = new THREE.MeshStandardMaterial({
+          roughness: 0.55, metalness: 0.08,
+          map: getCanvasProceduralTexture(activeColor.fabric ? 'fabric' : 'leather', hexColor),
+          bumpMap: getCanvasProceduralTexture(activeColor.fabric ? 'fabric' : 'leather', hexColor),
+          bumpScale: 0.007
+        });
+      }
+
+      const chassisMat = getChassisMaterial(appState.baseMetal);
+      const parts = [];
+
+      if (appState.model === 'chair') {
+        // Star Ray wheels Base
+        const gBase = new THREE.Group();
+        gBase.add(new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.22, 12), chassisMat));
+        for (let i = 0; i < 5; i++) {
+          const angle = (i / 5) * Math.PI * 2;
+          const ray = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.04, 0.66), chassisMat);
+          ray.position.set(Math.sin(angle) * 0.3, -0.05, Math.cos(angle) * 0.3);
+          ray.rotation.y = angle;
+          ray.rotation.x = 0.08;
+          gBase.add(ray);
+          
+          const wheel = new THREE.Mesh(new THREE.SphereGeometry(0.045, 12, 12), new THREE.MeshBasicMaterial({ color: 0x1a1a1a }));
+          wheel.position.set(Math.sin(angle) * 0.62, -0.14, Math.cos(angle) * 0.62);
+          gBase.add(wheel);
+        }
+        gBase.position.y = 0.16;
+        parts.push({ mesh: gBase, offset: new THREE.Vector3(0, -0.2, 0) });
+
+        // Stem Cylinder
+        const lift = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.038, 0.42, 12), chassisMat);
+        lift.position.y = 0.44;
+        parts.push({ mesh: lift, offset: new THREE.Vector3(0, -0.08, 0) });
+
+        // Cushion Seat
+        const gSeat = new THREE.Group();
+        const cushion = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.09, 0.52, 8, 1, 8), seatMaterial);
+        cushion.castShadow = true; cushion.receiveShadow = true;
+        gSeat.add(cushion);
+        gSeat.position.y = 0.7;
+        parts.push({ mesh: gSeat, offset: new THREE.Vector3(0, 0.06, 0) });
+
+        // Ergo Backrest
+        const gBack = new THREE.Group();
+        const backCush = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.68, 0.08), seatMaterial);
+        backCush.castShadow = true;
+        gBack.add(backCush);
+        const backSpline = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.48, 0.04), chassisMat);
+        backSpline.position.set(0, -0.1, -0.06);
+        gBack.add(backSpline);
+        gBack.position.set(0, 1.1, -0.22);
+        gBack.rotation.x = -0.12;
+        parts.push({ mesh: gBack, offset: new THREE.Vector3(0, 0.25, -0.2) });
+
+        // Arms L/R
+        const gArmL = new THREE.Group();
+        const armLSpur = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.26, 0.04), chassisMat);
+        const armLPad = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.04, 0.3), seatMaterial);
+        armLPad.position.set(0, 0.13, 0.08);
+        gArmL.add(armLSpur, armLPad);
+        gArmL.position.set(-0.31, 0.9, -0.02);
+        parts.push({ mesh: gArmL, offset: new THREE.Vector3(-0.2, 0.06, 0) });
+
+        const gArmR = new THREE.Group();
+        const armRSpur = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.26, 0.04), chassisMat);
+        const armRPad = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.04, 0.3), seatMaterial);
+        armRPad.position.set(0, 0.13, 0.08);
+        gArmR.add(armRSpur, armRPad);
+        gArmR.position.set(0.31, 0.9, -0.02);
+        parts.push({ mesh: gArmR, offset: new THREE.Vector3(0.2, 0.06, 0) });
+      } 
+      else if (appState.model === 'sofa') {
+        // Diablo Sofa Assembly
+        const gRail = new THREE.Group();
+        const rail1 = new THREE.Mesh(new THREE.BoxGeometry(1.64, 0.035, 0.035), chassisMat); rail1.position.z = -0.3;
+        const rail2 = new THREE.Mesh(new THREE.BoxGeometry(1.64, 0.035, 0.035), chassisMat); rail2.position.z = 0.3;
+        gRail.add(rail1, rail2);
+        
+        // Tapered legs with gold tips
+        const legGeo = new THREE.CylinderGeometry(0.02, 0.01, 0.36, 12);
+        const tipGeo = new THREE.CylinderGeometry(0.012, 0.01, 0.07, 12);
+        const goldMat = new THREE.MeshPhysicalMaterial({ color: 0xD4AF37, roughness: 0.1, metalness: 1 });
+        const legOffs = [[-0.78, -0.3], [0.78, -0.3], [-0.78, 0.3], [0.78, 0.3]];
+        legOffs.forEach(o => {
+          const leg = new THREE.Mesh(legGeo, chassisMat);
+          leg.position.set(o[0], -0.15, o[1]);
+          leg.rotation.z = o[0] > 0 ? -0.12 : 0.12;
+          gRail.add(leg);
+          
+          const tip = new THREE.Mesh(tipGeo, goldMat);
+          tip.position.set(o[0]*1.02, -0.31, o[1]);
+          gRail.add(tip);
+        });
+        gRail.position.y = 0.36;
+        parts.push({ mesh: gRail, offset: new THREE.Vector3(0, -0.2, 0) });
+
+        // Cushion seats
+        const gCushions = new THREE.Group();
+        for(let i=0; i<3; i++) {
+          const seat = new THREE.Mesh(new THREE.BoxGeometry(0.51, 0.2, 0.65, 6, 2, 6), seatMaterial);
+          seat.position.x = (i-1) * 0.54;
+          seat.castShadow = true; seat.receiveShadow = true;
+          gCushions.add(seat);
+        }
+        gCushions.position.y = 0.52;
+        parts.push({ mesh: gCushions, offset: new THREE.Vector3(0, 0.15, 0) });
+
+        // Backrest slab
+        const gBackSlab = new THREE.Mesh(new THREE.BoxGeometry(1.62, 0.46, 0.13), seatMaterial);
+        gBackSlab.castShadow = true;
+        gBackSlab.position.set(0, 0.8, -0.36);
+        parts.push({ mesh: gBackSlab, offset: new THREE.Vector3(0, 0.25, -0.25) });
+
+        // Arms L/R
+        const armL = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.42, 0.68), seatMaterial);
+        armL.castShadow = true; armL.position.set(-0.86, 0.62, 0);
+        parts.push({ mesh: armL, offset: new THREE.Vector3(-0.22, 0.04, 0) });
+
+        const armR = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.42, 0.68), seatMaterial);
+        armR.castShadow = true; armR.position.set(0.86, 0.62, 0);
+        parts.push({ mesh: armR, offset: new THREE.Vector3(0.22, 0.04, 0) });
+      } 
+      else if (appState.model === 'table') {
+        // Table slab walnut
+        const gTop = new THREE.Group();
+        const slab = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.07, 1.05, 12, 1, 8), seatMaterial);
+        slab.castShadow = true; slab.receiveShadow = true;
+        gTop.add(slab);
+        
+        // central grommet cord outlet box
+        const outline = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.08, 0.14), chassisMat);
+        const lid = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.081, 0.1), new THREE.MeshBasicMaterial({ color: 0x181816 }));
+        gTop.add(outline, lid);
+        gTop.position.y = 0.74;
+        parts.push({ mesh: gTop, offset: new THREE.Vector3(0, 0.25, 0) });
+
+        // Slate geometric legs L/R
+        const gLegL = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.7, 0.76), chassisMat);
+        gLegL.castShadow = true; gLegL.position.set(-0.74, 0.35, 0);
+        parts.push({ mesh: gLegL, offset: new THREE.Vector3(-0.3, -0.12, 0) });
+
+        const gLegR = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.7, 0.76), chassisMat);
+        gLegR.castShadow = true; gLegR.position.set(0.74, 0.35, 0);
+        parts.push({ mesh: gLegR, offset: new THREE.Vector3(0.3, -0.12, 0) });
+      } 
+      else if (appState.model === 'lounge') {
+        // Heavy steel Swivel base
+        const gBase = new THREE.Group();
+        gBase.add(new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.34, 0.03, 24), chassisMat));
+        const post = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.038, 0.3, 16), chassisMat);
+        post.position.y = 0.15;
+        gBase.add(post);
+        gBase.position.y = 0.015;
+        parts.push({ mesh: gBase, offset: new THREE.Vector3(0, -0.15, 0) });
+
+        // Contoured Plywood Shell
+        const woodMat = new THREE.MeshStandardMaterial({
+          roughness: 0.22, map: getCanvasProceduralTexture('wood', '#5c3e29')
+        });
+        const gShell = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.58, 0.58, 10, 10, 1), woodMat);
+        gShell.rotation.x = 0.2; gShell.castShadow = true;
+        gShell.position.set(0, 0.56, -0.05);
+        parts.push({ mesh: gShell, offset: new THREE.Vector3(0, 0.07, -0.08) });
+
+        // cushions
+        const cushionS = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.15, 0.5), seatMaterial);
+        cushionS.castShadow = true; cushionS.position.set(0, 0.48, 0.02);
+        parts.push({ mesh: cushionS, offset: new THREE.Vector3(0, 0.15, 0.08) });
+
+        const cushionB = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.42, 0.09), seatMaterial);
+        cushionB.castShadow = true; cushionB.position.set(0, 0.76, -0.15); cushionB.rotation.x = -0.1;
+        parts.push({ mesh: cushionB, offset: new THREE.Vector3(0, 0.22, -0.15) });
+      }
+
+      // Add to anchor group with dynamic assemble staggers
+      parts.forEach(p => {
+        studioGroup.add(p.mesh);
+        p.mesh.userData.origin = p.mesh.position.clone();
+        p.mesh.userData.offset = p.offset;
+
+        p.mesh.position.y += 2.0;
+        p.mesh.scale.set(0.01, 0.01, 0.01);
+
+        gsap.to(p.mesh.position, {
+          y: p.mesh.userData.origin.y, duration: 1, delay: Math.random() * 0.3, ease: 'power3.out'
+        });
+        gsap.to(p.mesh.scale, {
+          x: 1, y: 1, z: 1, duration: 0.8, delay: Math.random() * 0.2, ease: 'back.out(1.4)'
+        });
+      });
+
+      studioGroup.position.set(0, 0, 0);
+
+      if (appState.dimensions) {
+        setTimeout(renderAppDimensions, 900);
+      }
+    }
+
+    function getChassisMaterial(metal) {
+      const mat = new THREE.MeshPhysicalMaterial({ roughness: 0.12, metalness: 0.95, clearcoat: 0.8 });
+      if (metal === 'chrome') mat.color.setHex(0xE6E6E6);
+      else if (metal === 'brass') { mat.color.setHex(0xD4AF37); mat.roughness = 0.2; }
+      else if (metal === 'bronze') { mat.color.setHex(0x7B7059); mat.roughness = 0.28; }
+      else if (metal === 'black') { mat.color.setHex(0x161616); mat.metalness = 0.45; mat.roughness = 0.5; }
+      return mat;
+    }
+
+    // Explode toggle
+    function toggleAppExplode() {
+      appState.exploded = !appState.exploded;
+      playSynthSound(appState.exploded ? 'sweep' : 'click');
+      document.getElementById('btnAppExplode').classList.toggle('active', appState.exploded);
+
+      animationTweens.forEach(t => t.kill());
+      animationTweens.length = 0;
+
+      studioGroup.children.forEach(child => {
+        const origin = child.userData.origin;
+        const offset = child.userData.offset;
+        if (!origin || !offset) return;
+
+        const target = appState.exploded
+          ? new THREE.Vector3().addVectors(origin, offset)
+          : origin;
+
+        const tween = gsap.to(child.position, {
+          x: target.x, y: target.y, z: target.z, duration: 0.8, ease: appState.exploded ? 'back.out(1.1)' : 'power3.inOut'
+        });
+        animationTweens.push(tween);
+      });
+    }
+
+    // Dimensions rendering
+    function clearAppDimensions() {
+      measurementLines.forEach(l => studioScene.remove(l));
+      measurementLines.length = 0;
+    }
+
+    function renderAppDimensions() {
+      clearAppDimensions();
+      if (!appState.dimensions) return;
+      playSynthSound('shimmer');
+
+      let w = 0.68, h = 1.25, d = 0.65;
+      if (appState.model === 'sofa') { w = 1.92; h = 0.88; d = 0.88; }
+      else if (appState.model === 'table') { w = 2.2; h = 0.78; d = 1.1; }
+      else if (appState.model === 'lounge') { w = 0.76; h = 0.92; d = 0.72; }
+
+      const dashedMat = new THREE.LineDashedMaterial({ color: 0xC9A961, dashSize: 0.05, gapSize: 0.03, linewidth: 1 });
+
+      // width
+      drawAppDimensionLine(new THREE.Vector3(-w/2, 0.05, d/2+0.12), new THREE.Vector3(w/2, 0.05, d/2+0.12), `W: ${Math.round(w*100)}cm`, dashedMat);
+      // height
+      drawAppDimensionLine(new THREE.Vector3(-w/2-0.12, 0, -d/2), new THREE.Vector3(-w/2-0.12, h, -d/2), `H: ${Math.round(h*100)}cm`, dashedMat);
+      // depth
+      drawAppDimensionLine(new THREE.Vector3(w/2+0.12, 0.05, -d/2), new THREE.Vector3(w/2+0.12, 0.05, d/2), `D: ${Math.round(d*100)}cm`, dashedMat);
+    }
+
+    function drawAppDimensionLine(start, end, label, lineMat) {
+      const geom = new THREE.BufferGeometry().setFromPoints([start, end]);
+      const line = new THREE.Line(geom, lineMat);
+      line.computeLineDistances();
+      studioScene.add(line);
+      measurementLines.push(line);
+
+      const markL = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.05, 0.01), new THREE.MeshBasicMaterial({ color: 0xC9A961 }));
+      markL.position.copy(start);
+      if (start.x !== end.x) markL.rotation.z = Math.PI/2;
+      studioScene.add(markL);
+      measurementLines.push(markL);
+
+      const markR = markL.clone();
+      markR.position.copy(end);
+      studioScene.add(markR);
+      measurementLines.push(markR);
+
+      // Label sprite
+      const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+      const canvasText = document.createElement('canvas');
+      canvasText.width = 128; canvasText.height = 64;
+      const ctx = canvasText.getContext('2d');
+      ctx.fillStyle = '#0a0a09'; ctx.fillRect(16, 16, 96, 32);
+      ctx.strokeStyle = '#C9A961'; ctx.lineWidth = 1; ctx.strokeRect(16, 16, 96, 32);
+      ctx.fillStyle = '#F5F2EC'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText(label, 64, 35);
+
+      const tex = new THREE.CanvasTexture(canvasText);
+      const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true }));
+      sprite.position.copy(mid);
+      sprite.position.y += 0.06;
+      sprite.scale.set(0.42, 0.21, 1);
+      studioScene.add(sprite);
+      measurementLines.push(sprite);
+    }
+
+    function toggleAppDimensions() {
+      appState.dimensions = !appState.dimensions;
+      document.getElementById('btnAppDimensions').classList.toggle('active', appState.dimensions);
+      if (appState.dimensions) renderAppDimensions();
+      else { clearAppDimensions(); playSynthSound('click'); }
+    }
+
+    // ── Webcam AR overlay projection ──
+    let arCameraStream = null;
+    function toggleAppAR() {
+      appState.ar = !appState.ar;
+      playSynthSound('success');
+      document.getElementById('btnAppAR').classList.toggle('active', appState.ar);
+
+      const feed = document.getElementById('camera-feed');
+      const guide = document.getElementById('ar-guide');
+
+      if (appState.ar) {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+          .then(stream => {
+            arCameraStream = stream;
+            feed.srcObject = stream;
+            feed.style.display = 'block';
+            guide.style.display = 'block';
+            
+            studioRenderer.setClearColor(0x000000, 0);
+            studioScene.background = null;
+            studioScene.fog = null;
+            studioGrid.visible = false;
+            
+            studioCamera.position.set(0, 1.1, 2.8);
+            studioControls.target.set(0, 0.35, 0);
+          })
+          .catch(e => {
+            console.error('Camera failed', e);
+            alert('Camera unavailable. Casting loft space projection backdrop simulation.');
+            feed.style.display = 'block';
+            feed.style.background = 'url("https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80") no-repeat center/cover';
+          });
+      } else {
+        if (arCameraStream) {
+          arCameraStream.getTracks().forEach(t => t.stop());
+          arCameraStream = null;
+        }
+        feed.srcObject = null;
+        feed.style.display = 'none';
+        feed.style.background = 'none';
+        guide.style.display = 'none';
+        
+        studioRenderer.setClearColor(0x0a0a09, 1);
+        setVisualEnvironment(appState.preset);
+        studioGrid.visible = true;
+      }
+    }
+
+    // ── Stereoscopic Gyroscope Cardboard VR ──
+    function toggleAppVR() {
+      appState.vr = !appState.vr;
+      playSynthSound('success');
+      document.getElementById('btnAppVR').classList.toggle('active', appState.vr);
+
+      const left = document.getElementById('panelLeft');
+      const right = document.getElementById('panelRight');
+      const btL = document.getElementById('ptLeft');
+      const btR = document.getElementById('ptRight');
+      const header = document.getElementById('app-header');
+      const controlBar = document.getElementById('studioBottomBar');
+      const vrOverlay = document.getElementById('vr-overlay-container');
+
+      if (appState.vr) {
+        if (header) header.classList.add('fade-out');
+        left.classList.add('hidden');
+        right.classList.add('hidden');
+        btL.style.display = 'none';
+        btR.style.display = 'none';
+        vrOverlay.style.display = 'grid';
+        
+        studioControls.enabled = false;
+        studioCamera.position.set(0, 1.1, 3.0);
+        window.addEventListener('deviceorientation', handleAppGyro, true);
+        alert("Split stereoscopic dual VR view active.\nHead-tracking gyroscopic sensors enabled.\n(Press ESC to exit VR Mode)");
+      } else {
+        if (header) header.classList.remove('fade-out');
+        left.classList.remove('hidden');
+        right.classList.remove('hidden');
+        btL.style.display = 'flex';
+        btR.style.display = 'flex';
+        vrOverlay.style.display = 'none';
+        
+        studioControls.enabled = true;
+        window.removeEventListener('deviceorientation', handleAppGyro);
+      }
+    }
+
+    function handleAppGyro(e) {
+      if (!appState.vr) return;
+      const alpha = e.alpha ? THREE.MathUtils.degToRad(e.alpha) : 0;
+      const beta  = e.beta  ? THREE.MathUtils.degToRad(e.beta)  : 0;
+      const gamma = e.gamma ? THREE.MathUtils.degToRad(e.gamma) : 0;
+      studioCamera.rotation.set(beta - 0.2, gamma, alpha, 'YXZ');
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (appState.vr) toggleAppVR();
+        if (appState.ar) toggleAppAR();
+      }
+    });
+
+    // ── Threejs Animation loop ──
+    function animateStudio() {
+      requestAnimationFrame(animateStudio);
+      studioControls.update();
+
+      if (appState.vr) {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        // left
+        studioRenderer.setViewport(0, 0, w / 2, h);
+        studioRenderer.setScissor(0, 0, w / 2, h);
+        studioRenderer.setScissorTest(true);
+        studioCamera.aspect = (w / 2) / h;
+        studioCamera.updateProjectionMatrix();
+        studioCamera.position.x -= 0.03;
+        studioRenderer.render(studioScene, studioCamera);
+        // right
+        studioRenderer.setViewport(w / 2, 0, w / 2, h);
+        studioRenderer.setScissor(w / 2, 0, w / 2, h);
+        studioRenderer.setScissorTest(true);
+        studioCamera.position.x += 0.06;
+        studioRenderer.render(studioScene, studioCamera);
+        studioCamera.position.x -= 0.03;
+      } else {
+        const port = document.getElementById('three-viewport');
+        const w = port.clientWidth;
+        const h = port.clientHeight;
+        studioRenderer.setViewport(0, 0, w, h);
+        studioRenderer.setScissorTest(false);
+        studioCamera.aspect = w / h;
+        studioCamera.updateProjectionMatrix();
+        studioRenderer.render(studioScene, studioCamera);
+      }
+    }
+
+    // Swatches loader
+    const swatchesContainer = document.getElementById('upholstery-swatches-grid');
+    function loadUpholsterySwatches(model) {
+      swatchesContainer.innerHTML = '';
+      const presets = colorPresets[model];
+      presets.forEach(color => {
+        const btn = document.createElement('div');
+        btn.className = 'swatch-btn' + (color.id === appState.colors[model] ? ' active' : '');
+        btn.style.backgroundColor = color.value;
+        btn.title = color.name;
+        
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#upholstery-swatches-grid .swatch-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          appState.colors[model] = color.id;
+          
+          playSynthSound('click');
+          buildCustomFurniture();
+        });
+        swatchesContainer.appendChild(btn);
+      });
+      
+      const label = document.getElementById('swatch-title-label');
+      if (model === 'table') label.textContent = 'Solid Wood Finish';
+      else label.textContent = 'Upholstery Fabric / Leather';
+    }
+
+    // ── INTER-SECTION CONNECTORS ("Configure in 3D" cards) ──
+    document.querySelectorAll('.col-card-action').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const model = btn.dataset.target;
+        
+        // Scroll to studio
+        document.getElementById('studio-section').scrollIntoView({ behavior: 'smooth' });
+        
+        // Auto select and load in configurator
+        document.querySelectorAll('.studio-product-item').forEach(item => {
+          if (item.dataset.model === model) {
+            document.querySelectorAll('.studio-product-item').forEach(x => x.classList.remove('active'));
+            item.classList.add('active');
+            appState.model = model;
+            loadUpholsterySwatches(model);
+            playSynthSound('sweep');
+            buildCustomFurniture();
+          }
+        });
+      });
+    });
+
+    // ── PORTFOLIO STRATEGY SERVICES ACCORDION ──
+    const accordions = document.querySelectorAll('.svc-panel');
+    let accordionActiveIdx = 0;
+    accordions.forEach((panel, i) => {
+      panel.style.cursor = 'pointer';
+      panel.addEventListener('click', () => {
+        if (i === accordionActiveIdx) return;
+        accordions.forEach(x => x.classList.remove('active'));
+        panel.classList.add('active');
+        accordionActiveIdx = i;
+        playSynthSound('click');
+      });
+    });
+
+    // ── TESTIMONIALS SLIDER ──
+    const slides = document.querySelectorAll('.testimonial-slide');
+    const dots = document.querySelectorAll('.t-dot');
+    const tProgressFill = document.getElementById('testimonialProgressFill');
+    let testimonialIdx = 0;
+    let tTimer;
+
+    function renderTestimonialSlide(idx) {
+      slides[testimonialIdx].classList.remove('active');
+      dots[testimonialIdx].classList.remove('active');
+      
+      testimonialIdx = (idx + slides.length) % slides.length;
+      
+      slides[testimonialIdx].classList.add('active');
+      dots[testimonialIdx].classList.add('active');
+      resetTestimonialTimer();
+    }
+
+    function resetTestimonialTimer() {
+      clearInterval(tTimer);
+      tProgressFill.style.transition = 'none';
+      tProgressFill.style.width = '0%';
+      tProgressFill.offsetHeight;
+      
+      tProgressFill.style.transition = 'width 5s linear';
+      tProgressFill.style.width = '100%';
+      
+      tTimer = setInterval(() => {
+        renderTestimonialSlide(testimonialIdx + 1);
+      }, 5000);
+    }
+
+    document.getElementById('btnTestimonialPrev').addEventListener('click', () => { renderTestimonialSlide(testimonialIdx - 1); playSynthSound('click'); });
+    document.getElementById('btnTestimonialNext').addEventListener('click', () => { renderTestimonialSlide(testimonialIdx + 1); playSynthSound('click'); });
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', () => { renderTestimonialSlide(i); playSynthSound('click'); });
+    });
+    resetTestimonialTimer();
+
+    // ── INITIAL BINDINGS & INITS ──
+    window.addEventListener('load', () => {
+      // YouTube iframe is already set to autoplay via URL params
+
+      initStudio();
+      loadUpholsterySwatches('chair');
+      buildCustomFurniture();
+
+      // Sound trigger
+      document.getElementById('btnAppSound').addEventListener('click', () => {
+        appSoundEnabled = !appSoundEnabled;
+        const status = document.getElementById('appSoundStatus');
+        status.textContent = appSoundEnabled ? 'Active' : 'Muted';
+        status.style.color = appSoundEnabled ? 'var(--gold-light)' : 'rgba(245,242,236,0.35)';
+        if (appSoundEnabled) playSynthSound('success');
+      });
+
+      // Product switcher
+      document.querySelectorAll('.studio-product-item').forEach(item => {
+        item.addEventListener('click', () => {
+          document.querySelectorAll('.studio-product-item').forEach(p => p.classList.remove('active'));
+          item.classList.add('active');
+          appState.model = item.dataset.model;
+          
+          playSynthSound('sweep');
+          loadUpholsterySwatches(appState.model);
+          buildCustomFurniture();
+        });
+      });
+
+      // Metal base switcher
+      document.querySelectorAll('#base-swatches-grid .swatch-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#base-swatches-grid .swatch-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          appState.baseMetal = btn.dataset.base;
+          playSynthSound('click');
+          buildCustomFurniture();
+        });
+      });
+
+      // Environment switcher
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          appState.preset = btn.dataset.preset;
+          setVisualEnvironment(appState.preset);
+        });
+      });
+
+      // Toggles L/R drawers
+      const pl = document.getElementById('panelLeft');
+      const pr = document.getElementById('panelRight');
+      const ptl = document.getElementById('ptLeft');
+      const ptr = document.getElementById('ptRight');
+
+      ptl.addEventListener('click', () => {
+        const col = pl.classList.toggle('hidden');
+        ptl.classList.toggle('collapsed', col);
+        ptl.textContent = col ? '›' : '‹';
+        playSynthSound('click');
+      });
+      ptr.addEventListener('click', () => {
+        const col = pr.classList.toggle('hidden');
+        ptr.classList.toggle('collapsed', col);
+        ptr.textContent = col ? '‹' : '›';
+        playSynthSound('click');
+      });
+
+      // Bottom bar actions
+      document.getElementById('btnAppExplode').addEventListener('click', toggleAppExplode);
+      document.getElementById('btnAppDimensions').addEventListener('click', toggleAppDimensions);
+      document.getElementById('btnAppAR').addEventListener('click', toggleAppAR);
+      document.getElementById('btnAppVR').addEventListener('click', toggleAppVR);
+    });
+
+    window.addEventListener('resize', () => {
+      if (studioCamera && studioRenderer) {
+        const port = document.getElementById('three-viewport');
+        const w = port.clientWidth;
+        const h = port.clientHeight;
+        studioCamera.aspect = w / h;
+        studioCamera.updateProjectionMatrix();
+        studioRenderer.setSize(w, h);
+      }
+    });
+
+    // ── CINEMATIC GOLD DUST PARTICLE SYSTEM WITH CONSTELLATIONS ──
+    (function() {
+      const canvas = document.getElementById('hero-motion-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      
+      let width = (canvas.width = window.innerWidth);
+      let height = (canvas.height = window.innerHeight);
+      
+      const particles = [];
+      const particleCount = 120;
+      const connectionDistance = 120;
+      let mouse = { x: null, y: null, radius: 200 };
+      let time = 0;
+      
+      window.addEventListener('mousemove', (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+      });
+      
+      window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      });
+      
+      class Particle {
+        constructor() {
+          this.reset();
+        }
+        reset() {
+          this.x = Math.random() * width;
+          this.y = Math.random() * height;
+          this.baseSize = Math.random() * 2 + 0.5;
+          this.size = this.baseSize;
+          this.speedX = Math.random() * 0.4 - 0.2;
+          this.speedY = Math.random() * 0.4 - 0.2;
+          this.angle = Math.random() * Math.PI * 2;
+          this.spin = Math.random() * 0.006 - 0.003;
+          this.alpha = Math.random() * 0.6 + 0.15;
+          this.baseAlpha = this.alpha;
+          this.pulseSpeed = Math.random() * 0.02 + 0.005;
+          this.pulseOffset = Math.random() * Math.PI * 2;
+          // Trail
+          this.trail = [];
+          this.maxTrail = Math.floor(Math.random() * 4) + 2;
+        }
+        
+        update(t) {
+          // Store trail
+          this.trail.push({ x: this.x, y: this.y });
+          if (this.trail.length > this.maxTrail) this.trail.shift();
+          
+          this.x += this.speedX + Math.sin(this.angle + t * 0.001) * 0.2;
+          this.y += this.speedY + Math.cos(this.angle + t * 0.001) * 0.2;
+          this.angle += this.spin;
+          
+          // Pulsing glow
+          this.alpha = this.baseAlpha + Math.sin(t * this.pulseSpeed + this.pulseOffset) * 0.15;
+          this.size = this.baseSize + Math.sin(t * this.pulseSpeed + this.pulseOffset) * 0.4;
+          
+          // Wrap
+          if (this.x < -10) this.x = width + 10;
+          if (this.x > width + 10) this.x = -10;
+          if (this.y < -10) this.y = height + 10;
+          if (this.y > height + 10) this.y = -10;
+          
+          // Mouse interaction
+          if (mouse.x != null && mouse.y != null) {
+            let dx = mouse.x - this.x;
+            let dy = mouse.y - this.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < mouse.radius) {
+              const force = (mouse.radius - distance) / mouse.radius;
+              const angle = Math.atan2(dy, dx);
+              this.x -= Math.cos(angle) * force * 2;
+              this.y -= Math.sin(angle) * force * 2;
+              this.alpha = Math.min(1, this.alpha + force * 0.5);
+              this.size = this.baseSize + force * 3;
+            }
+          }
+        }
+        
+        draw() {
+          // Draw trail
+          for (let i = 0; i < this.trail.length; i++) {
+            const t = this.trail[i];
+            const ratio = i / this.trail.length;
+            ctx.beginPath();
+            ctx.arc(t.x, t.y, this.size * ratio * 0.5, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(201, 169, 97, ${this.alpha * ratio * 0.3})`;
+            ctx.fill();
+          }
+          
+          // Draw glow
+          const glow = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 4);
+          glow.addColorStop(0, `rgba(201, 169, 97, ${this.alpha * 0.4})`);
+          glow.addColorStop(1, 'rgba(201, 169, 97, 0)');
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size * 4, 0, Math.PI * 2);
+          ctx.fillStyle = glow;
+          ctx.fill();
+          
+          // Draw core
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(226, 201, 138, ${this.alpha})`;
+          ctx.fill();
+        }
+      }
+      
+      for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+      }
+      
+      function drawConnections() {
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < connectionDistance) {
+              const opacity = (1 - dist / connectionDistance) * 0.12;
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.strokeStyle = `rgba(201, 169, 97, ${opacity})`;
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
+          }
+        }
+      }
+      
+      function loop() {
+        time++;
+        ctx.clearRect(0, 0, width, height);
+        
+        drawConnections();
+        
+        for (let i = 0; i < particles.length; i++) {
+          particles[i].update(time);
+          particles[i].draw();
+        }
+        requestAnimationFrame(loop);
+      }
+      loop();
+    })();
+
+    // ── SCROLL REVEAL OBSERVER ──
+    (function() {
+      const revealEls = document.querySelectorAll('.reveal-up, .reveal-scale');
+      if (!revealEls.length) return;
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+          }
+        });
+      }, {
+        threshold: 0.15,
+        rootMargin: '0px 0px -50px 0px'
+      });
+      
+      revealEls.forEach(el => observer.observe(el));
+    })();
+
+    // ── PARALLAX ON PORTFOLIO IMAGES ──
+    (function() {
+      const items = document.querySelectorAll('.portfolio-item img');
+      if (!items.length) return;
+      
+      window.addEventListener('scroll', () => {
+        const scrollY = window.scrollY;
+        items.forEach(img => {
+          const rect = img.parentElement.getBoundingClientRect();
+          if (rect.top < window.innerHeight && rect.bottom > 0) {
+            const speed = 0.03;
+            const yPos = (rect.top - window.innerHeight / 2) * speed;
+            img.style.transform = `translateY(${yPos}px) scale(1)`;
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
