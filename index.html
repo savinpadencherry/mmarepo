@@ -1817,7 +1817,9 @@
       l1.shadow.mapSize.height = 1024;
       l1.shadow.bias = -0.0001;
       gStudio.add(l1);
-      gStudio.add(new THREE.DirectionalLight(0xe5efff, 0.45), new THREE.Vector3(-4, 3, -3));
+      const fillLight = new THREE.DirectionalLight(0xe5efff, 0.45);
+      fillLight.position.set(-4, 3, -3);
+      gStudio.add(fillLight);
       studioScene.add(gStudio);
       lightsPresets.studio = gStudio;
 
@@ -1864,7 +1866,7 @@
     const animationTweens = [];
     const measurementLines = [];
 
-    function buildCustomFurniture() {
+    function buildCustomFurniture({ animate = true } = {}) {
       // Clear
       animationTweens.forEach(t => t.kill());
       animationTweens.length = 0;
@@ -2081,15 +2083,17 @@
         p.mesh.userData.origin = p.mesh.position.clone();
         p.mesh.userData.offset = p.offset;
 
-        p.mesh.position.y += 2.0;
-        p.mesh.scale.set(0.01, 0.01, 0.01);
+        if (animate) {
+          p.mesh.position.y += 2.0;
+          p.mesh.scale.set(0.01, 0.01, 0.01);
 
-        gsap.to(p.mesh.position, {
-          y: p.mesh.userData.origin.y, duration: 1, delay: Math.random() * 0.3, ease: 'power3.out'
-        });
-        gsap.to(p.mesh.scale, {
-          x: 1, y: 1, z: 1, duration: 0.8, delay: Math.random() * 0.2, ease: 'back.out(1.4)'
-        });
+          gsap.to(p.mesh.position, {
+            y: p.mesh.userData.origin.y, duration: 1, delay: Math.random() * 0.3, ease: 'power3.out'
+          });
+          gsap.to(p.mesh.scale, {
+            x: 1, y: 1, z: 1, duration: 0.8, delay: Math.random() * 0.2, ease: 'back.out(1.4)'
+          });
+        }
       });
 
       studioGroup.position.set(0, 0, 0);
@@ -2437,13 +2441,14 @@
     resetTestimonialTimer();
 
     // ── INITIAL BINDINGS & INITS ──
-    window.addEventListener('load', () => {
-      startHeroVideoBackground();
-      setTimeout(attemptHeroVideoPlay, 500);
+    let appBootstrapped = false;
+    function bootstrapApp() {
+      if (appBootstrapped) return;
+      appBootstrapped = true;
 
       initStudio();
       loadUpholsterySwatches('chair');
-      buildCustomFurniture();
+      buildCustomFurniture({ animate: false });
 
       // Sound trigger
       document.getElementById('btnAppSound').addEventListener('click', () => {
@@ -2495,6 +2500,16 @@
       document.getElementById('btnAppDimensions').addEventListener('click', toggleAppDimensions);
       document.getElementById('btnAppAR').addEventListener('click', toggleAppAR);
       document.getElementById('btnAppVR').addEventListener('click', toggleAppVR);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bootstrapApp, { once: true });
+    } else {
+      bootstrapApp();
+    }
+
+    window.addEventListener('load', () => {
+      setTimeout(attemptHeroVideoPlay, 500);
     });
 
     window.addEventListener('resize', () => {
