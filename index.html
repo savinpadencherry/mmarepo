@@ -216,29 +216,9 @@
     }
     .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
 
-    /* ── SPLASH INTRO ── */
-    #splash {
-      position: fixed; inset: 0; z-index: 9999;
-      background: #0a0a09; display: flex; align-items: center; justify-content: center;
-      transform: translateY(0); will-change: transform;
-      transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
-    }
-    .splash-bg {
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse 60% 55% at 50% 60%, rgba(201,169,97,0.08) 0%, transparent 70%);
-    }
-    .splash-inner { text-align: center; max-width: 800px; padding: 0 40px; z-index: 2; }
-    .splash-eyebrow {
-      font-size: 10px; letter-spacing: 6px; text-transform: uppercase; color: var(--gold);
-      margin-bottom: 24px; display: flex; align-items: center; justify-content: center; gap: 16px;
-    }
-    .splash-eyebrow::before, .splash-eyebrow::after { content: ''; width: 32px; height: 1px; background: rgba(201,169,97,0.4); }
+    /* ── DISPLAY TYPOGRAPHY ── */
     .splash-headline { font-family: var(--font-display); font-size: clamp(48px, 7vw, 92px); font-weight: 300; line-height: 1.1; color: var(--cream); margin-bottom: 24px; }
     .splash-headline em { font-style: italic; color: var(--gold); }
-    .splash-sub { font-size: 15px; color: rgba(245,242,236,0.5); line-height: 1.7; margin-bottom: 40px; }
-    .splash-btn { padding: 18px 44px; background: var(--gold); color: var(--charcoal); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; border: none; cursor: none; transition: background 0.3s; }
-    .splash-btn:hover { background: var(--gold-light); }
-    .splash-progress-bar { position: absolute; bottom: 0; left: 0; height: 2px; width: 0%; background: var(--gold); }
 
     /* ═══════════════════════════════════════════════
        HERO — CINEMATIC LIVE VIDEO LANDING
@@ -367,16 +347,27 @@
     
     /* Configurator Workspace */
     #studio-container {
-      position: relative;
-      height: 720px;
-      max-width: 1320px;
+      height: 740px;
+      max-width: 1400px;
       margin: 0 auto;
       border: 1px solid var(--border-glass);
       background: var(--charcoal-2);
-      border-radius: 12px;
+      border-radius: 8px;
       overflow: hidden;
       box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
     }
+
+    .studio-stage {
+      min-width: 0;
+      position: relative;
+      overflow: hidden;
+      border-right: 1px solid var(--border-glass);
+    }
+    #studio-container.vr-active { grid-template-columns: 1fr; }
+    #studio-container.vr-active .studio-control-rail,
+    #studio-container.vr-active .studio-zoom-controls { display: none; }
 
     #three-viewport {
       width: 100%;
@@ -407,30 +398,39 @@
       background: rgba(10,10,9,0.85); backdrop-filter: blur(8px);
     }
 
-    /* Embedded Glass Panels */
-    .studio-panel {
-      position: absolute;
-      background: var(--glass);
-      border: 1px solid var(--border-glass);
-      backdrop-filter: blur(20px);
+    .studio-control-rail {
+      position: relative;
       z-index: 8;
-      border-radius: 8px;
-      padding: 20px;
+      min-width: 0;
+      overflow-y: auto;
+      padding: 18px;
+      background: rgba(12, 12, 11, 0.98);
       display: flex;
       flex-direction: column;
-      box-shadow: 0 12px 36px rgba(0,0,0,0.4);
+      gap: 14px;
+    }
+
+    /* Configurator Control Panels */
+    .studio-panel {
+      position: relative;
+      background: rgba(255,255,255,0.018);
+      border: 1px solid var(--border-glass);
+      z-index: 8;
+      border-radius: 6px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: none;
       transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
     
     .panel-left {
-      top: 24px; bottom: 24px; left: 24px; width: 260px;
+      flex: 0 0 auto;
     }
-    .panel-left.hidden { transform: translateX(-310px); }
     
     .panel-right {
-      top: 24px; bottom: 24px; right: 24px; width: 280px;
+      flex: 1 0 auto;
     }
-    .panel-right.hidden { transform: translateX(330px); }
 
     .panel-title-sm {
       font-size: 10px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold);
@@ -439,19 +439,19 @@
     .panel-title-sm::after { content: ''; flex: 1; height: 1px; background: rgba(201, 169, 97, 0.2); }
 
     .studio-product-list {
-      display: flex; flex-direction: column; gap: 10px; overflow-y: auto; flex: 1;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
     }
     .studio-product-item {
       background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.04);
-      border-radius: 6px; padding: 12px 14px; cursor: pointer; transition: all 0.3s;
+      border-radius: 4px; padding: 11px; cursor: pointer; transition: all 0.3s;
     }
     .studio-product-item:hover { background: rgba(201,169,97,0.04); border-color: rgba(201,169,97,0.2); }
     .studio-product-item.active { background: rgba(201,169,97,0.08); border-color: var(--gold); }
-    .studio-product-item h4 { font-family: var(--font-display); font-size: 16px; color: var(--white); margin-bottom: 2px; }
-    .studio-product-item p { font-size: 11px; color: var(--text-muted); line-height: 1.35; }
+    .studio-product-item h4 { font-family: var(--font-display); font-size: 15px; color: var(--white); margin-bottom: 2px; }
+    .studio-product-item p { font-size: 10px; color: var(--text-muted); line-height: 1.35; }
 
     .studio-config-scroller {
-      overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 20px;
+      display: flex; flex-direction: column; gap: 20px;
     }
     .config-title-inner { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-light); margin-bottom: 8px; }
     
@@ -498,17 +498,32 @@
     .studio-bar-btn.active { color: var(--charcoal); background: var(--gold); font-weight: 500; }
     .studio-bar-sep { width: 1px; height: 16px; background: rgba(255,255,255,0.1); }
 
-    /* Side drawer toggles */
-    .panel-toggle {
-      position: absolute; top: 50%; transform: translateY(-50%);
-      width: 20px; height: 50px; background: var(--glass); border: 1px solid var(--border-glass);
-      backdrop-filter: blur(10px); z-index: 9; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--gold);
+    .studio-zoom-controls {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 9;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
-    .pt-left { left: 284px; border-radius: 0 4px 4px 0; border-left: none; }
-    .pt-left.collapsed { left: 0; }
-    .pt-right { right: 304px; border-radius: 4px 0 0 4px; border-right: none; }
-    .pt-right.collapsed { right: 0; }
+    .studio-zoom-btn {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--border-glass);
+      border-radius: 4px;
+      background: var(--glass);
+      color: var(--gold-light);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: background 0.25s, color 0.25s, border-color 0.25s;
+    }
+    .studio-zoom-btn:hover {
+      background: rgba(201,169,97,0.12);
+      color: var(--white);
+      border-color: rgba(201,169,97,0.45);
+    }
 
     /* ═══════════════════════════════════════════════
        ARCHITECTURAL PORTFOLIO GRID (ANDREU WORLD STYLE)
@@ -816,6 +831,8 @@
     /* ── RESPONSIVE ADAPTATIONS ── */
     @media (max-width: 1024px) {
       nav { padding: 20px 40px; }
+      #studio-container { grid-template-columns: minmax(0, 1fr) 330px; }
+      .studio-product-list { grid-template-columns: 1fr; }
       .portfolio-grid { gap: 20px; }
       .portfolio-item { height: 350px !important; margin-top: 0 !important; grid-column: span 6 !important; }
       .collections-grid { grid-template-columns: 1fr 1fr; }
@@ -834,12 +851,22 @@
       .hero-ctas { flex-direction: column; align-items: center; }
       .hero-ctas button, .hero-ctas a { width: 100%; max-width: 280px; justify-content: center; }
       
-      #studio-container { height: 600px; }
-      .studio-panel { left: 10px; right: 10px; width: auto; height: 180px; top: auto; bottom: 80px; }
-      .panel-left.hidden { transform: translateY(280px); }
-      .panel-right.hidden { transform: translateY(280px); }
-      .panel-toggle { display: none; }
-      .studio-bar { width: calc(100% - 20px); overflow-x: auto; border-radius: 12px; padding: 4px; bottom: 10px; }
+      #studio-section { padding-top: 80px; }
+      .studio-header { padding: 0 24px; margin-bottom: 36px; }
+      #studio-container {
+        width: calc(100% - 24px);
+        height: auto;
+        grid-template-columns: 1fr;
+        overflow: visible;
+      }
+      .studio-stage { height: 520px; border-right: none; border-bottom: 1px solid var(--border-glass); }
+      .studio-control-rail { max-height: none; overflow: visible; padding: 12px; }
+      .studio-product-list { grid-template-columns: 1fr 1fr; }
+      .studio-panel { padding: 14px; }
+      .studio-config-scroller { gap: 16px; }
+      .studio-bar { width: calc(100% - 20px); overflow-x: auto; border-radius: 8px; padding: 4px; bottom: 10px; }
+      .studio-bar-btn { flex: 0 0 auto; padding: 8px 12px; }
+      .studio-zoom-controls { top: 12px; left: 12px; }
       
       .portfolio-item { grid-column: span 12 !important; height: 280px !important; }
       .collections-grid { grid-template-columns: 1fr; }
@@ -852,6 +879,12 @@
       .contact-grid { grid-template-columns: 1fr; gap: 48px; }
       .footer-top { grid-template-columns: 1fr; gap: 40px; }
       .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+    }
+
+    @media (max-width: 480px) {
+      .studio-stage { height: 430px; }
+      .studio-product-list { grid-template-columns: 1fr; }
+      .studio-product-item p { display: none; }
     }
   </style>
   
@@ -870,18 +903,6 @@
     <div id="cursor-dot"></div>
     <div id="cursor-ring"></div>
     <div id="cursor-label">Explore</div>
-  </div>
-
-  <!-- SPLASH SCREEN -->
-  <div id="splash">
-    <div class="splash-bg"></div>
-    <div class="splash-inner">
-      <div class="splash-eyebrow">MMA Design · Luxury Workspaces</div>
-      <h1 class="splash-headline">Architectural Seating<br><em>&amp; Workspace Systems</em></h1>
-      <p class="splash-sub">Designed for modern corporate leaders, R&amp;D hubs, and collaborative sanctuaries. Discover state-of-the-art 3D configurations, AR overlays, and VR headset viewports.</p>
-      <button class="splash-btn" id="btnSplashEnter">Explore Space</button>
-    </div>
-    <div class="splash-progress-bar" id="splashProgress"></div>
   </div>
 
   <!-- TOP HEADER -->
@@ -1005,120 +1026,115 @@
 
     <!-- The 3D Workspace -->
     <div id="studio-container">
-      
-      <!-- Webcam Feed for AR -->
-      <video id="camera-feed" autoplay playsinline muted></video>
+      <div class="studio-stage">
+        <!-- Webcam Feed for AR -->
+        <video id="camera-feed" autoplay playsinline muted></video>
 
-      <!-- VR Stereoscopic Eyeguides -->
-      <div id="vr-overlay-container">
-        <div class="vr-lens"></div>
-        <div class="vr-lens"></div>
-      </div>
+        <!-- VR Stereoscopic Eyeguides -->
+        <div id="vr-overlay-container">
+          <div class="vr-lens"></div>
+          <div class="vr-lens"></div>
+        </div>
 
-      <!-- AR Placement Guide -->
-      <div id="ar-guide">
-        Place seating on flat surface · Pinch to rotate
-      </div>
+        <!-- AR Placement Guide -->
+        <div id="ar-guide">
+          Place seating on flat surface · Pinch to rotate
+        </div>
 
-      <!-- WebGL Render Canvas -->
-      <div id="three-viewport">
-        <canvas id="three-canvas"></canvas>
-      </div>
+        <!-- WebGL Render Canvas -->
+        <div id="three-viewport">
+          <canvas id="three-canvas"></canvas>
+        </div>
 
-      <!-- LEFT DRAWER — MODELS -->
-      <div class="studio-panel panel-left" id="panelLeft">
-        <div class="panel-title-sm">Collections</div>
-        <div class="studio-product-list">
-          <div class="studio-product-item active" data-model="chair">
-            <h4>Meuse Executive</h4>
-            <p>Ergonomic mesh, hydraulic gas lift, solid structural frame.</p>
-          </div>
-          <div class="studio-product-item" data-model="sofa">
-            <h4>Diablo Collaborative</h4>
-            <p>Plush modular felt cushions with architectural brass tipped frame.</p>
-          </div>
-          <div class="studio-product-item" data-model="table">
-            <h4>Loire Boardroom</h4>
-            <p>Chamfered walnut wood slab table with steel modular legs.</p>
-          </div>
-          <div class="studio-product-item" data-model="lounge">
-            <h4>Flamingo Lounge</h4>
-            <p>Swivelling premium plywood lounge seat lined in smooth royal leather.</p>
-          </div>
+        <div class="studio-zoom-controls">
+          <button class="studio-zoom-btn" id="btnStudioZoomIn" aria-label="Zoom in" title="Zoom in">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3M11 8v6M8 11h6"/></svg>
+          </button>
+          <button class="studio-zoom-btn" id="btnStudioZoomOut" aria-label="Zoom out" title="Zoom out">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3M8 11h6"/></svg>
+          </button>
+        </div>
+
+        <!-- BOTTOM CONTROL BAR -->
+        <div class="studio-bar" id="studioBottomBar">
+          <button class="studio-bar-btn" id="btnAppExplode">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+            Explode View
+          </button>
+          <button class="studio-bar-btn" id="btnAppDimensions">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7M12 19l7-7-7-7" style="transform: rotate(90deg); transform-origin: center;"/></svg>
+            Dimensions
+          </button>
+          <div class="studio-bar-sep"></div>
+          <button class="studio-bar-btn" id="btnAppAR">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            AR View
+          </button>
+          <button class="studio-bar-btn" id="btnAppVR">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/></svg>
+            VR Mode
+          </button>
         </div>
       </div>
-      
-      <!-- LEFT TOGGLE -->
-      <div class="panel-toggle pt-left" id="ptLeft">‹</div>
 
-      <!-- RIGHT DRAWER — CUSTOMIZER -->
-      <div class="studio-panel panel-right" id="panelRight">
-        <div class="panel-title-sm">Customization</div>
-        <div class="studio-config-scroller">
-          
-          <!-- Cushion/Shell Swatches -->
-          <div class="config-inner-group">
-            <div class="config-title-inner" id="swatch-title-label">Upholstery Color</div>
-            <div class="swatches-row" id="upholstery-swatches-grid">
-              <!-- Swatches injected dynamically by JS -->
+      <aside class="studio-control-rail">
+        <div class="studio-panel panel-left" id="panelLeft">
+          <div class="panel-title-sm">Choose Collection</div>
+          <div class="studio-product-list">
+            <div class="studio-product-item active" data-model="chair">
+              <h4>Meuse Executive</h4>
+              <p>Ergonomic mesh, hydraulic gas lift, solid structural frame.</p>
+            </div>
+            <div class="studio-product-item" data-model="sofa">
+              <h4>Diablo Collaborative</h4>
+              <p>Plush modular felt cushions with architectural brass tipped frame.</p>
+            </div>
+            <div class="studio-product-item" data-model="table">
+              <h4>Loire Boardroom</h4>
+              <p>Chamfered walnut wood slab table with steel modular legs.</p>
+            </div>
+            <div class="studio-product-item" data-model="lounge">
+              <h4>Flamingo Lounge</h4>
+              <p>Swivelling premium plywood lounge seat lined in smooth royal leather.</p>
             </div>
           </div>
-
-          <!-- Base metals -->
-          <div class="config-inner-group">
-            <div class="config-title-inner">Structure Finish</div>
-            <div class="swatches-row" id="base-swatches-grid">
-              <div class="swatch-btn active" data-base="chrome" style="background-color: #E6E6E6;" title="Chrome"><div class="swatch-label"></div></div>
-              <div class="swatch-btn" data-base="brass" style="background-color: #D4AF37;" title="Brass"><div class="swatch-label"></div></div>
-              <div class="swatch-btn" data-base="bronze" style="background-color: #7B7059;" title="Bronze"><div class="swatch-label"></div></div>
-              <div class="swatch-btn" data-base="black" style="background-color: #222;" title="Matte Black"><div class="swatch-label"></div></div>
-            </div>
-          </div>
-
-          <!-- Environmental Lighting presets -->
-          <div class="config-inner-group">
-            <div class="config-title-inner">Visual Atmosphere</div>
-            <div class="presets-grid">
-              <div class="preset-btn active" data-preset="studio">Studio</div>
-              <div class="preset-btn" data-preset="office">Office</div>
-              <div class="preset-btn" data-preset="lounge">Lounge</div>
-            </div>
-          </div>
-
-          <!-- Synthesizer Audio volume switcher -->
-          <div class="sound-toggle-row" id="btnAppSound">
-            <span>Audio Synthesizer</span>
-            <span id="appSoundStatus" style="color: var(--gold-light); font-weight: 500;">Active</span>
-          </div>
-
         </div>
-      </div>
-      
-      <!-- RIGHT TOGGLE -->
-      <div class="panel-toggle pt-right" id="ptRight">›</div>
 
-      <!-- BOTTOM CONTROL BAR -->
-      <div class="studio-bar" id="studioBottomBar">
-        <button class="studio-bar-btn" id="btnAppExplode">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
-          Explode View
-        </button>
-        <button class="studio-bar-btn" id="btnAppDimensions">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7M12 19l7-7-7-7" style="transform: rotate(90deg); transform-origin: center;"/></svg>
-          Dimensions
-        </button>
-        <div class="studio-bar-sep"></div>
-        <button class="studio-bar-btn" id="btnAppAR">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          AR View
-        </button>
-        <button class="studio-bar-btn" id="btnAppVR">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/></svg>
-          VR Mode
-        </button>
-      </div>
+        <div class="studio-panel panel-right" id="panelRight">
+          <div class="panel-title-sm">Customize Selection</div>
+          <div class="studio-config-scroller">
+            <div class="config-inner-group">
+              <div class="config-title-inner" id="swatch-title-label">Upholstery Color</div>
+              <div class="swatches-row" id="upholstery-swatches-grid"></div>
+            </div>
 
-    </div>
+            <div class="config-inner-group">
+              <div class="config-title-inner">Structure Finish</div>
+              <div class="swatches-row" id="base-swatches-grid">
+                <div class="swatch-btn active" data-base="chrome" style="background-color: #E6E6E6;" title="Chrome"><div class="swatch-label"></div></div>
+                <div class="swatch-btn" data-base="brass" style="background-color: #D4AF37;" title="Brass"><div class="swatch-label"></div></div>
+                <div class="swatch-btn" data-base="bronze" style="background-color: #7B7059;" title="Bronze"><div class="swatch-label"></div></div>
+                <div class="swatch-btn" data-base="black" style="background-color: #222;" title="Matte Black"><div class="swatch-label"></div></div>
+              </div>
+            </div>
+
+            <div class="config-inner-group">
+              <div class="config-title-inner">Visual Atmosphere</div>
+              <div class="presets-grid">
+                <div class="preset-btn active" data-preset="studio">Studio</div>
+                <div class="preset-btn" data-preset="office">Office</div>
+                <div class="preset-btn" data-preset="lounge">Lounge</div>
+              </div>
+            </div>
+
+            <div class="sound-toggle-row" id="btnAppSound">
+              <span>Audio Synthesizer</span>
+              <span id="appSoundStatus" style="color: var(--gold-light); font-weight: 500;">Active</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+      </div>
   </section>
 
   <!-- PORTFOLIO SECTION -->
@@ -1606,25 +1622,6 @@
       });
     });
 
-    // ── SPLASH SCREEN AUTO DISMISSAL ──
-    const splash = document.getElementById('splash');
-    const prog = document.getElementById('splashProgress');
-    
-    gsap.to(prog, {
-      width: '100%', duration: 3, ease: 'none', onComplete: dismissSplash
-    });
-
-    document.getElementById('btnSplashEnter').addEventListener('click', dismissSplash);
-    function dismissSplash() {
-      if (splash.style.pointerEvents === 'none') return;
-      playSynthSound('success');
-      splash.style.transform = 'translateY(-101%)';
-      splash.style.pointerEvents = 'none';
-      setTimeout(attemptHeroVideoPlay, 120);
-      setTimeout(attemptHeroVideoPlay, 900);
-      setTimeout(() => splash.remove(), 1000);
-    }
-
     // ── CONFIGURATOR STATE ENGINE ──
     const appState = {
       model: 'chair',
@@ -1765,9 +1762,11 @@
       studioControls = new THREE.OrbitControls(studioCamera, studioRenderer.domElement);
       studioControls.enableDamping = true;
       studioControls.dampingFactor = 0.05;
+      studioControls.enableZoom = false;
       studioControls.minDistance = 2.2;
       studioControls.maxDistance = 10;
       studioControls.maxPolarAngle = Math.PI / 2 - 0.02;
+      studioRenderer.domElement.style.touchAction = 'pan-y';
 
       // 5. Anchor Group
       studioGroup = new THREE.Group();
@@ -1792,6 +1791,19 @@
 
       // Render loop
       animateStudio();
+    }
+
+    function zoomStudioCamera(factor) {
+      if (!studioCamera || !studioControls) return;
+      const offset = studioCamera.position.clone().sub(studioControls.target);
+      const nextDistance = THREE.MathUtils.clamp(
+        offset.length() * factor,
+        studioControls.minDistance,
+        studioControls.maxDistance
+      );
+      studioCamera.position.copy(studioControls.target).add(offset.setLength(nextDistance));
+      studioControls.update();
+      playSynthSound('click');
     }
 
     function initializeStudioLights() {
@@ -2245,20 +2257,15 @@
       playSynthSound('success');
       document.getElementById('btnAppVR').classList.toggle('active', appState.vr);
 
-      const left = document.getElementById('panelLeft');
-      const right = document.getElementById('panelRight');
-      const btL = document.getElementById('ptLeft');
-      const btR = document.getElementById('ptRight');
       const header = document.getElementById('app-header');
+      const container = document.getElementById('studio-container');
       const controlBar = document.getElementById('studioBottomBar');
       const vrOverlay = document.getElementById('vr-overlay-container');
 
       if (appState.vr) {
         if (header) header.classList.add('fade-out');
-        left.classList.add('hidden');
-        right.classList.add('hidden');
-        btL.style.display = 'none';
-        btR.style.display = 'none';
+        container.classList.add('vr-active');
+        controlBar.classList.add('fade-out');
         vrOverlay.style.display = 'grid';
         
         studioControls.enabled = false;
@@ -2267,15 +2274,14 @@
         alert("Split stereoscopic dual VR view active.\nHead-tracking gyroscopic sensors enabled.\n(Press ESC to exit VR Mode)");
       } else {
         if (header) header.classList.remove('fade-out');
-        left.classList.remove('hidden');
-        right.classList.remove('hidden');
-        btL.style.display = 'flex';
-        btR.style.display = 'flex';
+        container.classList.remove('vr-active');
+        controlBar.classList.remove('fade-out');
         vrOverlay.style.display = 'none';
         
         studioControls.enabled = true;
         window.removeEventListener('deviceorientation', handleAppGyro);
       }
+      setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
     }
 
     function handleAppGyro(e) {
@@ -2482,26 +2488,9 @@
         });
       });
 
-      // Toggles L/R drawers
-      const pl = document.getElementById('panelLeft');
-      const pr = document.getElementById('panelRight');
-      const ptl = document.getElementById('ptLeft');
-      const ptr = document.getElementById('ptRight');
-
-      ptl.addEventListener('click', () => {
-        const col = pl.classList.toggle('hidden');
-        ptl.classList.toggle('collapsed', col);
-        ptl.textContent = col ? '›' : '‹';
-        playSynthSound('click');
-      });
-      ptr.addEventListener('click', () => {
-        const col = pr.classList.toggle('hidden');
-        ptr.classList.toggle('collapsed', col);
-        ptr.textContent = col ? '‹' : '›';
-        playSynthSound('click');
-      });
-
       // Bottom bar actions
+      document.getElementById('btnStudioZoomIn').addEventListener('click', () => zoomStudioCamera(0.82));
+      document.getElementById('btnStudioZoomOut').addEventListener('click', () => zoomStudioCamera(1.22));
       document.getElementById('btnAppExplode').addEventListener('click', toggleAppExplode);
       document.getElementById('btnAppDimensions').addEventListener('click', toggleAppDimensions);
       document.getElementById('btnAppAR').addEventListener('click', toggleAppAR);
