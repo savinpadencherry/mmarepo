@@ -222,30 +222,31 @@
     .config-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
     .config-preview { position: relative; border-radius: 20px; overflow: hidden; background: linear-gradient(145deg, #F5F2EC, #EBE8E2); aspect-ratio: 4/3; border: 1px solid var(--border); }
     .config-preview-inner { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
-    .config-preview-placeholder { text-align: center; }
-    .config-preview-placeholder .icon-3d { font-size: 80px; margin-bottom: 16px; display: block; }
-    .config-preview-placeholder p { font-size: 13px; color: var(--text-muted); }
+    .config-preview-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s var(--ease-out); }
+    .config-preview:hover .config-preview-img { transform: scale(1.05); }
     .config-preview-btn { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 5; }
-    .config-content .config-features { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 48px; }
-    .config-feature { padding: 32px; border-radius: 16px; border: 1px solid var(--border); background: var(--bg-card); transition: all 0.3s var(--ease-out); }
-    .config-feature:hover { border-color: var(--gold); box-shadow: var(--shadow-md); transform: translateY(-2px); }
-    .config-feature-icon { font-size: 32px; margin-bottom: 16px; display: block; }
-    .config-feature h4 { font-family: var(--font-display); font-size: 20px; color: var(--dark); font-weight: 400; margin-bottom: 10px; }
-    .config-feature p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+    .config-features { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 40px; }
+    @media (max-width: 600px) { .config-features { grid-template-columns: 1fr; gap: 16px; } }
+    .config-feature { padding: 28px; border-radius: 16px; border: 1px solid var(--border); background: var(--bg-card); transition: all 0.4s var(--ease-out); display: flex; flex-direction: column; gap: 10px; }
+    .config-feature:hover { border-color: var(--gold); box-shadow: var(--shadow-md); transform: translateY(-3px); }
+    .config-feature-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--gold-10); color: var(--gold-dark); display: flex; align-items: center; justify-content: center; transition: all 0.3s var(--ease-out); }
+    .config-feature:hover .config-feature-icon { background: var(--gold); color: #fff; transform: scale(1.05); }
+    .config-feature h4 { font-family: var(--font-display); font-size: 18px; color: var(--dark); font-weight: 400; margin: 0; }
+    .config-feature p { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0; }
 
     #rooms { background: var(--bg-warm); position: relative; }
     #rooms::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 1px; height: 80px; background: linear-gradient(to bottom, transparent, var(--gold), transparent); }
     .rooms-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
     .room-card { position: relative; border-radius: 16px; overflow: hidden; cursor: pointer; aspect-ratio: 3/4; background: linear-gradient(145deg, #E8E5DF, #DDD9D3); border: 1px solid var(--border); transition: all 0.5s var(--ease-out); }
     .room-card:hover { border-color: var(--gold); transform: translateY(-6px); box-shadow: var(--shadow-lg); }
-    .room-card-bg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; transition: transform 0.8s var(--ease-out); }
+    .room-card-bg { position: absolute; inset: 0; display: block; transition: transform 0.8s var(--ease-out); }
+    .room-card-img { width: 100%; height: 100%; object-fit: cover; }
     .room-card:hover .room-card-bg { transform: scale(1.06); }
-    .room-card-bg .room-icon { font-size: 64px; opacity: 0.1; }
-    .room-card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,26,24,0.85) 0%, rgba(26,26,24,0.3) 40%, transparent 70%); }
+    .room-card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,26,24,0.9) 0%, rgba(26,26,24,0.3) 50%, transparent 80%); }
     .room-card-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 28px; z-index: 2; }
     .room-card-tag { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-light); margin-bottom: 8px; }
     .room-card-title { font-family: var(--font-display); font-size: 28px; font-weight: 300; color: #fff; margin-bottom: 8px; }
-    .room-card-desc { font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.5; margin-bottom: 16px; }
+    .room-card-desc { font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.5; margin-bottom: 16px; }
     .room-card-cta { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-light); display: inline-flex; align-items: center; gap: 8px; transition: gap 0.3s; }
     .room-card:hover .room-card-cta { gap: 14px; }
 
@@ -622,35 +623,7 @@
     </div>
     <div class="config-preview">
       <div class="config-preview-inner">
-        <svg width="280" height="220" viewBox="0 0 280 220" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <g stroke="#B8952F" stroke-width="0.8" opacity="0.35" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M140 20 L250 75 L250 165 L140 210 L30 165 L30 75 Z"/>
-            <line x1="140" y1="20" x2="140" y2="120"/><line x1="30" y1="75" x2="140" y2="120"/><line x1="250" y1="75" x2="140" y2="120"/>
-            <line x1="140" y1="120" x2="140" y2="210"/>
-            <path d="M85 75 L140 50 L195 75" opacity="0.5"/>
-            <path d="M85 75 L85 135 L140 160 L195 135 L195 75" opacity="0.5"/>
-            <line x1="140" y1="50" x2="140" y2="160" opacity="0.5"/>
-            <line x1="85" y1="135" x2="140" y2="120" opacity="0.3"/>
-            <line x1="195" y1="135" x2="140" y2="120" opacity="0.3"/>
-          </g>
-          <g stroke="#B8952F" stroke-width="1" opacity="0.2" stroke-linecap="round" stroke-linejoin="round">
-            <ellipse cx="140" cy="170" rx="22" ry="4"/>
-            <path d="M128 170 L128 150 Q128 142 133 140 L133 125"/>
-            <path d="M152 170 L152 150 Q152 142 147 140 L147 125"/>
-            <path d="M125 125 Q125 105 140 98 Q155 105 155 125"/>
-            <path d="M125 125 L125 130 Q125 135 130 135 L150 135 Q155 135 155 130 L155 125"/>
-            <path d="M122 115 Q120 110 123 106"/><path d="M158 115 Q160 110 157 106"/>
-            <path d="M122 115 L122 128 Q122 132 125 132"/><path d="M158 115 L158 128 Q158 132 155 132"/>
-          </g>
-          <g stroke="#B8952F" stroke-width="0.5" opacity="0.12">
-            <circle cx="60" cy="40" r="2"/><circle cx="220" cy="40" r="2"/>
-            <circle cx="60" cy="190" r="2"/><circle cx="220" cy="190" r="2"/>
-            <line x1="60" y1="40" x2="220" y2="40" stroke-dasharray="4 4"/>
-            <line x1="60" y1="190" x2="220" y2="190" stroke-dasharray="4 4"/>
-            <line x1="60" y1="40" x2="60" y2="190" stroke-dasharray="4 4"/>
-            <line x1="220" y1="40" x2="220" y2="190" stroke-dasharray="4 4"/>
-          </g>
-        </svg>
+        <img src="assets/configurator_preview.png" alt="3D Configurator Studio" class="config-preview-img">
       </div>
       <div class="config-preview-btn">
         <a href="3d-studio.html" class="btn-primary" style="font-size:10px;padding:10px 24px;">Open Configurator</a>
@@ -775,25 +748,7 @@
   <div class="rooms-grid reveal stagger-1">
     <div class="room-card" data-room="reception">
       <div class="room-card-bg">
-        <svg width="220" height="280" viewBox="0 0 220 280" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity:0.12;">
-          <g stroke="#B8952F" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M30 180 L30 120 Q30 110 40 110 L100 110 Q110 110 110 120 L110 180"/>
-            <path d="M30 150 L110 150"/>
-            <rect x="40" y="120" width="60" height="25" rx="3"/>
-            <path d="M140 180 L140 150 Q140 140 150 140 L180 140 Q190 140 190 150 L190 180"/>
-            <path d="M135 180 L195 180"/>
-            <ellipse cx="60" cy="200" rx="15" ry="3"/>
-            <path d="M50 200 L50 190 Q50 185 55 185 L65 185 Q70 185 70 190 L70 200"/>
-            <path d="M45 185 Q45 170 60 165 Q75 170 75 185"/>
-            <circle cx="170" cy="100" r="12" stroke-dasharray="3 3" opacity="0.5"/>
-            <path d="M170 88 L170 80" opacity="0.5"/>
-            <path d="M160 95 L155 90" opacity="0.5"/>
-            <path d="M180 95 L185 90" opacity="0.5"/>
-            <rect x="20" y="220" width="180" height="1" opacity="0.3"/>
-            <rect x="130" y="200" width="20" height="20" rx="2" opacity="0.4"/>
-            <path d="M135 200 L135 195 Q135 190 140 190 L145 190 Q150 190 150 195 L150 200" opacity="0.4"/>
-          </g>
-        </svg>
+        <img src="assets/reception_space.png" alt="Reception Lobby" class="room-card-img">
       </div>
       <div class="room-card-overlay"></div>
       <div class="room-card-content">
@@ -805,27 +760,7 @@
     </div>
     <div class="room-card" data-room="boardroom">
       <div class="room-card-bg">
-        <svg width="220" height="280" viewBox="0 0 220 280" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity:0.12;">
-          <g stroke="#B8952F" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="40" y="110" width="140" height="60" rx="4"/>
-            <line x1="60" y1="170" x2="58" y2="210"/>
-            <line x1="160" y1="170" x2="162" y2="210"/>
-            <line x1="90" y1="170" x2="89" y2="210"/>
-            <line x1="130" y1="170" x2="131" y2="210"/>
-            <path d="M50 100 L50 80 Q50 70 60 70 L60 100" opacity="0.5"/>
-            <path d="M80 100 L80 80 Q80 70 90 70 L90 100" opacity="0.5"/>
-            <path d="M110 100 L110 80 Q110 70 120 70 L120 100" opacity="0.5"/>
-            <path d="M140 100 L140 80 Q140 70 150 70 L150 100" opacity="0.5"/>
-            <path d="M50 180 L50 200 Q50 210 60 210 L60 180" opacity="0.5"/>
-            <path d="M80 180 L80 200 Q80 210 90 210 L90 180" opacity="0.5"/>
-            <path d="M110 180 L110 200 Q110 210 120 210 L120 180" opacity="0.5"/>
-            <path d="M140 180 L140 200 Q140 210 150 210 L150 180" opacity="0.5"/>
-            <rect x="70" y="40" width="80" height="45" rx="3" opacity="0.4"/>
-            <line x1="110" y1="85" x2="110" y2="110" opacity="0.3"/>
-            <rect x="80" y="48" width="60" height="30" rx="2" opacity="0.3"/>
-            <line x1="60" y1="210" x2="160" y2="210" opacity="0.2"/>
-          </g>
-        </svg>
+        <img src="assets/boardroom_space.png" alt="Boardroom" class="room-card-img">
       </div>
       <div class="room-card-overlay"></div>
       <div class="room-card-content">
@@ -837,30 +772,7 @@
     </div>
     <div class="room-card" data-room="cafeteria">
       <div class="room-card-bg">
-        <svg width="220" height="280" viewBox="0 0 220 280" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity:0.12;">
-          <g stroke="#B8952F" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="70" cy="140" r="25"/>
-            <line x1="55" y1="165" x2="53" y2="200"/>
-            <line x1="85" y1="165" x2="87" y2="200"/>
-            <line x1="70" y1="165" x2="70" y2="200"/>
-            <circle cx="160" cy="140" r="25"/>
-            <line x1="145" y1="165" x2="143" y2="200"/>
-            <line x1="175" y1="165" x2="177" y2="200"/>
-            <line x1="160" y1="165" x2="160" y2="200"/>
-            <path d="M55 125 L55 110 Q55 105 60 105 L60 125" opacity="0.5"/>
-            <path d="M80 125 L80 110 Q80 105 85 105 L85 125" opacity="0.5"/>
-            <path d="M145 125 L145 110 Q145 105 150 105 L150 125" opacity="0.5"/>
-            <path d="M170 125 L170 110 Q170 105 175 105 L175 125" opacity="0.5"/>
-            <rect x="20" y="60" width="80" height="30" rx="3" opacity="0.4"/>
-            <line x1="20" y1="75" x2="100" y2="75" opacity="0.3"/>
-            <rect x="25" y="65" width="15" height="8" rx="1" opacity="0.3"/>
-            <rect x="45" y="65" width="15" height="8" rx="1" opacity="0.3"/>
-            <rect x="65" y="65" width="15" height="8" rx="1" opacity="0.3"/>
-            <path d="M130 70 L190 70 L190 90 L130 90 Z" opacity="0.3"/>
-            <line x1="130" y1="80" x2="190" y2="80" opacity="0.2"/>
-            <line x1="50" y1="200" x2="180" y2="200" opacity="0.2"/>
-          </g>
-        </svg>
+        <img src="assets/cafeteria_space.png" alt="Collaborative Cafeteria" class="room-card-img">
       </div>
       <div class="room-card-overlay"></div>
       <div class="room-card-content">

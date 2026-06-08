@@ -54,64 +54,64 @@
     .header-btn:hover { background: var(--gold); color: #fff; border-color: var(--gold); }
     .header-btn svg { width: 14px; height: 14px; }
 
-    .drawer-left { position: absolute; top: 72px; bottom: 72px; left: 20px; width: 272px; background: var(--bg-card); border: 1px solid var(--border-medium); border-radius: 14px; z-index: 8; padding: 28px; display: flex; flex-direction: column; transform: translateX(0); transition: transform 0.4s var(--ease-out); box-shadow: var(--shadow-panel); overflow: hidden; }
+    .drawer-left { position: absolute; top: 72px; bottom: 72px; left: 20px; width: 272px; background: rgba(255, 255, 255, 0.72); backdrop-filter: blur(20px) saturate(190%); -webkit-backdrop-filter: blur(20px) saturate(190%); border: 1px solid rgba(255, 255, 255, 0.45); border-radius: 14px; z-index: 8; padding: 28px; display: flex; flex-direction: column; transform: translateX(0); transition: transform 0.4s var(--ease-out), background-color 0.3s; box-shadow: 0 8px 32px 0 rgba(26, 26, 24, 0.06); overflow: hidden; }
     .drawer-left.hidden { transform: translateX(-320px); }
-    .drawer-right { position: absolute; top: 72px; bottom: 72px; right: 20px; width: 300px; background: var(--bg-card); border: 1px solid var(--border-medium); border-radius: 14px; z-index: 8; padding: 28px; display: flex; flex-direction: column; transform: translateX(0); transition: transform 0.4s var(--ease-out); box-shadow: var(--shadow-panel); overflow: hidden; }
+    .drawer-right { position: absolute; top: 72px; bottom: 72px; right: 20px; width: 300px; background: rgba(255, 255, 255, 0.72); backdrop-filter: blur(20px) saturate(190%); -webkit-backdrop-filter: blur(20px) saturate(190%); border: 1px solid rgba(255, 255, 255, 0.45); border-radius: 14px; z-index: 8; padding: 28px; display: flex; flex-direction: column; transform: translateX(0); transition: transform 0.4s var(--ease-out), background-color 0.3s; box-shadow: 0 8px 32px 0 rgba(26, 26, 24, 0.06); overflow: hidden; }
     .drawer-right.hidden { transform: translateX(360px); }
 
     .section-eyebrow { font-size: 9px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
     .section-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--gold-20); }
     .section-title { font-family: var(--font-display); font-size: 22px; font-weight: 400; color: var(--dark); margin-bottom: 14px; }
 
-    .product-list { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; flex: 1; padding-right: 4px; }
-    .product-item { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; cursor: pointer; transition: all 0.3s var(--ease-out); }
-    .product-item:hover { background: var(--gold-10); border-color: var(--gold-20); }
-    .product-item.active { background: var(--gold-10); border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
+    .product-list { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; flex: 1; padding-right: 4px; }
+    .product-item { background: rgba(255, 255, 255, 0.4); border: 1px solid rgba(0, 0, 0, 0.05); border-radius: 8px; padding: 10px 12px; cursor: pointer; transition: all 0.3s var(--ease-out); }
+    .product-item:hover { background: rgba(184, 149, 47, 0.08); border-color: var(--gold-20); }
+    .product-item.active { background: rgba(184, 149, 47, 0.1); border-color: var(--gold); box-shadow: 0 0 10px rgba(184, 149, 47, 0.15); }
     .product-item h3 { font-family: var(--font-display); font-size: 15px; font-weight: 500; color: var(--dark); margin-bottom: 1px; }
     .product-item .pi-cat { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-dark); margin-bottom: 3px; font-weight: 500; }
     .product-item p { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
 
-    .config-scroller { overflow-y: auto; flex: 1; padding-right: 4px; display: flex; flex-direction: column; gap: 32px; }
-    .config-group { margin-bottom: 16px; }
+    .config-scroller { overflow-y: auto; flex: 1; padding-right: 4px; display: flex; flex-direction: column; gap: 24px; }
+    .config-group { margin-bottom: 12px; }
     .config-group-title { font-size: 9px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
 
-    .base-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .base-item { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 8px 4px; text-align: center; cursor: pointer; transition: all 0.3s; }
-    .base-item:hover { border-color: var(--gold-20); background: var(--gold-10); }
-    .base-item.active { background: var(--gold-10); border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
-    .base-item .base-code { font-size: 12px; font-weight: 600; color: var(--dark); }
+    .base-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .base-item { background: rgba(255, 255, 255, 0.4); border: 1px solid rgba(0, 0, 0, 0.05); border-radius: 6px; padding: 8px 4px; text-align: center; cursor: pointer; transition: all 0.3s; }
+    .base-item:hover { border-color: var(--gold-20); background: rgba(184, 149, 47, 0.06); }
+    .base-item.active { background: rgba(184, 149, 47, 0.1); border-color: var(--gold); box-shadow: 0 0 10px rgba(184, 149, 47, 0.15); }
+    .base-item .base-code { font-size: 11px; font-weight: 600; color: var(--dark); }
     .base-item .base-name { font-size: 8px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-muted); margin-top: 2px; }
 
-    .swatches-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .swatches-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
     .swatch-item { aspect-ratio: 1; border-radius: 50%; border: 2px solid transparent; cursor: pointer; position: relative; transition: all 0.3s var(--ease-out); box-shadow: inset 0 2px 4px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1); }
-    .swatch-item:hover { transform: scale(1.15); }
+    .swatch-item:hover { transform: scale(1.12); }
     .swatch-item.active { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold), inset 0 2px 4px rgba(0,0,0,0.15); }
-    .swatch-label { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 8px; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+    .swatch-label { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 8px; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 10; }
     .swatch-item:hover .swatch-label { opacity: 1; }
     .swatch-fabric-tag { position: absolute; top: -4px; right: -4px; background: var(--gold); color: #fff; font-size: 6px; font-weight: 700; padding: 1px 3px; border-radius: 3px; letter-spacing: 0.5px; text-transform: uppercase; }
 
     .wood-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
-    .wood-item { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 2px; text-align: center; cursor: pointer; transition: all 0.3s; }
-    .wood-item:hover { border-color: var(--gold-20); }
-    .wood-item.active { background: var(--gold-10); border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
-    .wood-swatch { width: 28px; height: 28px; border-radius: 50%; margin: 0 auto 4px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.08); }
+    .wood-item { background: rgba(255, 255, 255, 0.4); border: 1px solid rgba(0, 0, 0, 0.05); border-radius: 8px; padding: 8px 2px; text-align: center; cursor: pointer; transition: all 0.3s; }
+    .wood-item:hover { border-color: var(--gold-20); background: rgba(184, 149, 47, 0.06); }
+    .wood-item.active { background: rgba(184, 149, 47, 0.1); border-color: var(--gold); box-shadow: 0 0 10px rgba(184, 149, 47, 0.15); }
+    .wood-swatch { width: 26px; height: 26px; border-radius: 50%; margin: 0 auto 4px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.08); }
     .wood-name { font-size: 7px; letter-spacing: 0.3px; text-transform: uppercase; color: var(--text-muted); line-height: 1.2; }
 
     .structure-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-    .structure-item { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 4px; text-align: center; cursor: pointer; transition: all 0.3s; }
-    .structure-item:hover { border-color: var(--gold-20); }
-    .structure-item.active { background: var(--gold-10); border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
-    .structure-swatch { width: 24px; height: 24px; border-radius: 50%; margin: 0 auto 5px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
+    .structure-item { background: rgba(255, 255, 255, 0.4); border: 1px solid rgba(0, 0, 0, 0.05); border-radius: 8px; padding: 10px 4px; text-align: center; cursor: pointer; transition: all 0.3s; }
+    .structure-item:hover { border-color: var(--gold-20); background: rgba(184, 149, 47, 0.06); }
+    .structure-item.active { background: rgba(184, 149, 47, 0.1); border-color: var(--gold); box-shadow: 0 0 10px rgba(184, 149, 47, 0.15); }
+    .structure-swatch { width: 22px; height: 22px; border-radius: 50%; margin: 0 auto 5px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
     .structure-name { font-size: 7px; letter-spacing: 0.3px; text-transform: uppercase; color: var(--text-muted); line-height: 1.2; }
 
-    .control-bar { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--bg-card); border: 1px solid var(--border-medium); z-index: 8; border-radius: 100px; padding: 6px 12px; display: flex; align-items: center; gap: 2px; box-shadow: var(--shadow-md); }
+    .control-bar { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(20px) saturate(190%); -webkit-backdrop-filter: blur(20px) saturate(190%); border: 1px solid rgba(255, 255, 255, 0.45); z-index: 8; border-radius: 100px; padding: 6px 12px; display: flex; align-items: center; gap: 2px; box-shadow: 0 8px 32px 0 rgba(26, 26, 24, 0.08); }
     .bar-btn { background: transparent; border: none; color: var(--text-muted); padding: 10px 18px; font-family: var(--font-body); font-size: 10px; font-weight: 400; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 6px; border-radius: 100px; transition: all 0.3s; }
-    .bar-btn:hover { color: var(--dark); background: var(--gold-10); }
+    .bar-btn:hover { color: var(--dark); background: rgba(184, 149, 47, 0.08); }
     .bar-btn.active { color: #fff; background: var(--gold); font-weight: 500; }
     .bar-btn svg { width: 14px; height: 14px; }
-    .bar-sep { width: 1px; height: 20px; background: var(--border); }
+    .bar-sep { width: 1px; height: 20px; background: rgba(0, 0, 0, 0.08); }
 
-    .drawer-toggle { position: absolute; top: 50%; transform: translateY(-50%); width: 22px; height: 48px; background: var(--bg-card); border: 1px solid var(--border-medium); z-index: 9; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--text-muted); transition: all 0.3s; box-shadow: var(--shadow-sm); }
+    .drawer-toggle { position: absolute; top: 50%; transform: translateY(-50%); width: 22px; height: 48px; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.45); z-index: 9; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--text-muted); transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .drawer-toggle:hover { color: var(--gold); border-color: var(--gold); }
     .toggle-left { left: 300px; border-radius: 0 6px 6px 0; border-left: none; }
     .toggle-left.collapsed { left: 0; }
@@ -119,27 +119,82 @@
     .toggle-right.collapsed { right: 0; }
 
     .env-presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-    .preset-card { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 8px 4px; text-align: center; cursor: pointer; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); transition: all 0.3s; }
-    .preset-card:hover { border-color: var(--gold-20); color: var(--text-secondary); }
-    .preset-card.active { background: var(--gold-10); border-color: var(--gold); color: var(--gold-dark); font-weight: 500; }
+    .preset-card { background: rgba(255, 255, 255, 0.4); border: 1px solid rgba(0, 0, 0, 0.05); border-radius: 6px; padding: 8px 4px; text-align: center; cursor: pointer; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); transition: all 0.3s; }
+    .preset-card:hover { border-color: var(--gold-20); color: var(--text-secondary); background: rgba(184, 149, 47, 0.06); }
+    .preset-card.active { background: rgba(184, 149, 47, 0.1); border-color: var(--gold); color: var(--gold-dark); font-weight: 500; box-shadow: 0 0 10px rgba(184, 149, 47, 0.1); }
 
     .share-row { display: flex; gap: 8px; }
-    .share-btn { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .share-btn:hover { border-color: var(--gold); color: var(--gold-dark); }
+    .share-btn { flex: 1; background: rgba(255, 255, 255, 0.4); border: 1px solid rgba(0, 0, 0, 0.05); border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .share-btn:hover { border-color: var(--gold); color: var(--gold-dark); background: rgba(184, 149, 47, 0.06); }
     .share-btn svg { width: 16px; height: 16px; }
+
+    /* Mobile tabs panel controls */
+    .mobile-tabs {
+      display: none;
+      position: absolute;
+      bottom: 296px;
+      left: 16px;
+      right: 16px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(20px) saturate(190%);
+      -webkit-backdrop-filter: blur(20px) saturate(190%);
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      border-radius: 100px;
+      z-index: 10;
+      padding: 3px;
+      box-shadow: 0 8px 24px rgba(26,26,24,0.06);
+    }
+    .mobile-tab-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-family: var(--font-body);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .mobile-tab-btn.active {
+      background: var(--gold);
+      color: #fff;
+    }
 
     @media (max-width: 768px) {
       header { padding: 12px 16px; }
       .logo-text { font-size: 17px; }
       .header-btn { padding: 7px 12px; font-size: 8px; }
-      .drawer-left { left: 8px; right: 8px; width: auto; top: auto; bottom: 68px; height: 200px; transform: translateY(0); border-radius: 14px 14px 0 0; }
-      .drawer-left.hidden { transform: translateY(320px); }
-      .drawer-right { left: 8px; right: 8px; width: auto; top: auto; bottom: 68px; height: 260px; transform: translateY(0); border-radius: 14px 14px 0 0; }
-      .drawer-right.hidden { transform: translateY(400px); }
+      .drawer-left, .drawer-right {
+        left: 16px;
+        right: 16px;
+        width: auto;
+        top: auto;
+        bottom: 68px;
+        height: 220px;
+        transform: translateY(0);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(24px) saturate(190%);
+        -webkit-backdrop-filter: blur(24px) saturate(190%);
+        border: 1px solid rgba(255, 255, 255, 0.45);
+        box-shadow: 0 8px 32px rgba(26,26,24,0.12);
+        padding: 20px;
+        z-index: 8;
+        display: flex;
+        flex-direction: column;
+      }
+      .drawer-left.hidden-mobile, .drawer-right.hidden-mobile {
+        display: none !important;
+      }
       .drawer-toggle { display: none; }
-      .control-bar { bottom: 8px; width: calc(100% - 16px); justify-content: space-around; border-radius: 12px; padding: 4px; }
+      .control-bar { bottom: 8px; width: calc(100% - 32px); justify-content: space-around; border-radius: 12px; padding: 4px; }
       .bar-btn { padding: 8px 10px; font-size: 8px; letter-spacing: 1px; }
       .product-item h3 { font-size: 14px; }
+      .mobile-tabs { display: flex; }
     }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -170,7 +225,12 @@
     </div>
   </header>
 
-  <div class="drawer-left" id="drawerLeft">
+  <div class="mobile-tabs">
+    <button class="mobile-tab-btn" id="tab-btn-catalog" onclick="selectMobileTab('catalog')">Catalog</button>
+    <button class="mobile-tab-btn active" id="tab-btn-customise" onclick="selectMobileTab('customise')">Customise</button>
+  </div>
+
+  <div class="drawer-left hidden-mobile" id="drawerLeft">
     <div class="section-eyebrow">Collections</div>
     <div class="section-title">Select Design</div>
     <div class="product-list" id="productList"></div>
@@ -324,11 +384,11 @@
     ];
 
     var woodFinishes = [
-      { id:'ash-oak', name:'Ash Natural Oak', value:'#C6A984' },
-      { id:'ash-wenge', name:'Ash Wenge', value:'#3D2B1F' },
-      { id:'black-ash', name:'Black Ash', value:'#1A1A1A' },
-      { id:'dark-walnut', name:'Dark Walnut', value:'#432C1B' },
-      { id:'medium-walnut', name:'Medium Walnut', value:'#6B4A32' }
+      { id:'ash-oak', name:'Ash natural oak', value:'#E2D8C5' },
+      { id:'ash-wenge', name:'Ash wenge', value:'#2B2624' },
+      { id:'black-ash', name:'Black Ash', value:'#181818' },
+      { id:'dark-walnut', name:'Dark walnut Ash', value:'#3E2D20' },
+      { id:'medium-walnut', name:'Medium walnut Ash', value:'#5C4331' }
     ];
 
     var structureFinishes = [
@@ -339,16 +399,16 @@
     ];
 
     var products = [
-      { id:'chair-executive', name:'Meuse Executive', cat:'Executive Seating', bases:['D9','L14','R13'], hasUpholstery:true, hasTop:true, hasWood:false },
-      { id:'chair-conference', name:'Meuse Conference', cat:'Conference', bases:['S7','L14'], hasUpholstery:true, hasTop:true, hasWood:false },
-      { id:'sofa-modular', name:'Diablo Modular Sofa', cat:'Modular Lounge', bases:['L31','L32'], hasUpholstery:true, hasTop:false, hasWood:false },
-      { id:'sofa-bench', name:'Diablo Bench', cat:'Public Seating', bases:['L32'], hasUpholstery:true, hasTop:false, hasWood:false },
-      { id:'table-boardroom', name:'Loire Boardroom', cat:'Conference Table', bases:['R13','L30'], hasUpholstery:false, hasTop:false, hasWood:true },
-      { id:'table-round', name:'Loire Round', cat:'Meeting Table', bases:['R7','R13'], hasUpholstery:false, hasTop:false, hasWood:true },
-      { id:'lounge-chair', name:'Flamingo Lounge', cat:'Lounge Chair', bases:['R13','R7'], hasUpholstery:true, hasTop:true, hasWood:true },
-      { id:'storage-wall', name:'Marne Storage Wall', cat:'Storage', bases:['L21'], hasUpholstery:false, hasTop:false, hasWood:true },
-      { id:'table-reception', name:'Seine Reception', cat:'Reception Desk', bases:['L21'], hasUpholstery:false, hasTop:false, hasWood:true },
-      { id:'table-standing', name:'Garonne Standing', cat:'Standing Desk', bases:['R7'], hasUpholstery:false, hasTop:false, hasWood:true }
+      { id:'chair-executive', name:'Meuse Executive', cat:'Executive Seating', bases:['D9','L14','L21','L30','L31','L32','R13','R7','S7'], hasUpholstery:true, hasTop:true, hasWood:false },
+      { id:'chair-conference', name:'Meuse Conference', cat:'Conference', bases:['D9','L14','L21','L30','L31','L32','R13','R7','S7'], hasUpholstery:true, hasTop:true, hasWood:false },
+      { id:'sofa-modular', name:'Diablo Modular Sofa', cat:'Modular Lounge', bases:['D9','L14','L21','L30','L31','L32','R13','R7','S7'], hasUpholstery:true, hasTop:false, hasWood:false },
+      { id:'sofa-bench', name:'Diablo Bench', cat:'Public Seating', bases:['D9','L14','L21','L30','L31','L32','R13','R7','S7'], hasUpholstery:true, hasTop:false, hasWood:false },
+      { id:'table-boardroom', name:'Loire Boardroom', cat:'Conference Table', bases:['R13','L30','L21','L14','R7'], hasUpholstery:false, hasTop:false, hasWood:true },
+      { id:'table-round', name:'Loire Round', cat:'Meeting Table', bases:['R7','R13','L30'], hasUpholstery:false, hasTop:false, hasWood:true },
+      { id:'lounge-chair', name:'Flamingo Lounge', cat:'Lounge Chair', bases:['D9','L14','L21','L30','L31','L32','R13','R7','S7'], hasUpholstery:true, hasTop:true, hasWood:true },
+      { id:'storage-wall', name:'Marne Storage Wall', cat:'Storage', bases:['L21','L30'], hasUpholstery:false, hasTop:false, hasWood:true },
+      { id:'table-reception', name:'Seine Reception', cat:'Reception Desk', bases:['L21','L30','L14'], hasUpholstery:false, hasTop:false, hasWood:true },
+      { id:'table-standing', name:'Garonne Standing', cat:'Standing Desk', bases:['R7','R13','L30'], hasUpholstery:false, hasTop:false, hasWood:true }
     ];
 
     function renderProductList() {
@@ -368,6 +428,9 @@
       updateConfigUI();
       buildFurniture();
       playSound('success');
+      if (window.innerWidth <= 768) {
+        selectMobileTab('customise');
+      }
     }
 
     function updateConfigUI() {
@@ -559,7 +622,7 @@
     // ═══════════════════════════════════════
     var scene, camera, renderer, controls, mainGroup;
     var envLights = {};
-    var gridHelper, floorPlane;
+    var gridHelper, floorPlane, contactShadow;
     var explodedTweens = [];
     var dimMeshes = [];
     var envPresetCards = document.querySelectorAll('.preset-card');
@@ -606,6 +669,23 @@
       floorPlane.receiveShadow = true;
       scene.add(floorPlane);
 
+      // Soft contact shadow plane under the main group on the floor
+      var shadowCanvas = document.createElement('canvas');
+      shadowCanvas.width = 128; shadowCanvas.height = 128;
+      var sCtx = shadowCanvas.getContext('2d');
+      var grad = sCtx.createRadialGradient(64, 64, 0, 64, 64, 64);
+      grad.addColorStop(0, 'rgba(0,0,0,0.42)');
+      grad.addColorStop(0.35, 'rgba(0,0,0,0.22)');
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+      sCtx.fillStyle = grad; sCtx.fillRect(0,0,128,128);
+      var shadowTex = new THREE.CanvasTexture(shadowCanvas);
+      var shadowGeo = new THREE.PlaneGeometry(1.6, 1.6);
+      var shadowMat = new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false });
+      contactShadow = new THREE.Mesh(shadowGeo, shadowMat);
+      contactShadow.rotation.x = -Math.PI / 2;
+      contactShadow.position.set(0, 0.001, 0);
+      scene.add(contactShadow);
+
       var pmremGen = new THREE.PMREMGenerator(renderer);
       var envScene = new THREE.Scene();
       envScene.background = new THREE.Color(0xE8E4DC);
@@ -637,6 +717,7 @@
       key.shadow.mapSize.width = 2048;
       key.shadow.mapSize.height = 2048;
       key.shadow.bias = -0.0002;
+      key.shadow.radius = 4.0;
       key.shadow.camera.near = 0.5;
       key.shadow.camera.far = 20;
       key.shadow.camera.left = -3;
@@ -667,6 +748,7 @@
       oKey.shadow.mapSize.width = 2048;
       oKey.shadow.mapSize.height = 2048;
       oKey.shadow.bias = -0.0002;
+      oKey.shadow.radius = 4.0;
       oKey.shadow.camera.near = 0.5;
       oKey.shadow.camera.far = 20;
       oKey.shadow.camera.left = -3;
@@ -684,6 +766,8 @@
       var hLight = new THREE.PointLight(0xFFCC88, 2.2, 12);
       hLight.position.set(2, 1.5, 2);
       hLight.castShadow = true;
+      hLight.shadow.bias = -0.0002;
+      hLight.shadow.radius = 4.0;
       lg.add(hLight);
       var gLight = new THREE.DirectionalLight(0xFFBB88, 0.9);
       gLight.position.set(-4, 4, -4);
@@ -725,12 +809,12 @@
     // MATERIALS
     // ═══════════════════════════════════════
     function getMetalMat() {
-      var m = new THREE.MeshPhysicalMaterial({ roughness: 0.12, metalness: 0.95, clearcoat: 0.8, clearcoatRoughness: 0.1, envMapIntensity: 1.2 });
+      var m = new THREE.MeshPhysicalMaterial({ roughness: 0.05, metalness: 1.0, clearcoat: 1.0, clearcoatRoughness: 0.05, envMapIntensity: 1.5 });
       var s = structureFinishes.find(function(x) { return x.id === state.structure; });
       if (s) m.color.set(s.value);
-      if (state.structure === 'matte-black') { m.metalness = 0.35; m.roughness = 0.6; m.clearcoat = 0.2; }
-      else if (state.structure === 'brass') { m.roughness = 0.18; m.clearcoat = 0.6; }
-      else if (state.structure === 'bronze') { m.roughness = 0.25; m.clearcoat = 0.5; }
+      if (state.structure === 'matte-black') { m.metalness = 0.2; m.roughness = 0.5; m.clearcoat = 0.15; m.clearcoatRoughness = 0.4; }
+      else if (state.structure === 'brass') { m.roughness = 0.12; m.clearcoat = 0.6; m.clearcoatRoughness = 0.1; m.envMapIntensity = 1.3; }
+      else if (state.structure === 'bronze') { m.roughness = 0.2; m.clearcoat = 0.4; m.clearcoatRoughness = 0.15; m.envMapIntensity = 1.2; }
       return m;
     }
 
@@ -739,12 +823,13 @@
       if (!c) c = colourSwatches[0];
       var hex = c.value;
       if (c.fabric) {
-        var fm = new THREE.MeshPhysicalMaterial({ roughness: 0.85, metalness: 0.01, map: getTexture('fabric', hex), bumpMap: getTexture('fabric', hex), bumpScale: 0.01, envMapIntensity: 0.3 });
-        fm.sheen = 0.3;
-        fm.sheenRoughness = 0.8;
+        var fm = new THREE.MeshPhysicalMaterial({ roughness: 0.85, metalness: 0.01, map: getTexture('fabric', hex), bumpMap: getTexture('fabric', hex), bumpScale: 0.01, envMapIntensity: 0.35 });
+        fm.sheen = 0.85;
+        fm.sheenColor = new THREE.Color(0xffffff);
+        fm.sheenRoughness = 0.7;
         return fm;
       }
-      var lm = new THREE.MeshPhysicalMaterial({ roughness: 0.55, metalness: 0.04, map: getTexture('leather', hex), bumpMap: getTexture('leather', hex), bumpScale: 0.004, clearcoat: 0.15, clearcoatRoughness: 0.4, envMapIntensity: 0.6 });
+      var lm = new THREE.MeshPhysicalMaterial({ roughness: 0.45, metalness: 0.03, map: getTexture('leather', hex), bumpMap: getTexture('leather', hex), bumpScale: 0.005, clearcoat: 0.35, clearcoatRoughness: 0.25, envMapIntensity: 0.75 });
       return lm;
     }
 
@@ -753,18 +838,19 @@
       if (!c) c = colourSwatches[0];
       var hex = c.value;
       if (c.fabric) {
-        var fm = new THREE.MeshPhysicalMaterial({ roughness: 0.85, metalness: 0.01, map: getTexture('fabric', hex), bumpMap: getTexture('fabric', hex), bumpScale: 0.01, envMapIntensity: 0.3 });
-        fm.sheen = 0.3;
-        fm.sheenRoughness = 0.8;
+        var fm = new THREE.MeshPhysicalMaterial({ roughness: 0.85, metalness: 0.01, map: getTexture('fabric', hex), bumpMap: getTexture('fabric', hex), bumpScale: 0.01, envMapIntensity: 0.35 });
+        fm.sheen = 0.85;
+        fm.sheenColor = new THREE.Color(0xffffff);
+        fm.sheenRoughness = 0.7;
         return fm;
       }
-      var lm = new THREE.MeshPhysicalMaterial({ roughness: 0.55, metalness: 0.04, map: getTexture('leather', hex), bumpMap: getTexture('leather', hex), bumpScale: 0.004, clearcoat: 0.15, clearcoatRoughness: 0.4, envMapIntensity: 0.6 });
+      var lm = new THREE.MeshPhysicalMaterial({ roughness: 0.45, metalness: 0.03, map: getTexture('leather', hex), bumpMap: getTexture('leather', hex), bumpScale: 0.005, clearcoat: 0.35, clearcoatRoughness: 0.25, envMapIntensity: 0.75 });
       return lm;
     }
 
     function getWoodMat() {
       var w = woodFinishes.find(function(x) { return x.id === state.wood; });
-      return new THREE.MeshPhysicalMaterial({ roughness: 0.35, metalness: 0.04, map: getTexture('wood', w ? w.value : '#6B4A32'), clearcoat: 0.25, clearcoatRoughness: 0.3, envMapIntensity: 0.5 });
+      return new THREE.MeshPhysicalMaterial({ roughness: 0.25, metalness: 0.04, map: getTexture('wood', w ? w.value : '#6B4A32'), clearcoat: 0.4, clearcoatRoughness: 0.2, envMapIntensity: 0.75 });
     }
 
     // ═══════════════════════════════════════
@@ -1426,6 +1512,20 @@
         parts.push({ mesh: stRing, offset: new THREE.Vector3(0, 0.08, 0) });
       }
 
+      if (contactShadow) {
+        if (mid.indexOf('sofa') >= 0) {
+          contactShadow.scale.set(2.2, 1.2, 1);
+        } else if (mid === 'table-boardroom') {
+          contactShadow.scale.set(3.0, 1.5, 1);
+        } else if (mid === 'storage-wall') {
+          contactShadow.scale.set(2.0, 0.8, 1);
+        } else if (mid === 'table-reception') {
+          contactShadow.scale.set(2.2, 1.1, 1);
+        } else {
+          contactShadow.scale.set(1.4, 1.4, 1);
+        }
+      }
+
       parts.forEach(function(p, idx) {
         mainGroup.add(p.mesh);
         p.mesh.userData.origin = p.mesh.position.clone();
@@ -1549,12 +1649,36 @@
     // ═══════════════════════════════════════
     function toggleDrawer(side) {
       playSound('click');
-      if (side === 'left') {
-        document.getElementById('drawerLeft').classList.toggle('hidden');
-        document.getElementById('toggleLeft').classList.toggle('collapsed');
+      if (window.innerWidth <= 768) {
+        if (side === 'left') {
+          selectMobileTab('catalog');
+        } else {
+          selectMobileTab('customise');
+        }
       } else {
-        document.getElementById('drawerRight').classList.toggle('hidden');
-        document.getElementById('toggleRight').classList.toggle('collapsed');
+        if (side === 'left') {
+          document.getElementById('drawerLeft').classList.toggle('hidden');
+          document.getElementById('toggleLeft').classList.toggle('collapsed');
+        } else {
+          document.getElementById('drawerRight').classList.toggle('hidden');
+          document.getElementById('toggleRight').classList.toggle('collapsed');
+        }
+      }
+    }
+
+    function selectMobileTab(tab) {
+      var btnLeft = document.getElementById('tab-btn-catalog');
+      var btnRight = document.getElementById('tab-btn-customise');
+      if (tab === 'catalog') {
+        btnLeft.classList.add('active');
+        btnRight.classList.remove('active');
+        document.getElementById('drawerLeft').classList.remove('hidden-mobile');
+        document.getElementById('drawerRight').classList.add('hidden-mobile');
+      } else {
+        btnLeft.classList.remove('active');
+        btnRight.classList.add('active');
+        document.getElementById('drawerLeft').classList.add('hidden-mobile');
+        document.getElementById('drawerRight').classList.remove('hidden-mobile');
       }
     }
 
