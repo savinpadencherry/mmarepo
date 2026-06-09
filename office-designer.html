@@ -299,7 +299,10 @@
       { id:'workspace', name:'Open Workspace', cat:'Team Office', desc:'Rows of workstations with task seating, storage and greenery — a daylight studio for focused teams.' },
       { id:'executive', name:'Executive Suite', cat:'Leadership', desc:'A commanding desk, guest seating and a private lounge corner for informal conversations.' },
       { id:'boardroom', name:'Boardroom', cat:'Conference', desc:'A long conference table for eight, media wall and credenza — built for decisions.' },
-      { id:'reception', name:'Reception Lounge', cat:'Welcome', desc:'Reception counter, modular sofa and lounge chairs around a coffee table. First impressions matter.' }
+      { id:'reception', name:'Reception Lounge', cat:'Welcome', desc:'Reception counter, modular sofa and lounge chairs around a coffee table. First impressions matter.' },
+      { id:'cafeteria', name:'Collaborative Café', cat:'Social', desc:'Round café tables with social seating and a serving credenza — where teams cross-pollinate.' },
+      { id:'lounge', name:'Breakout Lounge', cat:'Informal', desc:'Facing sofas, lounge chairs and a coffee table on a soft rug — for conversations off the calendar.' },
+      { id:'huddle', name:'Huddle Room', cat:'Meeting', desc:'A round table for five with a media wall — quick syncs, short stand-ups, fast decisions.' }
     ];
 
     var chairModels = [
@@ -857,6 +860,21 @@
       return g;
     }
 
+    function buildCafeTable(scale) {
+      var s = scale || 1;
+      var g = new THREE.Group();
+      var wood = getWoodMat(), metal = getMetalMat();
+      var top = new THREE.Mesh(new THREE.CylinderGeometry(0.52 * s, 0.52 * s, 0.04, 48), wood);
+      top.position.y = 0.74; top.castShadow = true; top.receiveShadow = true; g.add(top);
+      var edge = new THREE.Mesh(new THREE.TorusGeometry(0.515 * s, 0.011, 8, 48), metal);
+      edge.rotation.x = Math.PI / 2; edge.position.y = 0.72; g.add(edge);
+      var col = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 0.7, 24), metal);
+      col.position.y = 0.37; col.castShadow = true; g.add(col);
+      var foot = new THREE.Mesh(new THREE.CylinderGeometry(0.3 * s, 0.32 * s, 0.025, 36), metal);
+      foot.position.y = 0.013; g.add(foot);
+      return g;
+    }
+
     function buildCredenza() {
       var g = new THREE.Group();
       var wood = getWoodMat(), metal = getMetalMat();
@@ -1029,6 +1047,42 @@
         L.push({ cat:'fixed', build:'plant', x:hw - 0.5, z:1.9, ry:0, s:1.0 });
         L.push({ cat:'fixed', build:'art', x:-hw + 0.01, z:0.6, ry:Math.PI / 2, wall:true, w:1.3, h:1.0 });
         L.push({ cat:'fixed', build:'art', x:0.6, z:hd - 0.01, ry:Math.PI, wall:true, w:1.1, h:1.4 });
+      } else if (presetId === 'cafeteria') {
+        var spots = [ {x:-2.4, z:-1.4}, {x:0.3, z:-1.7}, {x:-1.0, z:1.2}, {x:2.3, z:0.8} ];
+        spots.forEach(function(sp, si) {
+          L.push({ cat:'table', build:'cafetable', x:sp.x, z:sp.z, ry:0 });
+          for (var ci = 0; ci < 3; ci++) {
+            var ang = (ci / 3) * Math.PI * 2 + si * 0.7;
+            L.push({ cat:'chair', build:'chair', x:sp.x + Math.sin(ang) * 0.78, z:sp.z + Math.cos(ang) * 0.78, ry: ang + Math.PI });
+          }
+        });
+        L.push({ cat:'fixed', build:'credenza', x:1.2, z:hd - 0.42, ry:Math.PI });
+        L.push({ cat:'fixed', build:'plant', x:-hw + 0.55, z:2.3, ry:0, s:1.3 });
+        L.push({ cat:'fixed', build:'plant', x:hw - 0.55, z:-2.3, ry:0, s:1.1 });
+        L.push({ cat:'fixed', build:'art', x:-hw + 0.01, z:0.2, ry:Math.PI / 2, wall:true, w:1.2, h:0.9 });
+      } else if (presetId === 'lounge') {
+        L.push({ cat:'fixed', build:'rug', x:0, z:0.55, ry:0, w:4.4, d:3.2 });
+        L.push({ cat:'sofa', build:'sofa', x:0, z:1.95, ry:Math.PI });
+        L.push({ cat:'sofa', build:'sofa', x:0, z:-0.85, ry:0 });
+        L.push({ cat:'fixed', build:'coffee', x:0, z:0.55, ry:0 });
+        L.push({ cat:'chair', build:'chair', x:-2.45, z:0.55, ry:Math.PI / 2 });
+        L.push({ cat:'chair', build:'chair', x:2.45, z:0.55, ry:-Math.PI / 2 });
+        L.push({ cat:'fixed', build:'plant', x:-hw + 0.55, z:-2.4, ry:0, s:1.35 });
+        L.push({ cat:'fixed', build:'plant', x:hw - 0.5, z:2.3, ry:0, s:1.0 });
+        L.push({ cat:'fixed', build:'credenza', x:hw - 0.45, z:-1.4, ry:-Math.PI / 2 });
+        L.push({ cat:'fixed', build:'art', x:-hw + 0.01, z:0.5, ry:Math.PI / 2, wall:true, w:1.3, h:1.1 });
+        L.push({ cat:'fixed', build:'art', x:-0.8, z:hd - 0.01, ry:Math.PI, wall:true, w:1.1, h:1.4 });
+      } else if (presetId === 'huddle') {
+        L.push({ cat:'table', build:'cafetable', x:0.4, z:0, ry:0, s:1.45 });
+        for (var hi = 0; hi < 5; hi++) {
+          var hAng = (hi / 5) * Math.PI * 2 + 0.4;
+          L.push({ cat:'chair', build:'chair', x:0.4 + Math.sin(hAng) * 1.05, z:Math.cos(hAng) * 1.05, ry: hAng + Math.PI });
+        }
+        L.push({ cat:'fixed', build:'mediawall', x:-hw + 0.04, z:0, ry:Math.PI / 2, wall:true, y:1.5 });
+        L.push({ cat:'fixed', build:'credenza', x:1.4, z:hd - 0.42, ry:Math.PI });
+        L.push({ cat:'fixed', build:'plant', x:hw - 0.6, z:-2.3, ry:0, s:1.2 });
+        L.push({ cat:'fixed', build:'plant', x:hw - 0.6, z:2.3, ry:0, s:1.0 });
+        L.push({ cat:'fixed', build:'art', x:0.8, z:hd - 0.01, ry:Math.PI, wall:true, w:1.2, h:1.0 });
       }
       return L;
     }
@@ -1039,6 +1093,7 @@
         case 'chair': obj = buildChair(); break;
         case 'desk': obj = buildDesk(entry.props); break;
         case 'boardtable': obj = buildBoardTable(); break;
+        case 'cafetable': obj = buildCafeTable(entry.s); break;
         case 'sofa': obj = buildSofa(); break;
         case 'coffee': obj = buildCoffeeTable(); break;
         case 'credenza': obj = buildCredenza(); break;
@@ -1634,12 +1689,31 @@
     // ───────────────────────────────────────
     // URL PARAMS
     // ───────────────────────────────────────
+    var studioImport = null;
+    var studioNames = { 'chair-executive':'Meuse Executive', 'chair-conference':'Meuse Conference', 'sofa-modular':'Diablo Modular Sofa', 'sofa-bench':'Diablo Bench', 'table-boardroom':'Loire Boardroom', 'table-round':'Loire Round', 'lounge-chair':'Flamingo Lounge', 'storage-wall':'Marne Storage', 'table-reception':'Seine Reception', 'table-standing':'Garonne Standing' };
     (function() {
       var params = new URLSearchParams(window.location.search);
       var map = { preset:'preset', chair:'chairModel', desk:'deskModel', upholstery:'upholstery', structure:'structure', wood:'wood', wall:'wall', floor:'floor', light:'light' };
       Object.keys(map).forEach(function(k) {
         if (params.get(k)) state[map[k]] = params.get(k);
       });
+      if (params.get('fromStudio')) {
+        try {
+          var sc = JSON.parse(localStorage.getItem('mmaStudioConfig') || 'null');
+          if (sc && sc.model) {
+            studioImport = sc;
+            // place the customised product into its natural office context
+            var chairMap = { 'chair-executive':'executive', 'chair-conference':'sled', 'lounge-chair':'lounge' };
+            var presetMap = { 'chair-executive':'executive', 'chair-conference':'boardroom', 'lounge-chair':'lounge', 'sofa-modular':'lounge', 'sofa-bench':'reception', 'table-boardroom':'boardroom', 'table-round':'huddle', 'table-reception':'reception', 'table-standing':'cafeteria', 'storage-wall':'workspace' };
+            if (chairMap[sc.model]) state.chairModel = chairMap[sc.model];
+            if (!params.get('preset') && presetMap[sc.model]) state.preset = presetMap[sc.model];
+            if (sc.upholstery) state.upholstery = sc.upholstery;
+            if (sc.structure) state.structure = sc.structure;
+            if (sc.wood === 'dark-walnut') sc.wood = 'medium-walnut';
+            if (sc.wood && woodFinishes.find(function(w) { return w.id === sc.wood; })) state.wood = sc.wood;
+          }
+        } catch(e) {}
+      }
       if (!presets.find(function(p) { return p.id === state.preset; })) state.preset = 'workspace';
     })();
 
@@ -1669,7 +1743,11 @@
 
     setTimeout(function() {
       document.getElementById('loader').classList.add('done');
-      showToast('Welcome — <em>click any chair or desk</em> in the room to customise it.', 4200);
+      if (studioImport) {
+        showToast('Your customised <em>' + (studioNames[studioImport.model] || 'product') + '</em> from the Product Studio is styled into this office — fabrics &amp; finishes carried over.', 5600);
+      } else {
+        showToast('Welcome — <em>click any chair or desk</em> in the room to customise it.', 4200);
+      }
     }, 900);
   </script>
 </body>
