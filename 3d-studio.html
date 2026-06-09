@@ -210,9 +210,9 @@
       <div class="logo-text">MMA <em>3D Studio</em></div>
     </div>
     <div class="header-actions">
-      <button class="header-btn" onclick="window.location.href='office-designer.html'">
+      <button class="header-btn" onclick="window.location.href='office-designer.html?fromStudio=1'">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V8l9-5 9 5v13"/><path d="M3 21h18"/><path d="M9 21v-6h6v6"/></svg>
-        Office Designer
+        View in Office
       </button>
       <button class="header-btn" onclick="shareConfig()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
@@ -278,7 +278,13 @@
         </div>
       </div>
       <div class="config-group">
-        <div class="config-group-title">Share Configuration</div>
+        <div class="config-group-title">Take It Further</div>
+        <div class="share-row" style="margin-bottom:8px;">
+          <button class="share-btn" onclick="window.location.href='office-designer.html?fromStudio=1'" style="border-color:var(--gold-20);color:var(--gold-dark);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V8l9-5 9 5v13"/><path d="M3 21h18"/><path d="M9 21v-6h6v6"/></svg>
+            See It in an Office
+          </button>
+        </div>
         <div class="share-row">
           <button class="share-btn" onclick="shareConfig()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
@@ -376,6 +382,9 @@
       { code:'S7', name:'Sled Base', type:'sledbase' }
     ];
 
+    // top surface height of each base — bodies sit on this so every combination aligns
+    var baseTopY = { D9:0.63, L14:0.42, L21:0.72, L30:0.69, L31:0.38, L32:0.32, R13:0.375, R7:0.63, S7:0.42 };
+
     var colourSwatches = [
       { id:'charcoal', name:'Charcoal', value:'#1C1C19', fabric:false },
       { id:'camel', name:'Camel', value:'#C19A6B', fabric:false },
@@ -403,16 +412,16 @@
     ];
 
     var products = [
-      { id:'chair-executive', name:'Meuse Executive', cat:'Executive Seating', bases:['D9','L14','L21','L30','L31','L32','R13','R7','S7'], hasUpholstery:true, hasTop:true, hasWood:false },
-      { id:'chair-conference', name:'Meuse Conference', cat:'Conference', bases:['D9','L14','L21','L30','L31','L32','R13','R7','S7'], hasUpholstery:true, hasTop:true, hasWood:false },
-      { id:'sofa-modular', name:'Diablo Modular Sofa', cat:'Modular Lounge', bases:['D9','L14','L21','L30','L31','L32','R13','R7','S7'], hasUpholstery:true, hasTop:false, hasWood:false },
-      { id:'sofa-bench', name:'Diablo Bench', cat:'Public Seating', bases:['D9','L14','L21','L30','L31','L32','R13','R7','S7'], hasUpholstery:true, hasTop:false, hasWood:false },
-      { id:'table-boardroom', name:'Loire Boardroom', cat:'Conference Table', bases:['R13','L30','L21','L14','R7'], hasUpholstery:false, hasTop:false, hasWood:true },
-      { id:'table-round', name:'Loire Round', cat:'Meeting Table', bases:['R7','R13','L30'], hasUpholstery:false, hasTop:false, hasWood:true },
-      { id:'lounge-chair', name:'Flamingo Lounge', cat:'Lounge Chair', bases:['D9','L14','L21','L30','L31','L32','R13','R7','S7'], hasUpholstery:true, hasTop:true, hasWood:true },
-      { id:'storage-wall', name:'Marne Storage Wall', cat:'Storage', bases:['L21','L30'], hasUpholstery:false, hasTop:false, hasWood:true },
-      { id:'table-reception', name:'Seine Reception', cat:'Reception Desk', bases:['L21','L30','L14'], hasUpholstery:false, hasTop:false, hasWood:true },
-      { id:'table-standing', name:'Garonne Standing', cat:'Standing Desk', bases:['R7','R13','L30'], hasUpholstery:false, hasTop:false, hasWood:true }
+      { id:'chair-executive', name:'Meuse Executive', cat:'Executive Seating', bases:['D9','L30'], hasUpholstery:true, hasTop:true, hasWood:false },
+      { id:'chair-conference', name:'Meuse Conference', cat:'Conference', bases:['S7','L14'], hasUpholstery:true, hasTop:true, hasWood:false },
+      { id:'sofa-modular', name:'Diablo Modular Sofa', cat:'Modular Lounge', bases:['L31','L32'], hasUpholstery:true, hasTop:false, hasWood:false },
+      { id:'sofa-bench', name:'Diablo Bench', cat:'Public Seating', bases:['L32','L31'], hasUpholstery:true, hasTop:false, hasWood:false },
+      { id:'table-boardroom', name:'Loire Boardroom', cat:'Conference Table', bases:[], hasUpholstery:false, hasTop:false, hasWood:true },
+      { id:'table-round', name:'Loire Round', cat:'Meeting Table', bases:['R7','L30'], hasUpholstery:false, hasTop:false, hasWood:true },
+      { id:'lounge-chair', name:'Flamingo Lounge', cat:'Lounge Chair', bases:['R13'], hasUpholstery:true, hasTop:true, hasWood:true },
+      { id:'storage-wall', name:'Marne Storage Wall', cat:'Storage', bases:[], hasUpholstery:false, hasTop:false, hasWood:true },
+      { id:'table-reception', name:'Seine Reception', cat:'Reception Desk', bases:[], hasUpholstery:false, hasTop:false, hasWood:true },
+      { id:'table-standing', name:'Garonne Standing', cat:'Standing Desk', bases:['R7','R13'], hasUpholstery:false, hasTop:false, hasWood:true }
     ];
 
     function renderProductList() {
@@ -447,7 +456,7 @@
       document.getElementById('group-base').style.display = p.bases.length > 0 ? '' : 'none';
 
       var availBases = baseTypes.filter(function(b) { return p.bases.indexOf(b.code) >= 0; });
-      if (availBases.indexOf(baseTypes.find(function(b){ return b.code === state.base; })) < 0) {
+      if (p.bases.length > 0 && availBases.indexOf(baseTypes.find(function(b){ return b.code === state.base; })) < 0) {
         state.base = p.bases[0];
       }
       var baseGrid = document.getElementById('baseGrid');
@@ -1089,32 +1098,23 @@
       var mid = state.model;
 
       if (mid === 'chair-executive') {
+        var exTopY = baseTopY[state.base] || 0.63;
         var baseG = buildBase(state.base, metalMat);
         parts.push({ mesh: baseG, offset: new THREE.Vector3(0, -0.25, 0) });
 
-        var gasGroup = new THREE.Group();
-        var outerSleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.038, 0.16, 32), metalMat);
-        outerSleeve.position.y = 0.54; outerSleeve.castShadow = true;
-        gasGroup.add(outerSleeve);
-        var innerCyl = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.2, 32), blackPlastic);
-        innerCyl.position.y = 0.44; gasGroup.add(innerCyl);
-        var chromeRing = new THREE.Mesh(new THREE.TorusGeometry(0.036, 0.004, 12, 32), metalMat);
-        chromeRing.position.y = 0.62; chromeRing.rotation.x = Math.PI / 2;
-        gasGroup.add(chromeRing);
-        parts.push({ mesh: gasGroup, offset: new THREE.Vector3(0, -0.08, 0) });
-
         var tiltGroup = new THREE.Group();
         var tiltPlate = new THREE.Mesh(roundedBoxGeo(0.26, 0.2, 0.018, 0.015, 0.003), darkShell);
-        tiltPlate.position.y = 0.645; tiltGroup.add(tiltPlate);
+        tiltPlate.position.y = exTopY + 0.015; tiltGroup.add(tiltPlate);
         var pivot = new THREE.Mesh(new THREE.SphereGeometry(0.022, 16, 16), metalMat);
-        pivot.position.y = 0.65; tiltGroup.add(pivot);
+        pivot.position.y = exTopY + 0.02; tiltGroup.add(pivot);
         var tiltLever = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.14, 12), metalMat);
-        tiltLever.position.set(0.16, 0.64, 0.06); tiltLever.rotation.z = Math.PI / 3;
+        tiltLever.position.set(0.16, exTopY + 0.01, 0.06); tiltLever.rotation.z = Math.PI / 3;
         tiltGroup.add(tiltLever);
         var tiltKnob = new THREE.Mesh(new THREE.SphereGeometry(0.012, 12, 12), blackPlastic);
-        tiltKnob.position.set(0.22, 0.62, 0.06); tiltGroup.add(tiltKnob);
+        tiltKnob.position.set(0.22, exTopY - 0.01, 0.06); tiltGroup.add(tiltKnob);
         parts.push({ mesh: tiltGroup, offset: new THREE.Vector3(0, 0.04, 0) });
 
+        var exSeatY = exTopY + 0.09;
         var seatGroup = new THREE.Group();
         var seatCush = new THREE.Mesh(roundedBoxGeo(0.54, 0.50, 0.11, 0.04, 0.02), uphMat);
         seatCush.castShadow = true; seatCush.receiveShadow = true;
@@ -1122,7 +1122,7 @@
         addStitching(seatGroup, 0.50, 0.46, 0.058);
         var seatShell = new THREE.Mesh(roundedBoxGeo(0.56, 0.52, 0.02, 0.03, 0.004), darkShell);
         seatShell.position.y = -0.065; seatGroup.add(seatShell);
-        seatGroup.position.y = 0.72;
+        seatGroup.position.y = exSeatY;
         parts.push({ mesh: seatGroup, offset: new THREE.Vector3(0, 0.15, 0) });
 
         var backGroup = new THREE.Group();
@@ -1147,7 +1147,7 @@
         var lumbar = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.32, 16), metalMat);
         lumbar.position.set(0, -0.06, 0.02); lumbar.rotation.z = Math.PI / 2;
         backGroup.add(lumbar);
-        backGroup.position.set(0, 1.1, -0.22);
+        backGroup.position.set(0, exSeatY + 0.38, -0.22);
         backGroup.rotation.x = -0.12;
         parts.push({ mesh: backGroup, offset: new THREE.Vector3(0, 0.3, -0.28) });
 
@@ -1158,7 +1158,7 @@
         armLJoint.position.y = 0.14; armLGroup.add(armLJoint);
         var armLPad = new THREE.Mesh(roundedBoxGeo(0.065, 0.26, 0.028, 0.012, 0.008), uphMat);
         armLPad.position.set(0, 0.15, 0.06); armLGroup.add(armLPad);
-        armLGroup.position.set(-0.3, 0.9, -0.02);
+        armLGroup.position.set(-0.3, exSeatY + 0.18, -0.02);
         parts.push({ mesh: armLGroup, offset: new THREE.Vector3(-0.22, 0.1, 0) });
 
         var armRGroup = new THREE.Group();
@@ -1168,7 +1168,7 @@
         armRJoint.position.y = 0.14; armRGroup.add(armRJoint);
         var armRPad = new THREE.Mesh(roundedBoxGeo(0.065, 0.26, 0.028, 0.012, 0.008), uphMat);
         armRPad.position.set(0, 0.15, 0.06); armRGroup.add(armRPad);
-        armRGroup.position.set(0.3, 0.9, -0.02);
+        armRGroup.position.set(0.3, exSeatY + 0.18, -0.02);
         parts.push({ mesh: armRGroup, offset: new THREE.Vector3(0.22, 0.1, 0) });
 
         var hrGroup = new THREE.Group();
@@ -1176,45 +1176,57 @@
         hrPost.position.y = -0.07; hrGroup.add(hrPost);
         var hrCush = new THREE.Mesh(roundedBoxGeo(0.24, 0.07, 0.10, 0.02, 0.014), uphMat);
         hrCush.castShadow = true; hrGroup.add(hrCush);
-        hrGroup.position.set(0, 1.52, -0.26);
+        hrGroup.position.set(0, exSeatY + 0.8, -0.26);
         hrGroup.rotation.x = -0.15;
         parts.push({ mesh: hrGroup, offset: new THREE.Vector3(0, 0.35, -0.15) });
 
       } else if (mid === 'chair-conference') {
+        var cTopY = baseTopY[state.base] || 0.42;
         var cBaseG = buildBase(state.base, metalMat);
         parts.push({ mesh: cBaseG, offset: new THREE.Vector3(0, -0.2, 0) });
 
         var cSeatGroup = new THREE.Group();
-        var cSeat = new THREE.Mesh(roundedBoxGeo(0.46, 0.44, 0.09, 0.03, 0.018), uphMat);
+        var cSeat = new THREE.Mesh(roundedBoxGeo(0.47, 0.45, 0.075, 0.055, 0.016), uphMat);
         cSeat.castShadow = true; cSeat.receiveShadow = true;
         cSeatGroup.add(cSeat);
-        addStitching(cSeatGroup, 0.42, 0.40, 0.048);
-        var cSeatFrame = new THREE.Mesh(roundedBoxGeo(0.48, 0.46, 0.018, 0.02, 0.003), metalMat);
-        cSeatFrame.position.y = -0.054; cSeatGroup.add(cSeatFrame);
-        cSeatGroup.position.y = 0.52;
+        addStitching(cSeatGroup, 0.43, 0.41, 0.041);
+        var cSeatFrame = new THREE.Mesh(roundedBoxGeo(0.43, 0.41, 0.016, 0.045, 0.003), metalMat);
+        cSeatFrame.position.y = -0.046; cSeatGroup.add(cSeatFrame);
+        cSeatGroup.position.y = cTopY + 0.06;
         parts.push({ mesh: cSeatGroup, offset: new THREE.Vector3(0, 0.18, 0) });
 
         var cBackGroup = new THREE.Group();
-        var cBackProfile = [
-          new THREE.Vector2(0.04, -0.28),
-          new THREE.Vector2(0.12, -0.24),
-          new THREE.Vector2(0.20, -0.12),
-          new THREE.Vector2(0.22, 0.02),
-          new THREE.Vector2(0.20, 0.16),
-          new THREE.Vector2(0.16, 0.26),
-        ];
-        var cBackShellGeo = new THREE.LatheGeometry(cBackProfile, 40, Math.PI * 0.6, Math.PI * 0.8);
-        var cBackShell = new THREE.Mesh(cBackShellGeo, metalMat);
-        cBackShell.castShadow = true;
-        cBackGroup.add(cBackShell);
-        var cBack = new THREE.Mesh(roundedBoxGeo(0.40, 0.05, 0.44, 0.025, 0.014), uphMat);
-        cBack.position.z = 0.06; cBack.castShadow = true;
-        cBackGroup.add(cBack);
-        cBackGroup.position.set(0, 0.95, -0.2);
-        cBackGroup.rotation.x = -0.08;
+        var cBackCush = new THREE.Mesh(roundedBoxGeo(0.45, 0.055, 0.42, 0.05, 0.015), uphMat);
+        cBackCush.castShadow = true;
+        cBackGroup.add(cBackCush);
+        var cBackShell = new THREE.Mesh(roundedBoxGeo(0.47, 0.018, 0.44, 0.05, 0.004), darkShell);
+        cBackShell.position.z = -0.038; cBackGroup.add(cBackShell);
+        cBackGroup.position.set(0, cTopY + 0.47, -0.245);
+        cBackGroup.rotation.x = -0.09;
         parts.push({ mesh: cBackGroup, offset: new THREE.Vector3(0, 0.25, -0.22) });
 
+        var cUpL = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.013, 0.36, 12), metalMat);
+        cUpL.position.set(-0.17, cTopY + 0.22, -0.235); cUpL.rotation.x = -0.14; cUpL.castShadow = true;
+        parts.push({ mesh: cUpL, offset: new THREE.Vector3(-0.05, 0.2, -0.2) });
+        var cUpR = cUpL.clone();
+        cUpR.position.x = 0.17;
+        parts.push({ mesh: cUpR, offset: new THREE.Vector3(0.05, 0.2, -0.2) });
+
+        for (var cai = 0; cai < 2; cai++) {
+          var cax = cai === 0 ? -0.255 : 0.255;
+          var cArm = new THREE.Group();
+          var caPost = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.012, 0.2, 12), metalMat);
+          caPost.position.set(0, -0.1, 0.07); cArm.add(caPost);
+          var caPost2 = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.012, 0.2, 12), metalMat);
+          caPost2.position.set(0, -0.1, -0.12); cArm.add(caPost2);
+          var caPad = new THREE.Mesh(roundedBoxGeo(0.055, 0.3, 0.026, 0.013, 0.006), uphMat);
+          caPad.position.y = 0.01; caPad.castShadow = true; cArm.add(caPad);
+          cArm.position.set(cax, cTopY + 0.26, -0.02);
+          parts.push({ mesh: cArm, offset: new THREE.Vector3(cai === 0 ? -0.18 : 0.18, 0.12, 0) });
+        }
+
       } else if (mid === 'sofa-modular') {
+        var sTopY = baseTopY[state.base] || 0.38;
         var sBaseG = buildBase(state.base, metalMat);
         parts.push({ mesh: sBaseG, offset: new THREE.Vector3(0, -0.15, 0) });
 
@@ -1224,7 +1236,7 @@
         var frameEdge = new THREE.Mesh(new THREE.TorusGeometry(0.02, 0.005, 8, 48), metalMat);
         frameEdge.position.y = -0.05; frameEdge.rotation.x = Math.PI / 2;
         frameG.add(frameEdge);
-        frameG.position.y = 0.4;
+        frameG.position.y = sTopY + 0.02;
         parts.push({ mesh: frameG, offset: new THREE.Vector3(0, -0.12, 0) });
 
         var cushionG = new THREE.Group();
@@ -1238,25 +1250,26 @@
           seamLine.position.set((ci - 1) * 0.55, 0.105, 0);
           cushionG.add(seamLine);
         }
-        cushionG.position.y = 0.54;
+        cushionG.position.y = sTopY + 0.16;
         parts.push({ mesh: cushionG, offset: new THREE.Vector3(0, 0.2, 0) });
 
         var backGroup = new THREE.Group();
         var backMain = new THREE.Mesh(roundedBoxGeo(1.64, 0.14, 0.44, 0.04, 0.022), topMat);
         backMain.castShadow = true; backGroup.add(backMain);
         addTufting(backGroup, 1.50, 0.38, 0.075, 3, 8);
-        backGroup.position.set(0, 0.82, -0.36);
+        backGroup.position.set(0, sTopY + 0.44, -0.36);
         parts.push({ mesh: backGroup, offset: new THREE.Vector3(0, 0.26, -0.25) });
 
         var armL = new THREE.Mesh(roundedBoxGeo(0.14, 0.68, 0.42, 0.04, 0.02), uphMat);
-        armL.castShadow = true; armL.position.set(-0.88, 0.62, 0);
+        armL.castShadow = true; armL.position.set(-0.88, sTopY + 0.24, 0);
         parts.push({ mesh: armL, offset: new THREE.Vector3(-0.2, 0.08, 0) });
 
         var armR = new THREE.Mesh(roundedBoxGeo(0.14, 0.68, 0.42, 0.04, 0.02), uphMat);
-        armR.castShadow = true; armR.position.set(0.88, 0.62, 0);
+        armR.castShadow = true; armR.position.set(0.88, sTopY + 0.24, 0);
         parts.push({ mesh: armR, offset: new THREE.Vector3(0.2, 0.08, 0) });
 
       } else if (mid === 'sofa-bench') {
+        var bTopY = baseTopY[state.base] || 0.32;
         var bBaseG = buildBase(state.base, metalMat);
         parts.push({ mesh: bBaseG, offset: new THREE.Vector3(0, -0.12, 0) });
 
@@ -1267,18 +1280,15 @@
         addStitching(bSeatGroup, 1.14, 0.40, 0.054);
         var bSeatShell = new THREE.Mesh(roundedBoxGeo(1.22, 0.46, 0.03, 0.02, 0.004), metalMat);
         bSeatShell.position.y = -0.065; bSeatGroup.add(bSeatShell);
-        bSeatGroup.position.y = 0.48;
+        bSeatGroup.position.y = bTopY + 0.16;
         parts.push({ mesh: bSeatGroup, offset: new THREE.Vector3(0, 0.15, 0) });
 
         var bBack = new THREE.Mesh(roundedBoxGeo(1.18, 0.08, 0.32, 0.025, 0.016), uphMat);
         bBack.castShadow = true;
-        bBack.position.set(0, 0.68, -0.22);
+        bBack.position.set(0, bTopY + 0.36, -0.22);
         parts.push({ mesh: bBack, offset: new THREE.Vector3(0, 0.18, -0.15) });
 
       } else if (mid === 'table-boardroom') {
-        var tBaseG = buildBase(state.base, metalMat);
-        parts.push({ mesh: tBaseG, offset: new THREE.Vector3(0, -0.15, 0) });
-
         var topGroup = new THREE.Group();
         var tableTop = new THREE.Mesh(roundedBoxGeo(2.3, 1.1, 0.065, 0.03, 0.008), woodMat);
         tableTop.castShadow = true; tableTop.receiveShadow = true;
@@ -1350,7 +1360,7 @@
         rUnderRing.position.y = -0.03; rTopGroup.add(rUnderRing);
         var rUnderPlate = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.015, 32), metalMat);
         rUnderPlate.position.y = -0.035; rTopGroup.add(rUnderPlate);
-        rTopGroup.position.y = 0.75;
+        rTopGroup.position.y = (baseTopY[state.base] || 0.63) + 0.12;
         parts.push({ mesh: rTopGroup, offset: new THREE.Vector3(0, 0.28, 0) });
 
       } else if (mid === 'lounge-chair') {
@@ -1405,9 +1415,6 @@
         parts.push({ mesh: backCush, offset: new THREE.Vector3(0, 0.25, -0.2) });
 
       } else if (mid === 'storage-wall') {
-        var sBaseG2 = buildBase(state.base, metalMat);
-        parts.push({ mesh: sBaseG2, offset: new THREE.Vector3(0, -0.12, 0) });
-
         var cabinetG = new THREE.Group();
         var cabBody = new THREE.Mesh(roundedBoxGeo(1.4, 0.38, 1.2, 0.015, 0.004), woodMat);
         cabBody.castShadow = true; cabBody.receiveShadow = true;
@@ -1450,9 +1457,6 @@
         parts.push({ mesh: handle2b, offset: new THREE.Vector3(0, 0.15, 0.08) });
 
       } else if (mid === 'table-reception') {
-        var rcBaseG = buildBase(state.base, metalMat);
-        parts.push({ mesh: rcBaseG, offset: new THREE.Vector3(0, -0.12, 0) });
-
         var deskTop = new THREE.Mesh(roundedBoxGeo(1.6, 0.72, 0.055, 0.025, 0.008), woodMat);
         deskTop.castShadow = true; deskTop.receiveShadow = true;
         deskTop.position.y = 1.1;
@@ -1530,6 +1534,7 @@
         }
       }
 
+      persistConfig();
       parts.forEach(function(p, idx) {
         mainGroup.add(p.mesh);
         p.mesh.userData.origin = p.mesh.position.clone();
@@ -1633,6 +1638,16 @@
       state.vr = !state.vr;
       playSound('click');
       document.getElementById('btnVR').classList.toggle('active', state.vr);
+    }
+
+    // persist current configuration so the Office Designer can pick it up
+    function persistConfig() {
+      try {
+        localStorage.setItem('mmaStudioConfig', JSON.stringify({
+          model: state.model, base: state.base, upholstery: state.upholstery,
+          topColor: state.topColor, wood: state.wood, structure: state.structure
+        }));
+      } catch(e) {}
     }
 
     function shareConfig() {
