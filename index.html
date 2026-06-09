@@ -269,6 +269,31 @@
     .port-item-4 { grid-column: span 7; height: 520px; margin-top: -100px; }
     .portfolio-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 64px; }
 
+    #hive { background: var(--bg); position: relative; overflow: hidden; }
+    #hive::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 1px 1px, rgba(184,149,47,0.04) 1px, transparent 0); background-size: 36px 36px; pointer-events: none; }
+    .hive-grid { --hex-w: clamp(116px, 15vw, 208px); margin-top: 72px; user-select: none; }
+    .hex-row { display: flex; justify-content: center; gap: 12px; }
+    .hex-row + .hex-row { margin-top: calc(var(--hex-w) * -0.265); }
+    .hex { width: var(--hex-w); height: calc(var(--hex-w) * 1.1547); flex-shrink: 0; transition: transform 0.35s ease-out; will-change: transform; }
+    .hex-inner { position: relative; width: 100%; height: 100%; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); overflow: hidden; cursor: pointer; animation: hexFloat 7s ease-in-out infinite; animation-delay: var(--fd, 0s); background: var(--bg-cream); }
+    @keyframes hexFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+    .hex-inner img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.03); transform: scale(1.06); transition: filter 0.6s, transform 0.9s var(--ease-out); }
+    .hex-inner:hover img { filter: grayscale(0); transform: scale(1.16); }
+    .hex-inner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,26,24,0.55), transparent 55%); opacity: 0; transition: opacity 0.5s; pointer-events: none; }
+    .hex-inner:hover::after { opacity: 1; }
+    .hex-label { position: absolute; bottom: 16%; left: 8%; right: 8%; text-align: center; color: #fff; font-size: 9px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; opacity: 0; transform: translateY(8px); transition: all 0.45s var(--ease-out); z-index: 2; pointer-events: none; }
+    .hex-inner:hover .hex-label { opacity: 1; transform: translateY(0); }
+    .hive-hint { text-align: center; margin-top: 56px; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted); }
+    .hive-hint em { color: var(--gold-dark); font-style: normal; }
+    #hex-lightbox { position: fixed; inset: 0; z-index: 980; background: rgba(26,26,24,0.92); backdrop-filter: blur(20px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; opacity: 0; pointer-events: none; transition: opacity 0.45s var(--ease-out); padding: 40px; }
+    #hex-lightbox.open { opacity: 1; pointer-events: auto; }
+    #hex-lightbox img { max-width: min(1000px, 88vw); max-height: 74vh; border-radius: 8px; box-shadow: 0 40px 100px rgba(0,0,0,0.5); }
+    #hex-lightbox .lb-caption { font-family: var(--font-display); font-size: 22px; color: #fff; font-weight: 300; letter-spacing: 1px; }
+    #hex-lightbox .lb-caption em { color: var(--gold-light); font-style: italic; }
+    #hex-lightbox .lb-close { position: absolute; top: 28px; right: 36px; background: none; border: 1px solid rgba(255,255,255,0.25); color: #fff; width: 44px; height: 44px; border-radius: 50%; font-size: 20px; cursor: pointer; transition: all 0.3s; }
+    #hex-lightbox .lb-close:hover { border-color: var(--gold); color: var(--gold-light); transform: rotate(90deg); }
+    @media (max-width: 768px) { .hive-grid { --hex-w: 27vw; } .hex-row { gap: 6px; } }
+
     #collections { background: var(--bg-warm); }
     .collections-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
     .collection-card { position: relative; background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 32px 24px; overflow: hidden; transition: all 0.5s var(--ease-out); cursor: pointer; }
@@ -422,7 +447,8 @@
     </div>
     <ul class="nav-center">
       <li><a href="#products">Products</a></li>
-      <li><a href="#configurator">Configurator</a></li>
+      <li><a href="#configurator">3D Studio</a></li>
+      <li><a href="office-designer.html">Office Designer</a></li>
       <li><a href="#rooms">Spaces</a></li>
       <li><a href="#portfolio">Portfolio</a></li>
       <li><a href="#services">Services</a></li>
@@ -440,7 +466,8 @@
 
 <div class="mobile-menu" id="mobileMenu">
   <a href="#products" class="mm-link">Products</a>
-  <a href="#configurator" class="mm-link">Configurator</a>
+  <a href="#configurator" class="mm-link">3D Studio</a>
+  <a href="office-designer.html" class="mm-link">Office Designer</a>
   <a href="#rooms" class="mm-link">Spaces</a>
   <a href="#portfolio" class="mm-link">Portfolio</a>
   <a href="#services" class="mm-link">Services</a>
@@ -585,11 +612,14 @@
     <div>
       <div class="section-eyebrow">Interactive 3D Studio</div>
       <h2 class="section-title">Configure <em>Every Detail</em></h2>
-      <p class="section-desc" style="margin-bottom:36px;">Select your product, then customise every element in real time — base type, upholstery, wood finish, metal structure. See it update instantly in 3D. Switch between Studio, Office, and Lounge lighting environments.</p>
-      <a href="3d-studio.html" class="btn-primary">
-        Open 3D Configurator
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </a>
+      <p class="section-desc" style="margin-bottom:36px;">Select your product, then customise every element in real time — base type, upholstery, wood finish, metal structure. See it update instantly in 3D. Then take it further: drop your selections into a full office room and design the entire space.</p>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;">
+        <a href="3d-studio.html" class="btn-primary">
+          Open 3D Configurator
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="office-designer.html" class="btn-secondary">Design a Full Office</a>
+      </div>
       <div class="config-features">
         <div class="config-feature">
           <span class="config-feature-icon">
@@ -741,12 +771,12 @@
 
 <section id="rooms" class="section section-pattern-diagonal">
   <div class="reveal">
-    <div class="section-eyebrow">3D Room Configurator</div>
+    <div class="section-eyebrow">3D Office Designer</div>
     <h2 class="section-title">Design Your <em>Space</em></h2>
-    <p class="section-desc" style="margin-bottom:56px;">Choose a corporate space preset, populate it with products from the catalogue, and walk through your design in virtual 3D. Share configurations with architects and clients.</p>
+    <p class="section-desc" style="margin-bottom:56px;">Choose an office preset, then click any chair or desk in the 3D room to swap models, fabrics, woods, wall colours and flooring — and watch your entire office update in real time.</p>
   </div>
   <div class="rooms-grid reveal stagger-1">
-    <div class="room-card" data-room="reception">
+    <div class="room-card" data-room="reception" onclick="window.location.href='office-designer.html?preset=reception'">
       <div class="room-card-bg">
         <img src="assets/reception_space.png" alt="Reception Lobby" class="room-card-img">
       </div>
@@ -755,10 +785,10 @@
         <div class="room-card-tag">Corporate Space</div>
         <div class="room-card-title">Reception</div>
         <div class="room-card-desc">Make a statement with curated lounge seating, reception desks, and accent tables.</div>
-        <div class="room-card-cta">Start Designing &rarr;</div>
+        <div class="room-card-cta">Design in 3D &rarr;</div>
       </div>
     </div>
-    <div class="room-card" data-room="boardroom">
+    <div class="room-card" data-room="boardroom" onclick="window.location.href='office-designer.html?preset=boardroom'">
       <div class="room-card-bg">
         <img src="assets/boardroom_space.png" alt="Boardroom" class="room-card-img">
       </div>
@@ -767,21 +797,27 @@
         <div class="room-card-tag">Executive</div>
         <div class="room-card-title">Boardroom</div>
         <div class="room-card-desc">Executive conference tables, boardroom chairs, and presentation media walls.</div>
-        <div class="room-card-cta">Start Designing &rarr;</div>
+        <div class="room-card-cta">Design in 3D &rarr;</div>
       </div>
     </div>
-    <div class="room-card" data-room="cafeteria">
+    <div class="room-card" data-room="workspace" onclick="window.location.href='office-designer.html?preset=workspace'">
       <div class="room-card-bg">
-        <img src="assets/cafeteria_space.png" alt="Collaborative Cafeteria" class="room-card-img">
+        <img src="assets/cafeteria_space.png" alt="Open Workspace" class="room-card-img">
       </div>
       <div class="room-card-overlay"></div>
       <div class="room-card-content">
         <div class="room-card-tag">Collaborative</div>
-        <div class="room-card-title">Cafeteria</div>
-        <div class="room-card-desc">Modular dining systems, informal breakout seating, and collaborative bar tables.</div>
-        <div class="room-card-cta">Start Designing &rarr;</div>
+        <div class="room-card-title">Open Workspace</div>
+        <div class="room-card-desc">Rows of workstations, task seating, storage and greenery for focused teams.</div>
+        <div class="room-card-cta">Design in 3D &rarr;</div>
       </div>
     </div>
+  </div>
+  <div class="reveal stagger-2" style="text-align:center;margin-top:56px;">
+    <a href="office-designer.html" class="btn-primary">
+      Open the Office Designer
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
   </div>
 </section>
 
@@ -840,6 +876,39 @@
     </div>
   </div>
 </section>
+
+<section id="hive" class="section">
+  <div class="reveal" style="text-align:center;">
+    <div class="section-eyebrow" style="display:inline-block;">Gallery</div>
+    <h2 class="section-title" style="margin-left:auto;margin-right:auto;">The Work, in <em>Motion</em></h2>
+    <p class="section-desc" style="margin-left:auto;margin-right:auto;">A living collage of MMA spaces, products, and installations. Move your cursor through the hive — every cell is a story.</p>
+  </div>
+  <div class="hive-grid reveal stagger-1" id="hiveGrid">
+    <div class="hex-row">
+      <div class="hex" data-depth="0.6"><div class="hex-inner" style="--fd:0s" data-caption="Reception Lounge — <em>Spatial Concept</em>"><img src="assets/reception_space.png" alt="Reception lounge concept" loading="lazy"><div class="hex-label">Reception Lounge</div></div></div>
+      <div class="hex" data-depth="1.2"><div class="hex-inner" style="--fd:-1.4s" data-caption="Meuse Executive — <em>Signature Seating</em>"><img src="https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=600&h=700&fit=crop" alt="Meuse Executive chair" loading="lazy"><div class="hex-label">Meuse Executive</div></div></div>
+      <div class="hex" data-depth="0.8"><div class="hex-inner" style="--fd:-2.8s" data-caption="Boardroom — <em>Executive Space</em>"><img src="assets/boardroom_space.png" alt="Boardroom concept" loading="lazy"><div class="hex-label">Boardroom</div></div></div>
+    </div>
+    <div class="hex-row">
+      <div class="hex" data-depth="1.0"><div class="hex-inner" style="--fd:-0.7s" data-caption="Vesuvius India HQ — <em>Corporate Office</em>"><img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=700&fit=crop" alt="Vesuvius India HQ" loading="lazy"><div class="hex-label">Vesuvius HQ</div></div></div>
+      <div class="hex" data-depth="1.5"><div class="hex-inner" style="--fd:-3.5s" data-caption="3D Office Designer — <em>Interactive Studio</em>"><img src="assets/configurator_preview.png" alt="3D configurator studio" loading="lazy"><div class="hex-label">3D Studio</div></div></div>
+      <div class="hex" data-depth="0.7"><div class="hex-inner" style="--fd:-2.1s" data-caption="Diablo Modular — <em>Lounge System</em>"><img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&h=700&fit=crop" alt="Diablo modular sofa" loading="lazy"><div class="hex-label">Diablo Modular</div></div></div>
+      <div class="hex" data-depth="1.3"><div class="hex-inner" style="--fd:-4.6s" data-caption="Loire Boardroom — <em>Conference Table</em>"><img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=600&h=700&fit=crop" alt="Loire boardroom table" loading="lazy"><div class="hex-label">Loire Boardroom</div></div></div>
+    </div>
+    <div class="hex-row">
+      <div class="hex" data-depth="0.9"><div class="hex-inner" style="--fd:-1.9s" data-caption="Collaborative Cafeteria — <em>Spatial Concept</em>"><img src="assets/cafeteria_space.png" alt="Cafeteria concept" loading="lazy"><div class="hex-label">Cafeteria</div></div></div>
+      <div class="hex" data-depth="1.4"><div class="hex-inner" style="--fd:-3.1s" data-caption="Flamingo Lounge — <em>Sculptural Seating</em>"><img src="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=600&h=700&fit=crop" alt="Flamingo lounge chair" loading="lazy"><div class="hex-label">Flamingo Lounge</div></div></div>
+      <div class="hex" data-depth="0.6"><div class="hex-inner" style="--fd:-5.2s" data-caption="DWP Interics Studio — <em>Co-Working</em>"><img src="https://images.unsplash.com/photo-1497215842964-222b430dc094?w=600&h=700&fit=crop" alt="DWP Interics studio" loading="lazy"><div class="hex-label">DWP Studio</div></div></div>
+    </div>
+  </div>
+  <div class="hive-hint reveal stagger-2">Move your cursor &middot; <em>Click a cell to expand</em></div>
+</section>
+
+<div id="hex-lightbox">
+  <button class="lb-close" aria-label="Close">&times;</button>
+  <img src="" alt="">
+  <div class="lb-caption"></div>
+</div>
 
 <section id="collections" class="section" style="background:var(--bg-warm);">
   <div class="reveal" style="text-align:center;margin-bottom:64px;">
@@ -1080,8 +1149,8 @@
       <div class="footer-col-title">Resources</div>
       <ul class="footer-links">
         <li><a href="#products">Catalogue PDF</a></li>
-        <li><a href="#rooms">Room Designer</a></li>
-        <li><a href="#configurator">3D Studio</a></li>
+        <li><a href="office-designer.html">Office Designer</a></li>
+        <li><a href="3d-studio.html">3D Studio</a></li>
         <li><a href="#contact">Request Sample</a></li>
         <li><a href="#contact">Trade Enquiry</a></li>
       </ul>
@@ -1295,6 +1364,41 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 });
+
+// ── Hexagonal hive: cursor parallax ──
+const hiveSection = document.getElementById('hive');
+const hexes = document.querySelectorAll('#hiveGrid .hex');
+let hiveRAF = null;
+hiveSection.addEventListener('mousemove', e => {
+  if (hiveRAF) return;
+  hiveRAF = requestAnimationFrame(() => {
+    const rect = hiveSection.getBoundingClientRect();
+    const nx = (e.clientX - rect.left) / rect.width - 0.5;
+    const ny = (e.clientY - rect.top) / rect.height - 0.5;
+    hexes.forEach(h => {
+      const d = parseFloat(h.dataset.depth || 1);
+      h.style.transform = `translate3d(${(-nx * 22 * d).toFixed(1)}px, ${(-ny * 16 * d).toFixed(1)}px, 0)`;
+    });
+    hiveRAF = null;
+  });
+});
+hiveSection.addEventListener('mouseleave', () => {
+  hexes.forEach(h => { h.style.transform = 'translate3d(0,0,0)'; });
+});
+
+// ── Hive lightbox ──
+const hexLightbox = document.getElementById('hex-lightbox');
+const lbImg = hexLightbox.querySelector('img');
+const lbCaption = hexLightbox.querySelector('.lb-caption');
+document.querySelectorAll('.hex-inner').forEach(cell => {
+  cell.addEventListener('click', () => {
+    lbImg.src = cell.querySelector('img').src;
+    lbCaption.innerHTML = cell.dataset.caption || '';
+    hexLightbox.classList.add('open');
+  });
+});
+hexLightbox.addEventListener('click', e => { if (e.target !== lbImg) hexLightbox.classList.remove('open'); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') hexLightbox.classList.remove('open'); });
 </script>
 </body>
 </html>
