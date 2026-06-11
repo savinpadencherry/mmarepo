@@ -226,12 +226,22 @@
         <div class="chip-grid" id="structureGrid"></div>
       </div>
 
+      <div class="config-group" id="group-sofa">
+        <div class="config-group-title">Sofa Style</div>
+        <div class="chip-grid" id="sofaStyleGrid"></div>
+      </div>
+
       <div class="config-group" id="group-desk">
         <div class="config-group-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="3"/><path d="M5 10v8M19 10v8"/></svg>
           Desk Model
         </div>
         <div class="model-grid" id="deskModelGrid"></div>
+      </div>
+
+      <div class="config-group" id="group-table">
+        <div class="config-group-title">Table Legs</div>
+        <div class="chip-grid" id="tableStyleGrid"></div>
       </div>
 
       <div class="config-group" id="group-wood">
@@ -292,6 +302,8 @@
       chairModel: 'task',
       chairBase: 'auto',
       deskModel: 'linear',
+      sofaStyle: 'modular',
+      tableStyle: 'auto',
       upholstery: 'charcoal',
       structure: 'matte-black',
       wood: 'ash-oak',
@@ -322,6 +334,18 @@
       { id:'linear', name:'Linea', sub:'Panel Legs' },
       { id:'trestle', name:'Atelier', sub:'A-Frame Steel' },
       { id:'executive', name:'Stanza', sub:'Twin Pedestal' }
+    ];
+
+    var sofaStyles = [
+      { id:'modular', name:'Diablo Modular' },
+      { id:'bench', name:'Diablo Bench' }
+    ];
+
+    // table legs; 'auto' uses each table's signature design
+    var tableStyles = [
+      { id:'auto', name:'Signature' },
+      { id:'panel', name:'Wood Panel' },
+      { id:'column', name:'Steel Column' }
     ];
 
     // chair base/leg options; 'auto' uses each model's signature base
@@ -517,6 +541,9 @@
         }
       }
       var tex = new THREE.CanvasTexture(c);
+      // canvas colours are authored in sRGB; without this the renderer reads
+      // them as linear and dark fabrics wash out to pale grey
+      tex.encoding = THREE.sRGBEncoding;
       tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
       textureCache[key] = tex;
       return tex;
@@ -904,12 +931,20 @@
       var wood = getWoodMat(), metal = getMetalMat();
       var top = new THREE.Mesh(roundedBoxGeo(3.2, 1.2, 0.06, 0.05, 0.01), wood);
       top.position.y = 0.73; top.castShadow = true; top.receiveShadow = true; g.add(top);
+      var btStyle = state.tableStyle === 'auto' ? 'panel' : state.tableStyle;
       for (var i = 0; i < 2; i++) {
         var x = i === 0 ? -1.25 : 1.25;
-        var slab = new THREE.Mesh(roundedBoxGeo(0.12, 0.9, 0.68, 0.015, 0.005), wood);
-        slab.position.set(x, 0.35, 0); slab.castShadow = true; g.add(slab);
-        var plinth = new THREE.Mesh(roundedBoxGeo(0.2, 0.98, 0.03, 0.01, 0.004), metal);
-        plinth.position.set(x, 0.015, 0); g.add(plinth);
+        if (btStyle === 'column') {
+          var bCol = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.11, 0.66, 28), metal);
+          bCol.position.set(x, 0.36, 0); bCol.castShadow = true; g.add(bCol);
+          var bFoot = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.33, 0.03, 32), metal);
+          bFoot.position.set(x, 0.015, 0); bFoot.castShadow = true; g.add(bFoot);
+        } else {
+          var slab = new THREE.Mesh(roundedBoxGeo(0.12, 0.9, 0.68, 0.015, 0.005), wood);
+          slab.position.set(x, 0.35, 0); slab.castShadow = true; g.add(slab);
+          var plinth = new THREE.Mesh(roundedBoxGeo(0.2, 0.98, 0.03, 0.01, 0.004), metal);
+          plinth.position.set(x, 0.015, 0); g.add(plinth);
+        }
       }
       var beam = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.05, 0.1), metal);
       beam.position.y = 0.64; g.add(beam);
@@ -926,6 +961,26 @@
     function buildSofa() {
       var g = new THREE.Group();
       var metal = getMetalMat(), uph = getUpholsteryMat(), shell = darkShellMat();
+      if (state.sofaStyle === 'bench') {
+        // Diablo Bench: armless low-back bench on slim steel legs
+        var bSeat = new THREE.Mesh(roundedBoxGeo(1.6, 0.6, 0.13, 0.04, 0.02), uph);
+        bSeat.position.y = 0.42; bSeat.castShadow = true; bSeat.receiveShadow = true; g.add(bSeat);
+        var bShell = new THREE.Mesh(roundedBoxGeo(1.64, 0.62, 0.035, 0.03, 0.005), shell);
+        bShell.position.y = 0.34; g.add(bShell);
+        var bBack = new THREE.Mesh(roundedBoxGeo(1.56, 0.1, 0.4, 0.03, 0.016), uph);
+        bBack.position.set(0, 0.66, -0.26); bBack.rotation.x = -0.08; bBack.castShadow = true; g.add(bBack);
+        for (var bi = 0; bi < 4; bi++) {
+          var bx = (bi % 2 === 0 ? -1 : 1) * 0.7, bz = (bi < 2 ? -1 : 1) * 0.22;
+          var bLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.011, 0.33, 10), metal);
+          bLeg.position.set(bx, 0.165, bz); bLeg.castShadow = true; g.add(bLeg);
+        }
+        var bRailGeo = new THREE.CylinderGeometry(0.008, 0.008, 1.4, 10);
+        bRailGeo.rotateZ(Math.PI / 2);
+        var bRail = new THREE.Mesh(bRailGeo, metal);
+        bRail.position.set(0, 0.1, -0.22); g.add(bRail);
+        var bRail2 = bRail.clone(); bRail2.position.z = 0.22; g.add(bRail2);
+        return g;
+      }
       var frame = new THREE.Mesh(roundedBoxGeo(2.1, 0.85, 0.12, 0.04, 0.01), shell);
       frame.position.y = 0.26; frame.castShadow = true; g.add(frame);
       for (var i = 0; i < 4; i++) {
@@ -976,10 +1031,23 @@
       top.position.y = 0.74; top.castShadow = true; top.receiveShadow = true; g.add(top);
       var edge = new THREE.Mesh(new THREE.TorusGeometry(0.515 * s, 0.011, 8, 48), metal);
       edge.rotation.x = Math.PI / 2; edge.position.y = 0.72; g.add(edge);
-      var col = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 0.7, 24), metal);
-      col.position.y = 0.37; col.castShadow = true; g.add(col);
-      var foot = new THREE.Mesh(new THREE.CylinderGeometry(0.3 * s, 0.32 * s, 0.025, 36), metal);
-      foot.position.y = 0.013; g.add(foot);
+      var ctStyle = state.tableStyle === 'auto' ? 'column' : state.tableStyle;
+      if (ctStyle === 'panel') {
+        // four splayed wooden legs
+        for (var li = 0; li < 4; li++) {
+          var la = (li / 4) * Math.PI * 2 + Math.PI / 4;
+          var leg = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.016, 0.73, 12), wood);
+          leg.position.set(Math.sin(la) * 0.34 * s, 0.365, Math.cos(la) * 0.34 * s);
+          leg.rotation.x = Math.cos(la) * 0.1;
+          leg.rotation.z = -Math.sin(la) * 0.1;
+          leg.castShadow = true; g.add(leg);
+        }
+      } else {
+        var col = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 0.7, 24), metal);
+        col.position.y = 0.37; col.castShadow = true; g.add(col);
+        var foot = new THREE.Mesh(new THREE.CylinderGeometry(0.3 * s, 0.32 * s, 0.025, 36), metal);
+        foot.position.y = 0.013; g.add(foot);
+      }
       return g;
     }
 
@@ -1539,11 +1607,11 @@
         flashGroups(['group-desk', 'group-wood']);
         showToast('Customising <em>desks</em> — choose a model and finish. Every desk updates.');
       } else if (cat === 'table') {
-        flashGroups(['group-wood', 'group-structure']);
-        showToast('Customising the <em>conference table</em> — change the wood &amp; metal finish.');
+        flashGroups(['group-table', 'group-wood', 'group-structure']);
+        showToast('Customising <em>tables</em> — swap the legs, wood &amp; metal finish.');
       } else if (cat === 'sofa') {
-        flashGroups(['group-upholstery', 'group-structure']);
-        showToast('Customising the <em>sofa</em> — it follows your upholstery colour.');
+        flashGroups(['group-sofa', 'group-upholstery', 'group-structure']);
+        showToast('Customising <em>sofas</em> — pick a style; they follow your upholstery colour.');
       } else {
         flashGroups(['group-wall', 'group-floor']);
         showToast('Room detail — try <em>wall colours</em> and <em>flooring</em> below.');
@@ -1647,6 +1715,20 @@
         '</div>';
       }).join('');
 
+      document.getElementById('sofaStyleGrid').innerHTML = sofaStyles.map(function(s) {
+        return '<div class="chip-item' + (state.sofaStyle === s.id ? ' active' : '') + '" onclick="selectSofaStyle(\'' + s.id + '\')">' +
+          '<div class="chip-swatch sq" style="display:flex;align-items:center;justify-content:center;background:rgba(26,26,24,0.05);color:var(--text-secondary);">' + sofaStyleIcon(s.id) + '</div>' +
+          '<div class="chip-name">' + s.name + '</div>' +
+        '</div>';
+      }).join('');
+
+      document.getElementById('tableStyleGrid').innerHTML = tableStyles.map(function(t) {
+        return '<div class="chip-item' + (state.tableStyle === t.id ? ' active' : '') + '" onclick="selectTableStyle(\'' + t.id + '\')">' +
+          '<div class="chip-swatch sq" style="display:flex;align-items:center;justify-content:center;background:rgba(26,26,24,0.05);color:var(--text-secondary);">' + tableStyleIcon(t.id) + '</div>' +
+          '<div class="chip-name">' + t.name + '</div>' +
+        '</div>';
+      }).join('');
+
       document.getElementById('wallGrid').innerHTML = wallColours.map(function(w) {
         return '<div class="chip-item' + (state.wall === w.id ? ' active' : '') + '" onclick="selectWall(\'' + w.id + '\')">' +
           '<div class="chip-swatch sq" style="background-color:' + w.value + ';"></div>' +
@@ -1675,6 +1757,19 @@
       if (id === 'executive') return '<svg ' + common + '><rect x="8" y="2.5" width="8" height="11" rx="2.4"/><path d="M8 14h8"/><path d="M12 15v4"/><path d="M8 22l4-3 4 3"/><path d="M6 9v4M18 9v4"/></svg>';
       if (id === 'sled') return '<svg ' + common + '><path d="M8 5h8v6H8z"/><path d="M7 13h10"/><path d="M7 13v6h10v-6"/><path d="M5 19h14"/></svg>';
       return '<svg ' + common + '><path d="M6 11c0-4 2.7-7 6-7s6 3 6 7c0 2.4-1.2 4-3 5H9c-1.8-1-3-2.6-3-5z"/><path d="M12 17v3"/><path d="M8 21h8"/></svg>';
+    }
+
+    function sofaStyleIcon(id) {
+      var common = 'width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"';
+      if (id === 'bench') return '<svg ' + common + '><rect x="4" y="11" width="16" height="4" rx="1.4"/><path d="M6 15v4M18 15v4"/><path d="M5 8h14"/></svg>';
+      return '<svg ' + common + '><path d="M4 9a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3h-2a2 2 0 0 0-2 2v1H8v-1a2 2 0 0 0-2-2H4z"/><path d="M4 12v5h2M20 12v5h-2"/></svg>';
+    }
+
+    function tableStyleIcon(id) {
+      var common = 'width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"';
+      if (id === 'panel') return '<svg ' + common + '><path d="M3 7h18"/><rect x="6" y="7" width="2.4" height="12"/><rect x="15.6" y="7" width="2.4" height="12"/></svg>';
+      if (id === 'column') return '<svg ' + common + '><path d="M3 7h18"/><path d="M12 7v9"/><ellipse cx="12" cy="18" rx="5" ry="1.6"/></svg>';
+      return '<svg ' + common + '><path d="M12 3l2.2 4.8L19 9l-4.8 2.2L12 16l-2.2-4.8L5 9l4.8-1.2z"/></svg>';
     }
 
     function chairBaseIcon(id) {
@@ -1722,6 +1817,24 @@
       showToast(id === 'auto'
         ? 'Chairs back on their <em>signature</em> bases.'
         : 'All chairs switched to <em>' + b.name + '</em> legs.');
+    }
+    function selectSofaStyle(id) {
+      state.sofaStyle = id;
+      renderControls();
+      rebuildCategory(['sofa'], true);
+      playSound('success');
+      var s = sofaStyles.find(function(x) { return x.id === id; });
+      showToast('Sofas switched to <em>' + s.name + '</em>');
+    }
+    function selectTableStyle(id) {
+      state.tableStyle = id;
+      renderControls();
+      rebuildCategory(['table'], true);
+      playSound('success');
+      var t = tableStyles.find(function(x) { return x.id === id; });
+      showToast(id === 'auto'
+        ? 'Tables back on their <em>signature</em> legs.'
+        : 'All tables switched to <em>' + t.name + '</em> legs.');
     }
     function selectDeskModel(id) {
       state.deskModel = id;
@@ -1773,6 +1886,7 @@
     function shareConfig() {
       var url = window.location.href.split('?')[0] +
         '?preset=' + state.preset + '&chair=' + state.chairModel + '&chairbase=' + state.chairBase + '&desk=' + state.deskModel +
+        '&sofa=' + state.sofaStyle + '&table=' + state.tableStyle +
         '&upholstery=' + state.upholstery + '&structure=' + state.structure + '&wood=' + state.wood +
         '&wall=' + state.wall + '&floor=' + state.floor + '&light=' + state.light;
       navigator.clipboard.writeText(url).then(function() {
@@ -1827,7 +1941,7 @@
     var studioNames = { 'chair-executive':'Meuse Executive', 'chair-conference':'Meuse Conference', 'sofa-modular':'Diablo Modular Sofa', 'sofa-bench':'Diablo Bench', 'table-boardroom':'Loire Boardroom', 'table-round':'Loire Round', 'lounge-chair':'Flamingo Lounge', 'storage-wall':'Marne Storage', 'table-reception':'Seine Reception', 'table-standing':'Garonne Standing' };
     (function() {
       var params = new URLSearchParams(window.location.search);
-      var map = { preset:'preset', chair:'chairModel', chairbase:'chairBase', desk:'deskModel', upholstery:'upholstery', structure:'structure', wood:'wood', wall:'wall', floor:'floor', light:'light' };
+      var map = { preset:'preset', chair:'chairModel', chairbase:'chairBase', desk:'deskModel', sofa:'sofaStyle', table:'tableStyle', upholstery:'upholstery', structure:'structure', wood:'wood', wall:'wall', floor:'floor', light:'light' };
       Object.keys(map).forEach(function(k) {
         if (params.get(k)) state[map[k]] = params.get(k);
       });
@@ -1843,6 +1957,11 @@
             // carry the studio's base/leg choice onto the office chairs
             var baseMap = { 'D9':'castor', 'L14':'legs', 'S7':'sled', 'L30':'disc', 'R13':'disc' };
             if (chairMap[sc.model] && sc.base && baseMap[sc.base]) state.chairBase = baseMap[sc.base];
+            // sofa and table products map onto their office counterparts
+            if (sc.model === 'sofa-modular') state.sofaStyle = 'modular';
+            else if (sc.model === 'sofa-bench') state.sofaStyle = 'bench';
+            else if (sc.model === 'table-boardroom') state.tableStyle = 'panel';
+            else if (sc.model === 'table-round' || sc.model === 'table-standing') state.tableStyle = 'column';
             if (!params.get('preset') && presetMap[sc.model]) state.preset = presetMap[sc.model];
             if (sc.upholstery) state.upholstery = sc.upholstery;
             if (sc.structure) state.structure = sc.structure;

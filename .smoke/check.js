@@ -62,10 +62,30 @@ chairBases.forEach(function(b) { selectChairBase(b.id); });
   chairBases.forEach(function(b) { selectChairBase(b.id); }); // every model x base combo
 });
 ['linear','trestle','executive'].forEach(selectDeskModel);
+sofaStyles.forEach(function(s){ selectSofaStyle(s.id); });
+tableStyles.forEach(function(t){ selectTableStyle(t.id); });
 colourSwatches.forEach(function(c){ selectUpholstery(c.id); });
 structureFinishes.forEach(function(s){ selectStructure(s.id); });
 shareConfig();
-console.log('OFFICE RUNTIME OK (' + presets.length + ' presets, ' + chairBases.length + ' bases)');
+console.log('OFFICE RUNTIME OK (' + presets.length + ' presets, ' + chairBases.length + ' bases, ' + sofaStyles.length + ' sofas, ' + tableStyles.length + ' table styles)');
+`;
+  new Function('window','document','navigator','localStorage','THREE','gsap','requestAnimationFrame','setTimeout','clearTimeout', src + driver)(
+    win, makeDoc(), { clipboard: { writeText(){ return Promise.resolve(); } } },
+    { getItem(k){ return store[k]||null; }, setItem(k,v){ store[k]=v; } },
+    anything, anything, ()=>0, ()=>0, ()=>{});
+}
+
+// ── 3b. office designer: sofa/table products import onto their counterparts ──
+{
+  const html = fs.readFileSync(path.join(root, 'office-designer.html'), 'utf8');
+  const src = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m=>m[1]).filter(s=>s.trim())[0];
+  const store = { mmaStudioConfig: JSON.stringify({ model:'sofa-bench', base:'L32', upholstery:'terracotta', wood:'medium-walnut', structure:'bronze' }) };
+  const win = { innerWidth: 1400, innerHeight: 900, location: { href: 'http://x/?fromStudio=1', search: '?fromStudio=1' }, addEventListener(){} };
+  const driver = `
+;if (state.sofaStyle !== 'bench') throw new Error('sofa style import broken: ' + state.sofaStyle);
+if (state.preset !== 'reception') throw new Error('sofa preset routing broken: ' + state.preset);
+if (state.upholstery !== 'terracotta') throw new Error('sofa upholstery import broken');
+console.log('SOFA IMPORT OK (bench -> reception)');
 `;
   new Function('window','document','navigator','localStorage','THREE','gsap','requestAnimationFrame','setTimeout','clearTimeout', src + driver)(
     win, makeDoc(), { clipboard: { writeText(){ return Promise.resolve(); } } },

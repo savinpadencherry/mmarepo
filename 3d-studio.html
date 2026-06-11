@@ -383,7 +383,7 @@
     ];
 
     // top surface height of each base — bodies sit on this so every combination aligns
-    var baseTopY = { D9:0.63, L14:0.42, L21:0.72, L30:0.69, L31:0.38, L32:0.32, R13:0.375, R7:0.63, S7:0.42 };
+    var baseTopY = { D9:0.63, L14:0.44, L21:0.72, L30:0.69, L31:0.38, L32:0.32, R13:0.375, R7:0.63, S7:0.44 };
 
     var colourSwatches = [
       { id:'charcoal', name:'Charcoal', value:'#1C1C19', fabric:false },
@@ -564,6 +564,9 @@
         }
       }
       var tex = new THREE.CanvasTexture(c);
+      // canvas colours are authored in sRGB; without this the renderer reads
+      // them as linear and dark fabrics wash out to pale grey
+      tex.encoding = THREE.sRGBEncoding;
       tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
       if (type === 'fabric') tex.repeat.set(8,8);
       else if (type === 'leather') tex.repeat.set(4,4);
@@ -725,11 +728,11 @@
       var sg = new THREE.Group();
 
       // Enhanced ambient with warmer tone
-      var ambient = new THREE.AmbientLight(0xFFF8F0, 0.6);
+      var ambient = new THREE.AmbientLight(0xFFF8F0, 0.5);
       sg.add(ambient);
 
       // Main key light - stronger and more focused
-      var key = new THREE.DirectionalLight(0xFFF5E8, 1.8);
+      var key = new THREE.DirectionalLight(0xFFF5E8, 1.4);
       key.position.set(5, 8, 4);
       key.castShadow = true;
       key.shadow.mapSize.width = 4096; // Higher resolution shadows
@@ -745,26 +748,26 @@
       sg.add(key);
 
       // Enhanced fill light with cooler tone
-      var fill = new THREE.DirectionalLight(0xE8F0FF, 0.6);
+      var fill = new THREE.DirectionalLight(0xE8F0FF, 0.45);
       fill.position.set(-5, 4, -3);
       sg.add(fill);
 
-      // Stronger rim light for definition
-      var rim = new THREE.DirectionalLight(0xFFFFFF, 1.0);
+      // Rim light for definition
+      var rim = new THREE.DirectionalLight(0xFFFFFF, 0.7);
       rim.position.set(0, 3, -6);
       sg.add(rim);
 
       // Additional accent lights for premium look
-      var accentLeft = new THREE.SpotLight(0xFFE5CC, 0.8, 10, Math.PI / 6, 0.5, 2);
+      var accentLeft = new THREE.SpotLight(0xFFE5CC, 0.45, 10, Math.PI / 6, 0.5, 2);
       accentLeft.position.set(-3, 5, 2);
       sg.add(accentLeft);
 
-      var accentRight = new THREE.SpotLight(0xCCE5FF, 0.6, 10, Math.PI / 6, 0.5, 2);
+      var accentRight = new THREE.SpotLight(0xCCE5FF, 0.35, 10, Math.PI / 6, 0.5, 2);
       accentRight.position.set(3, 4, -2);
       sg.add(accentRight);
 
-      // Enhanced hemisphere light for ambient occlusion effect
-      var bottomFill = new THREE.HemisphereLight(0xFFF8F0, 0xD5CFC4, 0.4);
+      // Hemisphere light for soft ambient bounce
+      var bottomFill = new THREE.HemisphereLight(0xFFF8F0, 0xD5CFC4, 0.3);
       sg.add(bottomFill);
 
       scene.add(sg);
@@ -877,7 +880,7 @@
         m.roughness = 0.02;
         m.clearcoat = 1.0;
         m.clearcoatRoughness = 0.01;
-        m.envMapIntensity = 2.2;
+        m.envMapIntensity = 1.6;
       }
       return m;
     }
@@ -975,31 +978,30 @@
         g.add(sleeveRing);
 
       } else if (code === 'L14') {
-        var barGeo = new THREE.CylinderGeometry(0.018, 0.018, 0.72, 16);
-        barGeo.rotateX(Math.PI / 2);
-        var barF = new THREE.Mesh(barGeo, metalMat);
-        barF.position.set(-0.22, 0.018, 0); barF.castShadow = true;
-        g.add(barF);
-        var barB = barF.clone();
-        barB.position.set(0.22, 0.018, 0);
-        g.add(barB);
-        for (var j = 0; j < 2; j++) {
-          var xc = j === 0 ? -0.22 : 0.22;
-          var legGeo = new THREE.CylinderGeometry(0.018, 0.018, 0.4, 16);
-          var legV = new THREE.Mesh(legGeo, metalMat);
-          legV.position.set(xc, 0.22, -0.32); legV.castShadow = true;
+        // four splayed legs with an H-stretcher — a proper visitor-chair frame
+        for (var j = 0; j < 4; j++) {
+          var xc = (j % 2 === 0 ? -1 : 1) * 0.2;
+          var zc = (j < 2 ? -1 : 1) * 0.19;
+          var legV = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.017, 0.45, 16), metalMat);
+          legV.position.set(xc, 0.225, zc);
+          legV.rotation.x = (j < 2 ? -1 : 1) * -0.07;
+          legV.rotation.z = (j % 2 === 0 ? -1 : 1) * 0.07;
+          legV.castShadow = true;
           g.add(legV);
-          var foot = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.028, 0.018, 16), footMat);
-          foot.position.set(xc, 0.01, -0.32);
+          var foot = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.022, 0.014, 16), footMat);
+          foot.position.set(xc * 1.08, 0.007, zc * 1.08);
           g.add(foot);
-          var joint = new THREE.Mesh(new THREE.SphereGeometry(0.02, 12, 12), metalMat);
-          joint.position.set(xc, 0.02, -0.32);
-          g.add(joint);
         }
-        var crossBar = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.44, 12), metalMat);
-        crossBar.rotation.z = Math.PI / 2;
-        crossBar.position.set(0, 0.38, -0.32);
-        g.add(crossBar);
+        var sideGeo = new THREE.CylinderGeometry(0.009, 0.009, 0.36, 12);
+        sideGeo.rotateX(Math.PI / 2);
+        var sideL = new THREE.Mesh(sideGeo, metalMat);
+        sideL.position.set(-0.2, 0.16, 0); g.add(sideL);
+        var sideR = sideL.clone();
+        sideR.position.x = 0.2; g.add(sideR);
+        var hCross = new THREE.Mesh(new THREE.CylinderGeometry(0.009, 0.009, 0.4, 12), metalMat);
+        hCross.rotation.z = Math.PI / 2;
+        hCross.position.set(0, 0.16, 0);
+        g.add(hCross);
 
       } else if (code === 'L21') {
         for (var ui = 0; ui < 4; ui++) {
@@ -1112,32 +1114,33 @@
         g.add(rCol);
 
       } else if (code === 'S7') {
-        var sBarGeo = new THREE.CylinderGeometry(0.018, 0.018, 0.65, 16);
-        sBarGeo.rotateX(Math.PI / 2);
-        var sBar1 = new THREE.Mesh(sBarGeo, metalMat);
-        sBar1.position.set(-0.18, 0.018, 0); sBar1.castShadow = true;
-        g.add(sBar1);
-        var sBar2 = sBar1.clone();
-        sBar2.position.x = 0.18;
-        g.add(sBar2);
-        var sCrossGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.4, 12);
-        sCrossGeo.rotateZ(Math.PI / 2);
-        var sCross = new THREE.Mesh(sCrossGeo, metalMat);
-        sCross.position.set(0, 0.3, 0); sCross.castShadow = true;
-        g.add(sCross);
+        // cantilever sled: floor runners, front risers, top bars carrying the seat
         for (var si = 0; si < 2; si++) {
-          var sxc = si === 0 ? -0.18 : 0.18;
-          var sLegGeo = new THREE.CylinderGeometry(0.018, 0.018, 0.4, 16);
-          var sLeg = new THREE.Mesh(sLegGeo, metalMat);
-          sLeg.position.set(sxc, 0.22, -0.28); sLeg.castShadow = true;
-          g.add(sLeg);
-          var sFoot = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.025, 0.015, 16), footMat);
-          sFoot.position.set(sxc, 0.01, -0.28);
-          g.add(sFoot);
-          var sJoint = new THREE.Mesh(new THREE.SphereGeometry(0.02, 12, 12), metalMat);
-          sJoint.position.set(sxc, 0.02, -0.28);
-          g.add(sJoint);
+          var sxc = si === 0 ? -0.19 : 0.19;
+          var runGeo = new THREE.CylinderGeometry(0.015, 0.015, 0.52, 16);
+          runGeo.rotateX(Math.PI / 2);
+          var runner = new THREE.Mesh(runGeo, metalMat);
+          runner.position.set(sxc, 0.016, -0.02); runner.castShadow = true;
+          g.add(runner);
+          var riser = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.43, 16), metalMat);
+          riser.position.set(sxc, 0.23, 0.22); riser.castShadow = true;
+          g.add(riser);
+          var bendF = new THREE.Mesh(new THREE.SphereGeometry(0.017, 12, 12), metalMat);
+          bendF.position.set(sxc, 0.016, 0.22); g.add(bendF);
+          var bendT = new THREE.Mesh(new THREE.SphereGeometry(0.017, 12, 12), metalMat);
+          bendT.position.set(sxc, 0.44, 0.22); g.add(bendT);
+          var topBarGeo = new THREE.CylinderGeometry(0.015, 0.015, 0.36, 16);
+          topBarGeo.rotateX(Math.PI / 2);
+          var topBar = new THREE.Mesh(topBarGeo, metalMat);
+          topBar.position.set(sxc, 0.44, 0.04); topBar.castShadow = true;
+          g.add(topBar);
+          var endCap = new THREE.Mesh(new THREE.SphereGeometry(0.016, 12, 12), metalMat);
+          endCap.position.set(sxc, 0.44, -0.14); g.add(endCap);
         }
+        var sCross = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.011, 0.38, 12), metalMat);
+        sCross.rotation.z = Math.PI / 2;
+        sCross.position.set(0, 0.42, 0.21); sCross.castShadow = true;
+        g.add(sCross);
       }
 
       return g;
@@ -1281,7 +1284,7 @@
         parts.push({ mesh: cUpR, offset: new THREE.Vector3(0.05, 0.2, -0.2) });
 
         for (var cai = 0; cai < 2; cai++) {
-          var cax = cai === 0 ? -0.255 : 0.255;
+          var cax = cai === 0 ? -0.235 : 0.235;
           var cArm = new THREE.Group();
           var caPost = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.012, 0.2, 12), metalMat);
           caPost.position.set(0, -0.1, 0.07); cArm.add(caPost);
@@ -1294,17 +1297,52 @@
         }
 
       } else if (mid === 'sofa-modular') {
-        var sTopY = baseTopY[state.base] || 0.38;
-        var sBaseG = buildBase(state.base, metalMat);
+        // base is built into the sofa at full width so it always connects
+        var sBaseG = new THREE.Group();
+        if (state.base === 'L31') {
+          // wide sled: floor runners with risers up to the frame
+          var runGeoS = new THREE.CylinderGeometry(0.016, 0.016, 1.8, 16);
+          runGeoS.rotateZ(Math.PI / 2);
+          for (var sz = 0; sz < 2; sz++) {
+            var zPos = (sz === 0 ? -1 : 1) * 0.3;
+            var runS = new THREE.Mesh(runGeoS.clone(), metalMat);
+            runS.position.set(0, 0.016, zPos); runS.castShadow = true;
+            sBaseG.add(runS);
+            for (var sr = 0; sr < 2; sr++) {
+              var xPos = (sr === 0 ? -1 : 1) * 0.82;
+              var riserS = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.3, 14), metalMat);
+              riserS.position.set(xPos, 0.165, zPos); riserS.castShadow = true;
+              sBaseG.add(riserS);
+              var bendS = new THREE.Mesh(new THREE.SphereGeometry(0.018, 12, 12), metalMat);
+              bendS.position.set(xPos, 0.016, zPos);
+              sBaseG.add(bendS);
+            }
+          }
+        } else {
+          // low frame: four tapered legs with side rails
+          for (var sl = 0; sl < 4; sl++) {
+            var slx = (sl % 2 === 0 ? -1 : 1) * 0.82;
+            var slz = (sl < 2 ? -1 : 1) * 0.3;
+            var legS = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.012, 0.31, 14), metalMat);
+            legS.position.set(slx, 0.155, slz); legS.castShadow = true;
+            sBaseG.add(legS);
+            var tipS = new THREE.Mesh(new THREE.SphereGeometry(0.013, 10, 10), new THREE.MeshPhysicalMaterial({ color: 0xD4AF37, roughness: 0.1, metalness: 1, clearcoat: 0.9 }));
+            tipS.position.set(slx, 0.01, slz);
+            sBaseG.add(tipS);
+          }
+          var railGeoS = new THREE.CylinderGeometry(0.009, 0.009, 1.64, 12);
+          railGeoS.rotateZ(Math.PI / 2);
+          var railF = new THREE.Mesh(railGeoS, metalMat);
+          railF.position.set(0, 0.08, -0.3); sBaseG.add(railF);
+          var railB = railF.clone();
+          railB.position.z = 0.3; sBaseG.add(railB);
+        }
         parts.push({ mesh: sBaseG, offset: new THREE.Vector3(0, -0.15, 0) });
 
         var frameG = new THREE.Group();
         var frameBody = new THREE.Mesh(roundedBoxGeo(1.72, 0.78, 0.10, 0.04, 0.008), darkShell);
         frameBody.castShadow = true; frameG.add(frameBody);
-        var frameEdge = new THREE.Mesh(new THREE.TorusGeometry(0.02, 0.005, 8, 48), metalMat);
-        frameEdge.position.y = -0.05; frameEdge.rotation.x = Math.PI / 2;
-        frameG.add(frameEdge);
-        frameG.position.y = sTopY + 0.02;
+        frameG.position.y = 0.36;
         parts.push({ mesh: frameG, offset: new THREE.Vector3(0, -0.12, 0) });
 
         var cushionG = new THREE.Group();
@@ -1318,27 +1356,60 @@
           seamLine.position.set((ci - 1) * 0.55, 0.105, 0);
           cushionG.add(seamLine);
         }
-        cushionG.position.y = sTopY + 0.16;
+        cushionG.position.y = 0.5;
         parts.push({ mesh: cushionG, offset: new THREE.Vector3(0, 0.2, 0) });
 
         var backGroup = new THREE.Group();
         var backMain = new THREE.Mesh(roundedBoxGeo(1.64, 0.14, 0.44, 0.04, 0.022), topMat);
         backMain.castShadow = true; backGroup.add(backMain);
         addTufting(backGroup, 1.50, 0.38, 0.075, 3, 8);
-        backGroup.position.set(0, sTopY + 0.44, -0.36);
+        backGroup.position.set(0, 0.78, -0.36);
         parts.push({ mesh: backGroup, offset: new THREE.Vector3(0, 0.26, -0.25) });
 
         var armL = new THREE.Mesh(roundedBoxGeo(0.14, 0.68, 0.42, 0.04, 0.02), uphMat);
-        armL.castShadow = true; armL.position.set(-0.88, sTopY + 0.24, 0);
+        armL.castShadow = true; armL.position.set(-0.88, 0.58, 0);
         parts.push({ mesh: armL, offset: new THREE.Vector3(-0.2, 0.08, 0) });
 
         var armR = new THREE.Mesh(roundedBoxGeo(0.14, 0.68, 0.42, 0.04, 0.02), uphMat);
-        armR.castShadow = true; armR.position.set(0.88, sTopY + 0.24, 0);
+        armR.castShadow = true; armR.position.set(0.88, 0.58, 0);
         parts.push({ mesh: armR, offset: new THREE.Vector3(0.2, 0.08, 0) });
 
       } else if (mid === 'sofa-bench') {
-        var bTopY = baseTopY[state.base] || 0.32;
-        var bBaseG = buildBase(state.base, metalMat);
+        // base integrated at bench width so seat and legs always connect
+        var bBaseG = new THREE.Group();
+        if (state.base === 'L31') {
+          var bRunGeo = new THREE.CylinderGeometry(0.014, 0.014, 1.1, 14);
+          bRunGeo.rotateZ(Math.PI / 2);
+          for (var bz = 0; bz < 2; bz++) {
+            var bzPos = (bz === 0 ? -1 : 1) * 0.16;
+            var bRun = new THREE.Mesh(bRunGeo.clone(), metalMat);
+            bRun.position.set(0, 0.014, bzPos); bRun.castShadow = true;
+            bBaseG.add(bRun);
+            for (var br = 0; br < 2; br++) {
+              var bxPos = (br === 0 ? -1 : 1) * 0.5;
+              var bRiser = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.37, 12), metalMat);
+              bRiser.position.set(bxPos, 0.2, bzPos); bRiser.castShadow = true;
+              bBaseG.add(bRiser);
+              var bBend = new THREE.Mesh(new THREE.SphereGeometry(0.016, 10, 10), metalMat);
+              bBend.position.set(bxPos, 0.014, bzPos);
+              bBaseG.add(bBend);
+            }
+          }
+        } else {
+          for (var bl = 0; bl < 4; bl++) {
+            var blx = (bl % 2 === 0 ? -1 : 1) * 0.5;
+            var blz = (bl < 2 ? -1 : 1) * 0.16;
+            var bLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.011, 0.38, 12), metalMat);
+            bLeg.position.set(blx, 0.19, blz); bLeg.castShadow = true;
+            bBaseG.add(bLeg);
+          }
+          var bRailGeo = new THREE.CylinderGeometry(0.008, 0.008, 1.0, 10);
+          bRailGeo.rotateZ(Math.PI / 2);
+          var bRailF = new THREE.Mesh(bRailGeo, metalMat);
+          bRailF.position.set(0, 0.09, -0.16); bBaseG.add(bRailF);
+          var bRailB = bRailF.clone();
+          bRailB.position.z = 0.16; bBaseG.add(bRailB);
+        }
         parts.push({ mesh: bBaseG, offset: new THREE.Vector3(0, -0.12, 0) });
 
         var bSeatGroup = new THREE.Group();
@@ -1346,14 +1417,14 @@
         bSeatTop.castShadow = true; bSeatTop.receiveShadow = true;
         bSeatGroup.add(bSeatTop);
         addStitching(bSeatGroup, 1.14, 0.40, 0.054);
-        var bSeatShell = new THREE.Mesh(roundedBoxGeo(1.22, 0.46, 0.03, 0.02, 0.004), metalMat);
-        bSeatShell.position.y = -0.065; bSeatGroup.add(bSeatShell);
-        bSeatGroup.position.y = bTopY + 0.16;
+        var bSeatShell = new THREE.Mesh(roundedBoxGeo(1.22, 0.46, 0.03, 0.02, 0.004), darkShell);
+        bSeatShell.position.y = -0.06; bSeatGroup.add(bSeatShell);
+        bSeatGroup.position.y = 0.43;
         parts.push({ mesh: bSeatGroup, offset: new THREE.Vector3(0, 0.15, 0) });
 
         var bBack = new THREE.Mesh(roundedBoxGeo(1.18, 0.08, 0.32, 0.025, 0.016), uphMat);
         bBack.castShadow = true;
-        bBack.position.set(0, bTopY + 0.36, -0.22);
+        bBack.position.set(0, 0.63, -0.22);
         parts.push({ mesh: bBack, offset: new THREE.Vector3(0, 0.18, -0.15) });
 
       } else if (mid === 'table-boardroom') {
@@ -1483,6 +1554,11 @@
         parts.push({ mesh: backCush, offset: new THREE.Vector3(0, 0.25, -0.2) });
 
       } else if (mid === 'storage-wall') {
+        // recessed plinth grounds the cabinet on the floor
+        var plinth = new THREE.Mesh(roundedBoxGeo(1.32, 0.32, 0.08, 0.01, 0.004), darkShell);
+        plinth.position.y = 0.045; plinth.castShadow = true;
+        parts.push({ mesh: plinth, offset: new THREE.Vector3(0, -0.12, 0) });
+
         var cabinetG = new THREE.Group();
         var cabBody = new THREE.Mesh(roundedBoxGeo(1.4, 0.38, 1.2, 0.015, 0.004), woodMat);
         cabBody.castShadow = true; cabBody.receiveShadow = true;
@@ -1495,33 +1571,33 @@
         divider.position.x = 0.34; cabinetG.add(divider);
         var backPanel = new THREE.Mesh(new THREE.BoxGeometry(1.38, 1.18, 0.008), darkShell);
         backPanel.position.z = -0.186; cabinetG.add(backPanel);
-        cabinetG.position.y = 1.08;
+        cabinetG.position.y = 0.69;
         parts.push({ mesh: cabinetG, offset: new THREE.Vector3(0, 0.35, 0) });
 
         var topShelf = new THREE.Mesh(roundedBoxGeo(1.5, 0.4, 0.04, 0.01, 0.006), woodMat);
-        topShelf.position.y = 1.72; topShelf.castShadow = true;
+        topShelf.position.y = 1.31; topShelf.castShadow = true;
         parts.push({ mesh: topShelf, offset: new THREE.Vector3(0, 0.42, 0) });
 
         var handleGeo = new THREE.CylinderGeometry(0.006, 0.006, 0.12, 12);
         handleGeo.rotateZ(Math.PI / 2);
         var handle1 = new THREE.Mesh(handleGeo, metalMat);
-        handle1.position.set(-0.34, 0.95, 0.2); handle1.castShadow = true;
+        handle1.position.set(-0.34, 0.56, 0.2); handle1.castShadow = true;
         parts.push({ mesh: handle1, offset: new THREE.Vector3(0, 0.15, 0.1) });
         var handle1a = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.03, 12), metalMat);
-        handle1a.position.set(-0.4, 0.95, 0.19); handle1a.rotation.x = Math.PI / 2;
+        handle1a.position.set(-0.4, 0.56, 0.19); handle1a.rotation.x = Math.PI / 2;
         parts.push({ mesh: handle1a, offset: new THREE.Vector3(0, 0.15, 0.08) });
         var handle1b = handle1a.clone();
-        handle1b.position.set(-0.28, 0.95, 0.19);
+        handle1b.position.set(-0.28, 0.56, 0.19);
         parts.push({ mesh: handle1b, offset: new THREE.Vector3(0, 0.15, 0.08) });
 
         var handle2 = new THREE.Mesh(handleGeo.clone(), metalMat);
-        handle2.position.set(0.65, 0.95, 0.2); handle2.castShadow = true;
+        handle2.position.set(0.65, 0.56, 0.2); handle2.castShadow = true;
         parts.push({ mesh: handle2, offset: new THREE.Vector3(0, 0.15, 0.1) });
         var handle2a = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.03, 12), metalMat);
-        handle2a.position.set(0.59, 0.95, 0.19); handle2a.rotation.x = Math.PI / 2;
+        handle2a.position.set(0.59, 0.56, 0.19); handle2a.rotation.x = Math.PI / 2;
         parts.push({ mesh: handle2a, offset: new THREE.Vector3(0, 0.15, 0.08) });
         var handle2b = handle2a.clone();
-        handle2b.position.set(0.71, 0.95, 0.19);
+        handle2b.position.set(0.71, 0.56, 0.19);
         parts.push({ mesh: handle2b, offset: new THREE.Vector3(0, 0.15, 0.08) });
 
       } else if (mid === 'table-reception') {
