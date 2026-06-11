@@ -188,7 +188,7 @@
     <div class="left-footer">
       <div class="hint-line">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-        <span><strong style="font-weight:500;color:var(--text-secondary);">Click any chair or desk</strong> in the room to customise it. Every change updates the whole office instantly.</span>
+        <span><strong style="font-weight:500;color:var(--text-secondary);">Click any chair, desk, table, sofa or storage piece</strong> in the room to customise it. Every change updates the whole office instantly.</span>
       </div>
     </div>
   </div>
@@ -242,6 +242,14 @@
       <div class="config-group" id="group-table">
         <div class="config-group-title">Table Legs</div>
         <div class="chip-grid" id="tableStyleGrid"></div>
+      </div>
+
+      <div class="config-group" id="group-storage">
+        <div class="config-group-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="9" rx="1"/><path d="M9 8v9M15 8v9"/><path d="M6 17v2M18 17v2"/></svg>
+          Storage Style
+        </div>
+        <div class="chip-grid" id="storageGrid"></div>
       </div>
 
       <div class="config-group" id="group-wood">
@@ -303,6 +311,7 @@
       chairBase: 'auto',
       deskModel: 'linear',
       sofaStyle: 'modular',
+      storage: 'sideboard',
       tableStyle: 'auto',
       upholstery: 'charcoal',
       structure: 'matte-black',
@@ -339,6 +348,12 @@
     var sofaStyles = [
       { id:'modular', name:'Diablo Modular' },
       { id:'bench', name:'Diablo Bench' }
+    ];
+
+    var storageStyles = [
+      { id:'sideboard', name:'Sideboard' },
+      { id:'shelf', name:'Open Shelf' },
+      { id:'lockers', name:'Locker Bank' }
     ];
 
     // table legs; 'auto' uses each table's signature design
@@ -739,16 +754,33 @@
       seat.position.y = 0.46; seat.castShadow = true; g.add(seat);
       var seatPan = new THREE.Mesh(roundedBoxGeo(0.45, 0.43, 0.018, 0.04, 0.003), shell);
       seatPan.position.y = 0.41; g.add(seatPan);
-      // curved mesh back
+      // curved mesh back — cylinder axis sits over the seat centre so the
+      // curved surface lands at the seat's rear edge (an axis placed behind
+      // the chair pushes the visible surface a full radius further back)
       var backGeo = new THREE.CylinderGeometry(0.31, 0.27, 0.56, 24, 1, true, Math.PI * 0.7, Math.PI * 0.6);
       var backMat = new THREE.MeshPhysicalMaterial({ color: 0x222220, roughness: 0.8, side: THREE.DoubleSide, map: getTexture('fabric', '#262623') });
       backMat.map.repeat.set(5,5);
       var back = new THREE.Mesh(backGeo, backMat);
-      back.position.set(0, 0.82, -0.255); back.castShadow = true; g.add(back);
-      var backFrameT = new THREE.Mesh(new THREE.TorusGeometry(0.29, 0.011, 8, 24, Math.PI * 0.62), metal);
-      backFrameT.position.set(0, 1.1, -0.255); backFrameT.rotation.z = Math.PI * 0.19; g.add(backFrameT);
+      back.position.set(0, 0.82, 0.05); back.castShadow = true; g.add(back);
+      // frame rails hugging the mesh top and bottom edges
+      var topRailGeo = new THREE.TorusGeometry(0.31, 0.012, 8, 28, Math.PI * 0.6);
+      topRailGeo.rotateZ(-Math.PI * 0.8); topRailGeo.rotateX(Math.PI / 2);
+      var topRail = new THREE.Mesh(topRailGeo, metal);
+      topRail.position.set(0, 1.1, 0.05); topRail.castShadow = true; g.add(topRail);
+      var botRailGeo = new THREE.TorusGeometry(0.27, 0.011, 8, 28, Math.PI * 0.6);
+      botRailGeo.rotateZ(-Math.PI * 0.8); botRailGeo.rotateX(Math.PI / 2);
+      var botRail = new THREE.Mesh(botRailGeo, metal);
+      botRail.position.set(0, 0.54, 0.05); g.add(botRail);
+      // side stiles closing the mesh edges
+      for (var si = 0; si < 2; si++) {
+        var sSide = si === 0 ? -1 : 1;
+        var stile = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.011, 0.57, 8), metal);
+        stile.position.set(sSide * 0.234, 0.82, -0.12);
+        stile.rotation.z = -sSide * 0.057;
+        g.add(stile);
+      }
       var lumbarPad = new THREE.Mesh(roundedBoxGeo(0.3, 0.05, 0.12, 0.02, 0.01), uph);
-      lumbarPad.position.set(0, 0.62, -0.24); g.add(lumbarPad);
+      lumbarPad.position.set(0, 0.62, -0.2); g.add(lumbarPad);
       // back supports
       var sup = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.013, 0.28, 10), metal);
       sup.position.set(0, 0.49, -0.245); sup.rotation.x = 0.32; sup.castShadow = true; g.add(sup);
@@ -1054,6 +1086,63 @@
     function buildCredenza() {
       var g = new THREE.Group();
       var wood = getWoodMat(), metal = getMetalMat();
+      if (state.storage === 'shelf') {
+        // open shelving: frame, mid shelf and cubby dividers
+        var shTop = new THREE.Mesh(roundedBoxGeo(1.8, 0.42, 0.045, 0.01, 0.004), wood);
+        shTop.position.y = 1.04; shTop.castShadow = true; g.add(shTop);
+        var shBot = new THREE.Mesh(roundedBoxGeo(1.8, 0.42, 0.045, 0.01, 0.004), wood);
+        shBot.position.y = 0.17; shBot.castShadow = true; g.add(shBot);
+        for (var spi = 0; spi < 2; spi++) {
+          var spx = spi === 0 ? -0.878 : 0.878;
+          var side = new THREE.Mesh(roundedBoxGeo(0.045, 0.42, 0.87, 0.008, 0.003), wood);
+          side.position.set(spx, 0.605, 0); side.castShadow = true; g.add(side);
+        }
+        var midShelf = new THREE.Mesh(roundedBoxGeo(1.72, 0.4, 0.03, 0.006, 0.002), wood);
+        midShelf.position.y = 0.605; g.add(midShelf);
+        var backPanel = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.83, 0.015), wood);
+        backPanel.position.set(0, 0.605, -0.195); g.add(backPanel);
+        for (var dvi = 0; dvi < 3; dvi++) {
+          var dv = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.83, 0.38), wood);
+          dv.position.set(-0.44 + dvi * 0.44, 0.605, 0); g.add(dv);
+        }
+        for (var sli = 0; sli < 4; sli++) {
+          var slx = (sli % 2 === 0 ? -0.8 : 0.8), slz = (sli < 2 ? -0.16 : 0.16);
+          var sLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.01, 0.15, 10), metal);
+          sLeg.position.set(slx, 0.075, slz); g.add(sLeg);
+        }
+        // decor: books in a cubby + box
+        var bk1 = new THREE.Mesh(roundedBoxGeo(0.04, 0.24, 0.3, 0.004, 0.002), new THREE.MeshStandardMaterial({ color: 0x9A8568, roughness: 0.7 }));
+        bk1.position.set(-0.6, 0.78, 0.02); g.add(bk1);
+        var bk2 = new THREE.Mesh(roundedBoxGeo(0.035, 0.22, 0.27, 0.004, 0.002), new THREE.MeshStandardMaterial({ color: 0x4A6741, roughness: 0.75 }));
+        bk2.position.set(-0.55, 0.765, 0.02); g.add(bk2);
+        var box = new THREE.Mesh(roundedBoxGeo(0.26, 0.26, 0.18, 0.01, 0.004), new THREE.MeshStandardMaterial({ color: 0xDDD6C8, roughness: 0.6 }));
+        box.position.set(0.22, 0.285, 0); g.add(box);
+        var pot2 = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.04, 0.12, 16), new THREE.MeshStandardMaterial({ color: 0xDDD6C8, roughness: 0.6 }));
+        pot2.position.set(0.6, 1.12, 0); g.add(pot2);
+        var sprig2 = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.18, 8), new THREE.MeshStandardMaterial({ color: 0x4A6741, roughness: 0.9 }));
+        sprig2.position.set(0.6, 1.26, 0); g.add(sprig2);
+        return g;
+      }
+      if (state.storage === 'lockers') {
+        // locker bank: tall four-door cabinet on a metal plinth
+        var lkBody = new THREE.Mesh(roundedBoxGeo(1.8, 0.45, 1.5, 0.012, 0.005), wood);
+        lkBody.position.y = 0.81; lkBody.castShadow = true; lkBody.receiveShadow = true; g.add(lkBody);
+        var plinth = new THREE.Mesh(roundedBoxGeo(1.7, 0.4, 0.06, 0.008, 0.003), metal);
+        plinth.position.y = 0.03; g.add(plinth);
+        for (var lsi = 0; lsi < 3; lsi++) {
+          var lSeam = new THREE.Mesh(new THREE.BoxGeometry(0.004, 1.42, 0.004), darkShellMat());
+          lSeam.position.set(-0.45 + lsi * 0.45, 0.81, 0.228); g.add(lSeam);
+        }
+        for (var ldi = 0; ldi < 4; ldi++) {
+          var ldx = -0.675 + ldi * 0.45;
+          var lHndl = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.16, 8), metal);
+          lHndl.position.set(ldx + 0.13, 0.95, 0.235); g.add(lHndl);
+          var vent = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.008, 0.01), darkShellMat());
+          vent.position.set(ldx, 1.42, 0.228); g.add(vent);
+          var vent2 = vent.clone(); vent2.position.y = 1.37; g.add(vent2);
+        }
+        return g;
+      }
       var body = new THREE.Mesh(roundedBoxGeo(1.8, 0.45, 0.62, 0.012, 0.005), wood);
       body.position.y = 0.46; body.castShadow = true; body.receiveShadow = true; g.add(body);
       for (var i = 0; i < 4; i++) {
@@ -1180,7 +1269,7 @@
           L.push({ cat:'desk', build:'desk', x:hw - 0.62, z:z, ry:Math.PI / 2, props:true });
           L.push({ cat:'chair', build:'chair', x:hw - 1.42, z:z, ry:-Math.PI / 2 });
         }
-        L.push({ cat:'fixed', build:'credenza', x:-hw + 0.45, z:0.4, ry:Math.PI / 2 });
+        L.push({ cat:'storage', build:'credenza', x:-hw + 0.45, z:0.4, ry:Math.PI / 2 });
         L.push({ cat:'fixed', build:'plant', x:-hw + 0.55, z:2.3, ry:0, s:1.25 });
         L.push({ cat:'fixed', build:'plant', x:0.9, z:1.9, ry:0, s:1.0 });
         L.push({ cat:'fixed', build:'art', x:-hw + 0.01, z:-1.6, ry:Math.PI / 2, wall:true, w:1.0, h:1.3 });
@@ -1196,7 +1285,7 @@
         L.push({ cat:'chair', build:'chair', x:-2.1, z:2.35, ry:Math.PI });
         L.push({ cat:'chair', build:'chair', x:-3.15, z:1.0, ry:Math.PI / 2 + 0.3 });
         L.push({ cat:'chair', build:'chair', x:-1.05, z:1.0, ry:-Math.PI / 2 - 0.3 });
-        L.push({ cat:'fixed', build:'credenza', x:hw - 0.45, z:0.6, ry:-Math.PI / 2 });
+        L.push({ cat:'storage', build:'credenza', x:hw - 0.45, z:0.6, ry:-Math.PI / 2 });
         L.push({ cat:'fixed', build:'plant', x:hw - 0.6, z:-2.3, ry:0, s:1.3 });
         L.push({ cat:'fixed', build:'art', x:-hw + 0.01, z:-0.4, ry:Math.PI / 2, wall:true, w:1.2, h:1.5 });
       } else if (presetId === 'boardroom') {
@@ -1208,7 +1297,7 @@
         }
         L.push({ cat:'chair', build:'chair', x:0.3 + 2.2, z:0, ry:-Math.PI / 2 });
         L.push({ cat:'fixed', build:'mediawall', x:-hw + 0.04, z:0, ry:Math.PI / 2, wall:true, y:1.5 });
-        L.push({ cat:'fixed', build:'credenza', x:1.0, z:hd - 0.42, ry:Math.PI });
+        L.push({ cat:'storage', build:'credenza', x:1.0, z:hd - 0.42, ry:Math.PI });
         L.push({ cat:'fixed', build:'plant', x:hw - 0.6, z:-2.4, ry:0, s:1.2 });
         L.push({ cat:'fixed', build:'plant', x:hw - 0.6, z:2.4, ry:0, s:1.0 });
       } else if (presetId === 'reception') {
@@ -1232,7 +1321,7 @@
             L.push({ cat:'chair', build:'chair', x:sp.x + Math.sin(ang) * 0.78, z:sp.z + Math.cos(ang) * 0.78, ry: ang + Math.PI });
           }
         });
-        L.push({ cat:'fixed', build:'credenza', x:1.2, z:hd - 0.42, ry:Math.PI });
+        L.push({ cat:'storage', build:'credenza', x:1.2, z:hd - 0.42, ry:Math.PI });
         L.push({ cat:'fixed', build:'plant', x:-hw + 0.55, z:2.3, ry:0, s:1.3 });
         L.push({ cat:'fixed', build:'plant', x:hw - 0.55, z:-2.3, ry:0, s:1.1 });
         L.push({ cat:'fixed', build:'art', x:-hw + 0.01, z:0.2, ry:Math.PI / 2, wall:true, w:1.2, h:0.9 });
@@ -1245,7 +1334,7 @@
         L.push({ cat:'chair', build:'chair', x:2.45, z:0.55, ry:-Math.PI / 2 });
         L.push({ cat:'fixed', build:'plant', x:-hw + 0.55, z:-2.4, ry:0, s:1.35 });
         L.push({ cat:'fixed', build:'plant', x:hw - 0.5, z:2.3, ry:0, s:1.0 });
-        L.push({ cat:'fixed', build:'credenza', x:hw - 0.45, z:-1.4, ry:-Math.PI / 2 });
+        L.push({ cat:'storage', build:'credenza', x:hw - 0.45, z:-1.4, ry:-Math.PI / 2 });
         L.push({ cat:'fixed', build:'art', x:-hw + 0.01, z:0.5, ry:Math.PI / 2, wall:true, w:1.3, h:1.1 });
         L.push({ cat:'fixed', build:'art', x:-0.8, z:hd - 0.01, ry:Math.PI, wall:true, w:1.1, h:1.4 });
       } else if (presetId === 'huddle') {
@@ -1255,7 +1344,7 @@
           L.push({ cat:'chair', build:'chair', x:0.4 + Math.sin(hAng) * 1.05, z:Math.cos(hAng) * 1.05, ry: hAng + Math.PI });
         }
         L.push({ cat:'fixed', build:'mediawall', x:-hw + 0.04, z:0, ry:Math.PI / 2, wall:true, y:1.5 });
-        L.push({ cat:'fixed', build:'credenza', x:1.4, z:hd - 0.42, ry:Math.PI });
+        L.push({ cat:'storage', build:'credenza', x:1.4, z:hd - 0.42, ry:Math.PI });
         L.push({ cat:'fixed', build:'plant', x:hw - 0.6, z:-2.3, ry:0, s:1.2 });
         L.push({ cat:'fixed', build:'plant', x:hw - 0.6, z:2.3, ry:0, s:1.0 });
         L.push({ cat:'fixed', build:'art', x:0.8, z:hd - 0.01, ry:Math.PI, wall:true, w:1.2, h:1.0 });
@@ -1612,6 +1701,12 @@
       } else if (cat === 'sofa') {
         flashGroups(['group-sofa', 'group-upholstery', 'group-structure']);
         showToast('Customising <em>sofas</em> — pick a style; they follow your upholstery colour.');
+      } else if (cat === 'storage') {
+        flashGroups(['group-storage', 'group-wood', 'group-structure']);
+        showToast('Customising <em>storage</em> — pick a style; it follows your wood &amp; metal finishes.');
+      } else if (obj.userData.build === 'receptiondesk' || obj.userData.build === 'coffee') {
+        flashGroups(['group-wood', 'group-structure']);
+        showToast('This piece follows your <em>wood</em> &amp; <em>metal</em> finishes below.');
       } else {
         flashGroups(['group-wall', 'group-floor']);
         showToast('Room detail — try <em>wall colours</em> and <em>flooring</em> below.');
@@ -1722,6 +1817,13 @@
         '</div>';
       }).join('');
 
+      document.getElementById('storageGrid').innerHTML = storageStyles.map(function(s) {
+        return '<div class="chip-item' + (state.storage === s.id ? ' active' : '') + '" onclick="selectStorage(\'' + s.id + '\')">' +
+          '<div class="chip-swatch sq" style="display:flex;align-items:center;justify-content:center;background:rgba(26,26,24,0.05);color:var(--text-secondary);">' + storageIcon(s.id) + '</div>' +
+          '<div class="chip-name">' + s.name + '</div>' +
+        '</div>';
+      }).join('');
+
       document.getElementById('tableStyleGrid').innerHTML = tableStyles.map(function(t) {
         return '<div class="chip-item' + (state.tableStyle === t.id ? ' active' : '') + '" onclick="selectTableStyle(\'' + t.id + '\')">' +
           '<div class="chip-swatch sq" style="display:flex;align-items:center;justify-content:center;background:rgba(26,26,24,0.05);color:var(--text-secondary);">' + tableStyleIcon(t.id) + '</div>' +
@@ -1763,6 +1865,13 @@
       var common = 'width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"';
       if (id === 'bench') return '<svg ' + common + '><rect x="4" y="11" width="16" height="4" rx="1.4"/><path d="M6 15v4M18 15v4"/><path d="M5 8h14"/></svg>';
       return '<svg ' + common + '><path d="M4 9a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3h-2a2 2 0 0 0-2 2v1H8v-1a2 2 0 0 0-2-2H4z"/><path d="M4 12v5h2M20 12v5h-2"/></svg>';
+    }
+
+    function storageIcon(id) {
+      var common = 'width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"';
+      if (id === 'shelf') return '<svg ' + common + '><rect x="4" y="5" width="16" height="14"/><path d="M4 12h16"/><path d="M12 5v14"/></svg>';
+      if (id === 'lockers') return '<svg ' + common + '><rect x="5" y="3" width="14" height="18"/><path d="M9.7 3v18M14.3 3v18"/><path d="M8 10v3M12 10v3M16 10v3"/></svg>';
+      return '<svg ' + common + '><rect x="3" y="9" width="18" height="8" rx="1"/><path d="M9 9v8M15 9v8"/><path d="M6 17v2M18 17v2"/></svg>';
     }
 
     function tableStyleIcon(id) {
@@ -1836,6 +1945,14 @@
         ? 'Tables back on their <em>signature</em> legs.'
         : 'All tables switched to <em>' + t.name + '</em> legs.');
     }
+    function selectStorage(id) {
+      state.storage = id;
+      renderControls();
+      rebuildCategory(['storage'], true);
+      playSound('success');
+      var s = storageStyles.find(function(x) { return x.id === id; });
+      showToast('Storage switched to <em>' + s.name + '</em>');
+    }
     function selectDeskModel(id) {
       state.deskModel = id;
       renderControls();
@@ -1853,13 +1970,13 @@
     function selectStructure(id) {
       state.structure = id;
       renderControls();
-      rebuildCategory(['chair', 'sofa', 'desk', 'table', 'fixed'], false);
+      rebuildCategory(['chair', 'sofa', 'desk', 'table', 'storage', 'fixed'], false);
       playSound('click');
     }
     function selectWood(id) {
       state.wood = id;
       renderControls();
-      rebuildCategory(['desk', 'table', 'fixed', 'chair'], false);
+      rebuildCategory(['desk', 'table', 'storage', 'fixed', 'chair'], false);
       playSound('click');
     }
     function selectWall(id) {
@@ -1886,7 +2003,7 @@
     function shareConfig() {
       var url = window.location.href.split('?')[0] +
         '?preset=' + state.preset + '&chair=' + state.chairModel + '&chairbase=' + state.chairBase + '&desk=' + state.deskModel +
-        '&sofa=' + state.sofaStyle + '&table=' + state.tableStyle +
+        '&sofa=' + state.sofaStyle + '&table=' + state.tableStyle + '&storage=' + state.storage +
         '&upholstery=' + state.upholstery + '&structure=' + state.structure + '&wood=' + state.wood +
         '&wall=' + state.wall + '&floor=' + state.floor + '&light=' + state.light;
       navigator.clipboard.writeText(url).then(function() {
@@ -1941,7 +2058,7 @@
     var studioNames = { 'chair-executive':'Meuse Executive', 'chair-conference':'Meuse Conference', 'sofa-modular':'Diablo Modular Sofa', 'sofa-bench':'Diablo Bench', 'table-boardroom':'Loire Boardroom', 'table-round':'Loire Round', 'lounge-chair':'Flamingo Lounge', 'storage-wall':'Marne Storage', 'table-reception':'Seine Reception', 'table-standing':'Garonne Standing' };
     (function() {
       var params = new URLSearchParams(window.location.search);
-      var map = { preset:'preset', chair:'chairModel', chairbase:'chairBase', desk:'deskModel', sofa:'sofaStyle', table:'tableStyle', upholstery:'upholstery', structure:'structure', wood:'wood', wall:'wall', floor:'floor', light:'light' };
+      var map = { preset:'preset', chair:'chairModel', chairbase:'chairBase', desk:'deskModel', sofa:'sofaStyle', table:'tableStyle', storage:'storage', upholstery:'upholstery', structure:'structure', wood:'wood', wall:'wall', floor:'floor', light:'light' };
       Object.keys(map).forEach(function(k) {
         if (params.get(k)) state[map[k]] = params.get(k);
       });
@@ -1960,6 +2077,7 @@
             // sofa and table products map onto their office counterparts
             if (sc.model === 'sofa-modular') state.sofaStyle = 'modular';
             else if (sc.model === 'sofa-bench') state.sofaStyle = 'bench';
+            else if (sc.model === 'storage-wall') state.storage = 'shelf';
             else if (sc.model === 'table-boardroom') state.tableStyle = 'panel';
             else if (sc.model === 'table-round' || sc.model === 'table-standing') state.tableStyle = 'column';
             if (!params.get('preset') && presetMap[sc.model]) state.preset = presetMap[sc.model];
@@ -1990,6 +2108,14 @@
 
     renderer.domElement.addEventListener('pointerdown', onPointerDown);
     renderer.domElement.addEventListener('pointerup', onPointerUp);
+    renderer.domElement.addEventListener('pointermove', function(e) {
+      if (downPos) return; // dragging the camera
+      pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
+      pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(pointer, camera);
+      var over = raycaster.intersectObjects(furnitureGroup.children, true).length > 0;
+      renderer.domElement.style.cursor = over ? 'pointer' : '';
+    });
 
     window.addEventListener('resize', function() {
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -2002,7 +2128,7 @@
       if (studioImport) {
         showToast('Your customised <em>' + (studioNames[studioImport.model] || 'product') + '</em> from the Product Studio is styled into this office — fabrics &amp; finishes carried over.', 5600);
       } else {
-        showToast('Welcome — <em>click any chair or desk</em> in the room to customise it.', 4200);
+        showToast('Welcome — <em>click any chair, desk, table or storage piece</em> in the room to customise it.', 4200);
       }
     }, 900);
   </script>
