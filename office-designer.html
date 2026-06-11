@@ -211,6 +211,11 @@
         <div class="model-grid" id="chairModelGrid"></div>
       </div>
 
+      <div class="config-group" id="group-chairbase">
+        <div class="config-group-title">Chair Base / Legs</div>
+        <div class="chip-grid" id="chairBaseGrid"></div>
+      </div>
+
       <div class="config-group" id="group-upholstery">
         <div class="config-group-title">Chair Upholstery</div>
         <div class="swatches-grid" id="upholsteryGrid"></div>
@@ -285,6 +290,7 @@
     var state = {
       preset: 'workspace',
       chairModel: 'task',
+      chairBase: 'auto',
       deskModel: 'linear',
       upholstery: 'charcoal',
       structure: 'matte-black',
@@ -316,6 +322,15 @@
       { id:'linear', name:'Linea', sub:'Panel Legs' },
       { id:'trestle', name:'Atelier', sub:'A-Frame Steel' },
       { id:'executive', name:'Stanza', sub:'Twin Pedestal' }
+    ];
+
+    // chair base/leg options; 'auto' uses each model's signature base
+    var chairBases = [
+      { id:'auto', name:'Signature' },
+      { id:'castor', name:'5-Star Castors' },
+      { id:'legs', name:'4-Leg Steel' },
+      { id:'sled', name:'Sled Frame' },
+      { id:'disc', name:'Disc Swivel' }
     ];
 
     var colourSwatches = [
@@ -532,24 +547,81 @@
     // ───────────────────────────────────────
     // MATERIALS
     // ───────────────────────────────────────
+    // ═══════════════════════════════════════
+    // ENHANCED MATERIALS - Premium PBR quality
+    // ═══════════════════════════════════════
     function getMetalMat() {
-      var m = new THREE.MeshPhysicalMaterial({ roughness: 0.08, metalness: 1.0, clearcoat: 0.9, clearcoatRoughness: 0.06, envMapIntensity: 1.4 });
+      var m = new THREE.MeshPhysicalMaterial({
+        roughness: 0.05,
+        metalness: 1.0,
+        clearcoat: 0.95,
+        clearcoatRoughness: 0.04,
+        envMapIntensity: 1.8,
+        reflectivity: 1.0
+      });
       var s = structureFinishes.find(function(x) { return x.id === state.structure; });
       if (s) m.color.set(s.value);
-      if (state.structure === 'matte-black') { m.metalness = 0.25; m.roughness = 0.5; m.clearcoat = 0.15; }
-      else if (state.structure === 'brass') { m.roughness = 0.14; m.clearcoat = 0.55; }
-      else if (state.structure === 'bronze') { m.roughness = 0.22; m.clearcoat = 0.4; }
+      
+      // Enhanced material properties for different finishes
+      if (state.structure === 'matte-black') {
+        m.metalness = 0.2;
+        m.roughness = 0.6;
+        m.clearcoat = 0.1;
+        m.clearcoatRoughness = 0.5;
+        m.envMapIntensity = 0.7;
+      }
+      else if (state.structure === 'brass') {
+        m.roughness = 0.1;
+        m.clearcoat = 0.7;
+        m.clearcoatRoughness = 0.06;
+        m.envMapIntensity = 1.6;
+      }
+      else if (state.structure === 'bronze') {
+        m.roughness = 0.18;
+        m.clearcoat = 0.5;
+        m.clearcoatRoughness = 0.12;
+        m.envMapIntensity = 1.4;
+      }
+      else if (state.structure === 'chrome') {
+        m.roughness = 0.03;
+        m.clearcoat = 1.0;
+        m.clearcoatRoughness = 0.02;
+        m.envMapIntensity = 2.0;
+      }
       return m;
     }
 
     function getUpholsteryMat() {
       var c = colourSwatches.find(function(x) { return x.id === state.upholstery; }) || colourSwatches[0];
       if (c.fabric) {
-        var fm = new THREE.MeshPhysicalMaterial({ roughness: 0.88, metalness: 0.01, map: getTexture('fabric', c.value), bumpMap: getTexture('fabric', c.value), bumpScale: 0.01, envMapIntensity: 0.3 });
-        fm.map.repeat.set(6,6); return fm;
+        // Enhanced fabric material; bump-only relief (a colour texture is
+        // not a valid normal map, and numeric sheen is not supported in r128)
+        var tex = getTexture('fabric', c.value);
+        tex.repeat.set(7, 7);
+        var fm = new THREE.MeshPhysicalMaterial({
+          roughness: 0.9,
+          metalness: 0.0,
+          map: tex,
+          bumpMap: tex,
+          bumpScale: 0.012,
+          envMapIntensity: 0.35
+        });
+        return fm;
       }
-      var lm = new THREE.MeshPhysicalMaterial({ roughness: 0.45, metalness: 0.03, map: getTexture('leather', c.value), bumpMap: getTexture('leather', c.value), bumpScale: 0.004, clearcoat: 0.3, clearcoatRoughness: 0.25, envMapIntensity: 0.7 });
-      lm.map.repeat.set(3,3); return lm;
+      // Enhanced leather material with realistic properties
+      var ltex = getTexture('leather', c.value);
+      ltex.repeat.set(3.5, 3.5);
+      var lm = new THREE.MeshPhysicalMaterial({
+        roughness: 0.4,
+        metalness: 0.02,
+        map: ltex,
+        bumpMap: ltex,
+        bumpScale: 0.006,
+        clearcoat: 0.4,
+        clearcoatRoughness: 0.22,
+        envMapIntensity: 0.85
+      });
+      return lm;
     }
 
     function getWoodMat() {
@@ -587,10 +659,55 @@
       return g;
     }
 
+    // every base variant tops out at ~0.42m so chair bodies sit correctly
+    function resolveChairBase(model) {
+      if (state.chairBase !== 'auto') return state.chairBase;
+      return model === 'sled' ? 'sled' : 'castor';
+    }
+
+    function buildChairBase(type, metal, s) {
+      s = s || 1;
+      if (type === 'castor') return buildCastorBase(metal, s);
+      var g = new THREE.Group();
+      if (type === 'legs') {
+        for (var i = 0; i < 4; i++) {
+          var lx = (i % 2 === 0 ? -1 : 1) * 0.21 * s, lz = (i < 2 ? -1 : 1) * 0.2 * s;
+          var leg = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.016, 0.43, 10), metal);
+          leg.position.set(lx, 0.21, lz);
+          leg.rotation.x = (i < 2 ? -1 : 1) * -0.07;
+          leg.rotation.z = (i % 2 === 0 ? -1 : 1) * 0.07;
+          leg.castShadow = true; g.add(leg);
+        }
+        var ringF = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.007, 0.38 * s, 8), metal);
+        ringF.rotation.z = Math.PI / 2; ringF.position.set(0, 0.15, -0.19 * s); g.add(ringF);
+        var ringB = ringF.clone(); ringB.position.z = 0.19 * s; g.add(ringB);
+      } else if (type === 'sled') {
+        for (var j = 0; j < 2; j++) {
+          var x = (j === 0 ? -0.22 : 0.22) * s;
+          var run = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.013, 0.52 * s, 10), metal);
+          run.rotation.x = Math.PI / 2; run.position.set(x, 0.015, 0); run.castShadow = true; g.add(run);
+          var frontLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.013, 0.42, 10), metal);
+          frontLeg.position.set(x, 0.22, 0.2 * s); frontLeg.castShadow = true; g.add(frontLeg);
+          var backLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.013, 0.43, 10), metal);
+          backLeg.position.set(x, 0.225, -0.18 * s); backLeg.rotation.x = 0.08; backLeg.castShadow = true; g.add(backLeg);
+        }
+        var cross = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.42 * s, 8), metal);
+        cross.rotation.z = Math.PI / 2; cross.position.set(0, 0.4, -0.16 * s); g.add(cross);
+      } else { // disc swivel
+        var disc = new THREE.Mesh(new THREE.CylinderGeometry(0.24 * s, 0.27 * s, 0.025, 32), metal);
+        disc.position.y = 0.013; disc.castShadow = true; g.add(disc);
+        var rim = new THREE.Mesh(new THREE.TorusGeometry(0.255 * s, 0.006, 8, 32), metal);
+        rim.rotation.x = Math.PI / 2; rim.position.y = 0.028; g.add(rim);
+        var col = new THREE.Mesh(new THREE.CylinderGeometry(0.024 * s, 0.032 * s, 0.4, 20), metal);
+        col.position.y = 0.21; col.castShadow = true; g.add(col);
+      }
+      return g;
+    }
+
     function buildTaskChair() {
       var g = new THREE.Group();
       var metal = getMetalMat(), uph = getUpholsteryMat(), shell = darkShellMat();
-      g.add(buildCastorBase(metal, 1));
+      g.add(buildChairBase(resolveChairBase('task'), metal, 1));
       var seat = new THREE.Mesh(roundedBoxGeo(0.47, 0.45, 0.07, 0.05, 0.012), uph);
       seat.position.y = 0.46; seat.castShadow = true; g.add(seat);
       var seatPan = new THREE.Mesh(roundedBoxGeo(0.45, 0.43, 0.018, 0.04, 0.003), shell);
@@ -622,7 +739,7 @@
     function buildExecChair() {
       var g = new THREE.Group();
       var metal = getMetalMat(), uph = getUpholsteryMat(), shell = darkShellMat();
-      g.add(buildCastorBase(metal, 1.12));
+      g.add(buildChairBase(resolveChairBase('executive'), metal, 1.12));
       var seat = new THREE.Mesh(roundedBoxGeo(0.52, 0.5, 0.1, 0.05, 0.018), uph);
       seat.position.y = 0.48; seat.castShadow = true; g.add(seat);
       var back = new THREE.Mesh(roundedBoxGeo(0.5, 0.09, 0.66, 0.05, 0.018), uph);
@@ -646,16 +763,7 @@
     function buildSledChair() {
       var g = new THREE.Group();
       var metal = getMetalMat(), uph = getUpholsteryMat();
-      // sled runners
-      for (var i = 0; i < 2; i++) {
-        var x = i === 0 ? -0.22 : 0.22;
-        var run = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.013, 0.52, 10), metal);
-        run.rotation.x = Math.PI / 2; run.position.set(x, 0.015, 0); run.castShadow = true; g.add(run);
-        var frontLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.013, 0.44, 10), metal);
-        frontLeg.position.set(x, 0.235, 0.22); frontLeg.castShadow = true; g.add(frontLeg);
-        var backLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.013, 0.46, 10), metal);
-        backLeg.position.set(x, 0.245, -0.2); backLeg.rotation.x = 0.1; backLeg.castShadow = true; g.add(backLeg);
-      }
+      g.add(buildChairBase(resolveChairBase('sled'), metal, 1));
       var seat = new THREE.Mesh(roundedBoxGeo(0.46, 0.44, 0.06, 0.04, 0.012), uph);
       seat.position.y = 0.46; seat.castShadow = true; g.add(seat);
       var back = new THREE.Mesh(roundedBoxGeo(0.44, 0.05, 0.42, 0.04, 0.012), uph);
@@ -1425,8 +1533,8 @@
       gsap.fromTo(obj.scale, { x: 1.07, y: 1.07, z: 1.07 }, { x: 1, y: 1, z: 1, duration: 0.55, ease: 'elastic.out(1.2, 0.45)' });
       var cat = obj.userData.category;
       if (cat === 'chair') {
-        flashGroups(['group-chair', 'group-upholstery', 'group-structure']);
-        showToast('Customising <em>chairs</em> — pick a model, fabric or metal. Every chair updates.');
+        flashGroups(['group-chair', 'group-chairbase', 'group-upholstery', 'group-structure']);
+        showToast('Customising <em>chairs</em> — pick a model, base, fabric or metal. Every chair updates.');
       } else if (cat === 'desk') {
         flashGroups(['group-desk', 'group-wood']);
         showToast('Customising <em>desks</em> — choose a model and finish. Every desk updates.');
@@ -1512,6 +1620,13 @@
         '</div>';
       }).join('');
 
+      document.getElementById('chairBaseGrid').innerHTML = chairBases.map(function(b) {
+        return '<div class="chip-item' + (state.chairBase === b.id ? ' active' : '') + '" onclick="selectChairBase(\'' + b.id + '\')">' +
+          '<div class="chip-swatch sq" style="display:flex;align-items:center;justify-content:center;background:rgba(26,26,24,0.05);color:var(--text-secondary);">' + chairBaseIcon(b.id) + '</div>' +
+          '<div class="chip-name">' + b.name + '</div>' +
+        '</div>';
+      }).join('');
+
       document.getElementById('upholsteryGrid').innerHTML = colourSwatches.map(function(c) {
         return '<div class="swatch-item' + (state.upholstery === c.id ? ' active' : '') + '" style="background-color:' + c.value + ';" onclick="selectUpholstery(\'' + c.id + '\')">' +
           '<div class="swatch-label">' + c.name + (c.fabric ? ' · Fabric' : ' · Leather') + '</div>' +
@@ -1562,6 +1677,15 @@
       return '<svg ' + common + '><path d="M6 11c0-4 2.7-7 6-7s6 3 6 7c0 2.4-1.2 4-3 5H9c-1.8-1-3-2.6-3-5z"/><path d="M12 17v3"/><path d="M8 21h8"/></svg>';
     }
 
+    function chairBaseIcon(id) {
+      var common = 'width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"';
+      if (id === 'auto') return '<svg ' + common + '><path d="M12 3l2.2 4.8L19 9l-4.8 2.2L12 16l-2.2-4.8L5 9l4.8-1.2z"/></svg>';
+      if (id === 'castor') return '<svg ' + common + '><path d="M12 5v7"/><path d="M12 12l-6 5M12 12l6 5M12 12v7"/><circle cx="6" cy="19" r="1.6"/><circle cx="18" cy="19" r="1.6"/><circle cx="12" cy="21" r="1.6"/></svg>';
+      if (id === 'legs') return '<svg ' + common + '><path d="M5 6h14"/><path d="M7 6l-2 13M17 6l2 13M10 6l-1 13M14 6l1 13"/></svg>';
+      if (id === 'sled') return '<svg ' + common + '><path d="M7 5v10M17 5v10"/><path d="M4 19h16"/><path d="M7 15l-3 4M17 15l3 4"/></svg>';
+      return '<svg ' + common + '><path d="M12 5v10"/><ellipse cx="12" cy="18" rx="7" ry="2.4"/></svg>';
+    }
+
     function deskIcon(id) {
       var common = 'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"';
       if (id === 'linear') return '<svg ' + common + '><path d="M3 8h18"/><path d="M5 8v11M19 8v11"/><path d="M5 13h14"/></svg>';
@@ -1588,6 +1712,16 @@
       playSound('success');
       var m = chairModels.find(function(x) { return x.id === id; });
       showToast('All chairs switched to <em>' + m.name + '</em>');
+    }
+    function selectChairBase(id) {
+      state.chairBase = id;
+      renderControls();
+      rebuildCategory(['chair'], true);
+      playSound('success');
+      var b = chairBases.find(function(x) { return x.id === id; });
+      showToast(id === 'auto'
+        ? 'Chairs back on their <em>signature</em> bases.'
+        : 'All chairs switched to <em>' + b.name + '</em> legs.');
     }
     function selectDeskModel(id) {
       state.deskModel = id;
@@ -1638,7 +1772,7 @@
     // ───────────────────────────────────────
     function shareConfig() {
       var url = window.location.href.split('?')[0] +
-        '?preset=' + state.preset + '&chair=' + state.chairModel + '&desk=' + state.deskModel +
+        '?preset=' + state.preset + '&chair=' + state.chairModel + '&chairbase=' + state.chairBase + '&desk=' + state.deskModel +
         '&upholstery=' + state.upholstery + '&structure=' + state.structure + '&wood=' + state.wood +
         '&wall=' + state.wall + '&floor=' + state.floor + '&light=' + state.light;
       navigator.clipboard.writeText(url).then(function() {
@@ -1693,7 +1827,7 @@
     var studioNames = { 'chair-executive':'Meuse Executive', 'chair-conference':'Meuse Conference', 'sofa-modular':'Diablo Modular Sofa', 'sofa-bench':'Diablo Bench', 'table-boardroom':'Loire Boardroom', 'table-round':'Loire Round', 'lounge-chair':'Flamingo Lounge', 'storage-wall':'Marne Storage', 'table-reception':'Seine Reception', 'table-standing':'Garonne Standing' };
     (function() {
       var params = new URLSearchParams(window.location.search);
-      var map = { preset:'preset', chair:'chairModel', desk:'deskModel', upholstery:'upholstery', structure:'structure', wood:'wood', wall:'wall', floor:'floor', light:'light' };
+      var map = { preset:'preset', chair:'chairModel', chairbase:'chairBase', desk:'deskModel', upholstery:'upholstery', structure:'structure', wood:'wood', wall:'wall', floor:'floor', light:'light' };
       Object.keys(map).forEach(function(k) {
         if (params.get(k)) state[map[k]] = params.get(k);
       });
@@ -1706,6 +1840,9 @@
             var chairMap = { 'chair-executive':'executive', 'chair-conference':'sled', 'lounge-chair':'lounge' };
             var presetMap = { 'chair-executive':'executive', 'chair-conference':'boardroom', 'lounge-chair':'lounge', 'sofa-modular':'lounge', 'sofa-bench':'reception', 'table-boardroom':'boardroom', 'table-round':'huddle', 'table-reception':'reception', 'table-standing':'cafeteria', 'storage-wall':'workspace' };
             if (chairMap[sc.model]) state.chairModel = chairMap[sc.model];
+            // carry the studio's base/leg choice onto the office chairs
+            var baseMap = { 'D9':'castor', 'L14':'legs', 'S7':'sled', 'L30':'disc', 'R13':'disc' };
+            if (chairMap[sc.model] && sc.base && baseMap[sc.base]) state.chairBase = baseMap[sc.base];
             if (!params.get('preset') && presetMap[sc.model]) state.preset = presetMap[sc.model];
             if (sc.upholstery) state.upholstery = sc.upholstery;
             if (sc.structure) state.structure = sc.structure;

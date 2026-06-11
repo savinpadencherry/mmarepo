@@ -718,19 +718,24 @@
       animate();
     }
 
+    // ═══════════════════════════════════════
+    // ENHANCED LIGHTING - Studio-quality illumination
+    // ═══════════════════════════════════════
     function setupLights() {
       var sg = new THREE.Group();
 
-      var ambient = new THREE.AmbientLight(0xFFF8F0, 0.5);
+      // Enhanced ambient with warmer tone
+      var ambient = new THREE.AmbientLight(0xFFF8F0, 0.6);
       sg.add(ambient);
 
-      var key = new THREE.DirectionalLight(0xFFF5E8, 1.3);
+      // Main key light - stronger and more focused
+      var key = new THREE.DirectionalLight(0xFFF5E8, 1.8);
       key.position.set(5, 8, 4);
       key.castShadow = true;
-      key.shadow.mapSize.width = 2048;
-      key.shadow.mapSize.height = 2048;
-      key.shadow.bias = -0.0002;
-      key.shadow.radius = 4.0;
+      key.shadow.mapSize.width = 4096; // Higher resolution shadows
+      key.shadow.mapSize.height = 4096;
+      key.shadow.bias = -0.0001;
+      key.shadow.radius = 5.0; // Softer shadows
       key.shadow.camera.near = 0.5;
       key.shadow.camera.far = 20;
       key.shadow.camera.left = -3;
@@ -739,15 +744,27 @@
       key.shadow.camera.bottom = -3;
       sg.add(key);
 
-      var fill = new THREE.DirectionalLight(0xE8F0FF, 0.4);
+      // Enhanced fill light with cooler tone
+      var fill = new THREE.DirectionalLight(0xE8F0FF, 0.6);
       fill.position.set(-5, 4, -3);
       sg.add(fill);
 
-      var rim = new THREE.DirectionalLight(0xFFFFFF, 0.7);
+      // Stronger rim light for definition
+      var rim = new THREE.DirectionalLight(0xFFFFFF, 1.0);
       rim.position.set(0, 3, -6);
       sg.add(rim);
 
-      var bottomFill = new THREE.HemisphereLight(0xFFF8F0, 0xE5DDD0, 0.3);
+      // Additional accent lights for premium look
+      var accentLeft = new THREE.SpotLight(0xFFE5CC, 0.8, 10, Math.PI / 6, 0.5, 2);
+      accentLeft.position.set(-3, 5, 2);
+      sg.add(accentLeft);
+
+      var accentRight = new THREE.SpotLight(0xCCE5FF, 0.6, 10, Math.PI / 6, 0.5, 2);
+      accentRight.position.set(3, 4, -2);
+      sg.add(accentRight);
+
+      // Enhanced hemisphere light for ambient occlusion effect
+      var bottomFill = new THREE.HemisphereLight(0xFFF8F0, 0xD5CFC4, 0.4);
       sg.add(bottomFill);
 
       scene.add(sg);
@@ -821,13 +838,47 @@
     // ═══════════════════════════════════════
     // MATERIALS
     // ═══════════════════════════════════════
+    // ═══════════════════════════════════════
+    // ENHANCED MATERIALS - Premium PBR quality
+    // ═══════════════════════════════════════
     function getMetalMat() {
-      var m = new THREE.MeshPhysicalMaterial({ roughness: 0.05, metalness: 1.0, clearcoat: 1.0, clearcoatRoughness: 0.05, envMapIntensity: 1.5 });
+      var m = new THREE.MeshPhysicalMaterial({
+        roughness: 0.03,
+        metalness: 1.0,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.03,
+        envMapIntensity: 2.0,
+        reflectivity: 1.0
+      });
       var s = structureFinishes.find(function(x) { return x.id === state.structure; });
       if (s) m.color.set(s.value);
-      if (state.structure === 'matte-black') { m.metalness = 0.2; m.roughness = 0.5; m.clearcoat = 0.15; m.clearcoatRoughness = 0.4; }
-      else if (state.structure === 'brass') { m.roughness = 0.12; m.clearcoat = 0.6; m.clearcoatRoughness = 0.1; m.envMapIntensity = 1.3; }
-      else if (state.structure === 'bronze') { m.roughness = 0.2; m.clearcoat = 0.4; m.clearcoatRoughness = 0.15; m.envMapIntensity = 1.2; }
+      
+      // Enhanced material properties for different finishes
+      if (state.structure === 'matte-black') {
+        m.metalness = 0.15;
+        m.roughness = 0.65;
+        m.clearcoat = 0.08;
+        m.clearcoatRoughness = 0.5;
+        m.envMapIntensity = 0.6;
+      }
+      else if (state.structure === 'brass') {
+        m.roughness = 0.08;
+        m.clearcoat = 0.75;
+        m.clearcoatRoughness = 0.05;
+        m.envMapIntensity = 1.8;
+      }
+      else if (state.structure === 'bronze') {
+        m.roughness = 0.15;
+        m.clearcoat = 0.55;
+        m.clearcoatRoughness = 0.1;
+        m.envMapIntensity = 1.5;
+      }
+      else if (state.structure === 'chrome') {
+        m.roughness = 0.02;
+        m.clearcoat = 1.0;
+        m.clearcoatRoughness = 0.01;
+        m.envMapIntensity = 2.2;
+      }
       return m;
     }
 
@@ -836,13 +887,33 @@
       if (!c) c = colourSwatches[0];
       var hex = c.value;
       if (c.fabric) {
-        var fm = new THREE.MeshPhysicalMaterial({ roughness: 0.85, metalness: 0.01, map: getTexture('fabric', hex), bumpMap: getTexture('fabric', hex), bumpScale: 0.01, envMapIntensity: 0.35 });
-        fm.sheen = 0.85;
-        fm.sheenColor = new THREE.Color(0xffffff);
-        fm.sheenRoughness = 0.7;
+        // Enhanced fabric material; bump-only relief (a colour texture is
+        // not a valid normal map, and numeric sheen is not supported in r128)
+        var tex = getTexture('fabric', hex);
+        tex.repeat.set(8, 8);
+        var fm = new THREE.MeshPhysicalMaterial({
+          roughness: 0.92,
+          metalness: 0.0,
+          map: tex,
+          bumpMap: tex,
+          bumpScale: 0.015,
+          envMapIntensity: 0.4
+        });
         return fm;
       }
-      var lm = new THREE.MeshPhysicalMaterial({ roughness: 0.45, metalness: 0.03, map: getTexture('leather', hex), bumpMap: getTexture('leather', hex), bumpScale: 0.005, clearcoat: 0.35, clearcoatRoughness: 0.25, envMapIntensity: 0.75 });
+      // Enhanced leather material with realistic properties
+      var ltex = getTexture('leather', hex);
+      ltex.repeat.set(4, 4);
+      var lm = new THREE.MeshPhysicalMaterial({
+        roughness: 0.38,
+        metalness: 0.02,
+        map: ltex,
+        bumpMap: ltex,
+        bumpScale: 0.008,
+        clearcoat: 0.45,
+        clearcoatRoughness: 0.2,
+        envMapIntensity: 0.9
+      });
       return lm;
     }
 
@@ -852,9 +923,6 @@
       var hex = c.value;
       if (c.fabric) {
         var fm = new THREE.MeshPhysicalMaterial({ roughness: 0.85, metalness: 0.01, map: getTexture('fabric', hex), bumpMap: getTexture('fabric', hex), bumpScale: 0.01, envMapIntensity: 0.35 });
-        fm.sheen = 0.85;
-        fm.sheenColor = new THREE.Color(0xffffff);
-        fm.sheenRoughness = 0.7;
         return fm;
       }
       var lm = new THREE.MeshPhysicalMaterial({ roughness: 0.45, metalness: 0.03, map: getTexture('leather', hex), bumpMap: getTexture('leather', hex), bumpScale: 0.005, clearcoat: 0.35, clearcoatRoughness: 0.25, envMapIntensity: 0.75 });
