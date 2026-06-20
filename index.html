@@ -80,6 +80,53 @@
     .mobile-menu a { font-family: var(--font-display); font-size: 36px; font-weight: 300; color: var(--dark); letter-spacing: 1px; transition: color 0.3s; }
     .mobile-menu a:hover { color: var(--gold); }
 
+    /* ── Mega-menu navigation (Phase 1: catalogue architecture) ── */
+    nav.menu-active { background: rgba(250,250,248,0.94); backdrop-filter: blur(40px) saturate(1.8); -webkit-backdrop-filter: blur(40px) saturate(1.8); border-bottom: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+    .nav-center { gap: 30px; }
+    .nav-item { position: relative; }
+    .nav-item > a { display: flex; align-items: center; gap: 5px; cursor: pointer; user-select: none; }
+    .nav-item > a .caret { width: 9px; height: 9px; transition: transform 0.3s var(--ease-out); opacity: 0.55; }
+    .nav-item.open > a { color: var(--dark); }
+    .nav-item.open > a .caret { transform: rotate(180deg); opacity: 0.9; }
+    .nav-item.open > a::after { width: 100%; }
+
+    .mega-panel { position: fixed; left: 0; right: 0; top: 76px; background: rgba(252,251,248,0.98); backdrop-filter: blur(44px) saturate(1.8); -webkit-backdrop-filter: blur(44px) saturate(1.8); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); box-shadow: 0 32px 64px rgba(0,0,0,0.09); opacity: 0; visibility: hidden; transform: translateY(-14px); transition: opacity 0.35s var(--ease-out), transform 0.35s var(--ease-out), visibility 0.35s; z-index: 899; }
+    .nav-item.open .mega-panel { opacity: 1; visibility: visible; transform: translateY(0); }
+    .mega-inner { max-width: 1400px; margin: 0 auto; padding: 38px 60px 42px; display: grid; grid-template-columns: repeat(5, 1fr) 1.35fr; gap: 32px; }
+    .mega-col-title { font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-dark); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .mega-link { display: flex; align-items: baseline; justify-content: space-between; font-size: 13px; font-weight: 300; color: var(--text-secondary); padding: 7px 0; cursor: pointer; transition: color 0.25s, padding-left 0.25s var(--ease-out); }
+    .mega-link:hover { color: var(--gold-dark); padding-left: 8px; }
+    .mega-link .mega-count { font-size: 10px; color: var(--text-light); font-weight: 400; }
+    .mega-all { margin-top: 14px; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-dark); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: gap 0.3s; }
+    .mega-all:hover { gap: 11px; }
+    .mega-features { display: flex; flex-direction: column; gap: 14px; }
+    .mega-feature { background: linear-gradient(150deg, var(--bg-warm), var(--bg-cream)); border: 1px solid var(--border); border-radius: 14px; padding: 22px; cursor: pointer; transition: all 0.4s var(--ease-out); position: relative; overflow: hidden; }
+    .mega-feature:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .mega-feature .mf-cat { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-dark); margin-bottom: 6px; }
+    .mega-feature h4 { font-family: var(--font-display); font-size: 21px; font-weight: 400; color: var(--dark); margin-bottom: 6px; }
+    .mega-feature p { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+    .mega-feature .mf-arrow { position: absolute; top: 20px; right: 20px; color: var(--gold); opacity: 0; transform: translateX(-6px); transition: all 0.4s var(--ease-out); }
+    .mega-feature:hover .mf-arrow { opacity: 1; transform: translateX(0); }
+
+    .nav-dropdown { position: absolute; top: 52px; left: 50%; transform: translateX(-50%) translateY(-8px); min-width: 248px; background: rgba(252,251,248,0.98); backdrop-filter: blur(40px) saturate(1.8); -webkit-backdrop-filter: blur(40px) saturate(1.8); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow-lg); padding: 12px; opacity: 0; visibility: hidden; transition: all 0.3s var(--ease-out); z-index: 899; }
+    .nav-item.open .nav-dropdown { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+    .nav-dropdown a { display: flex; align-items: flex-start; gap: 11px; font-size: 12px; color: var(--text-secondary); padding: 11px 12px; border-radius: 8px; transition: all 0.25s; text-transform: none; letter-spacing: 0; }
+    .nav-dropdown a::after { display: none; }
+    .nav-dropdown a:hover { background: var(--gold-10); color: var(--gold-dark); }
+    .nav-dropdown a svg { width: 16px; height: 16px; color: var(--gold); flex-shrink: 0; margin-top: 1px; }
+    .nav-dropdown a span { display: block; }
+    .nav-dropdown a small { display: block; font-size: 10px; color: var(--text-light); margin-top: 3px; line-height: 1.4; }
+
+    /* mobile catalogue accordion */
+    .mm-section { width: 100%; max-width: 360px; border-bottom: 1px solid var(--border); }
+    .mm-acc-trigger { display: flex; align-items: center; justify-content: space-between; width: 100%; background: none; border: none; cursor: pointer; padding: 18px 4px; font-family: var(--font-display); font-size: 26px; font-weight: 300; color: var(--dark); letter-spacing: 1px; }
+    .mm-acc-trigger .caret { width: 16px; height: 16px; color: var(--gold); transition: transform 0.3s; }
+    .mm-section.open .mm-acc-trigger .caret { transform: rotate(180deg); }
+    .mm-acc-body { max-height: 0; overflow: hidden; transition: max-height 0.4s var(--ease-out); }
+    .mm-section.open .mm-acc-body { max-height: 420px; }
+    .mm-acc-body a { display: block; font-family: var(--font-body); font-size: 15px; font-weight: 300; color: var(--text-secondary); padding: 9px 4px; letter-spacing: 0.5px; }
+    .mm-acc-body a:hover { color: var(--gold); }
+
     #search-overlay { position: fixed; inset: 0; z-index: 950; background: rgba(250,250,248,0.96); backdrop-filter: blur(60px); opacity: 0; pointer-events: none; transition: opacity 0.4s var(--ease-out); display: flex; align-items: flex-start; justify-content: center; padding-top: 120px; }
     #search-overlay.open { opacity: 1; pointer-events: auto; }
     .search-container { width: 100%; max-width: 720px; padding: 0 24px; }
@@ -429,6 +476,10 @@
 
     @media (max-width: 1024px) {
       nav { padding: 0 40px; }
+      .nav-center { gap: 20px; }
+      .mega-inner { padding: 30px 40px 34px; gap: 22px; grid-template-columns: repeat(3, 1fr); }
+      .mega-features { flex-direction: row; grid-column: span 3; }
+      .mega-feature { flex: 1; }
       .section { padding: 120px 40px; }
       .products-grid { grid-template-columns: repeat(2, 1fr); }
       .rooms-grid { grid-template-columns: repeat(2, 1fr); }
@@ -483,12 +534,77 @@
       <img src="https://www.mmadesign.in/assets/images/logo/mmadesignlogo.png" alt="MMA Design" onerror="this.style.display='none';this.parentNode.innerHTML='<span class=\'nav-logo-text\'>MMA <em>Design</em></span>'">
     </div>
     <ul class="nav-center">
-      <li><a href="#products">Products</a></li>
-      <li><a href="#configurator">3D Studio</a></li>
-      <li><a href="office-designer.html">Office Designer</a></li>
-      <li><a href="#rooms">Spaces</a></li>
-      <li><a href="#portfolio">Portfolio</a></li>
-      <li><a href="#services">Services</a></li>
+      <li class="nav-item" data-menu="products">
+        <a>Products <svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></a>
+        <div class="mega-panel" id="megaProducts">
+          <div class="mega-inner">
+            <div>
+              <div class="mega-col-title">Seating</div>
+              <div class="mega-link" data-type="sub" data-value="executive-chairs">Executive Chairs <span class="mega-count">2</span></div>
+              <div class="mega-link" data-type="sub" data-value="conference-chairs">Conference Chairs <span class="mega-count">1</span></div>
+              <div class="mega-all" data-type="group" data-value="seating">All Seating &rarr;</div>
+            </div>
+            <div>
+              <div class="mega-col-title">Soft Seating</div>
+              <div class="mega-link" data-type="sub" data-value="sofas">Sofas <span class="mega-count">1</span></div>
+              <div class="mega-link" data-type="sub" data-value="lounge-chairs">Lounge Chairs <span class="mega-count">1</span></div>
+              <div class="mega-link" data-type="sub" data-value="benches">Benches <span class="mega-count">1</span></div>
+              <div class="mega-link" data-type="sub" data-value="breakout">Breakout <span class="mega-count">1</span></div>
+              <div class="mega-all" data-type="group" data-value="soft-seating">All Soft Seating &rarr;</div>
+            </div>
+            <div>
+              <div class="mega-col-title">Tables</div>
+              <div class="mega-link" data-type="sub" data-value="conference-tables">Conference Tables <span class="mega-count">1</span></div>
+              <div class="mega-link" data-type="sub" data-value="meeting-tables">Meeting Tables <span class="mega-count">1</span></div>
+              <div class="mega-link" data-type="sub" data-value="reception">Reception <span class="mega-count">1</span></div>
+              <div class="mega-all" data-type="group" data-value="tables">All Tables &rarr;</div>
+            </div>
+            <div>
+              <div class="mega-col-title">Collaborative &amp; Pods</div>
+              <div class="mega-link" data-type="sub" data-value="hot-desking">Hot Desking <span class="mega-count">1</span></div>
+              <div class="mega-link" data-type="sub" data-value="bar-tables">Bar &amp; Standing <span class="mega-count">1</span></div>
+              <div class="mega-all" data-type="group" data-value="collaborative">All Collaborative &rarr;</div>
+            </div>
+            <div>
+              <div class="mega-col-title">Storage</div>
+              <div class="mega-link" data-type="sub" data-value="storage-systems">Storage Systems <span class="mega-count">1</span></div>
+              <div class="mega-all" data-type="group" data-value="storage">All Storage &rarr;</div>
+              <div class="mega-col-title" style="margin-top:26px;">Documents</div>
+              <div class="mega-link" onclick="document.getElementById('materials').scrollIntoView({behavior:'smooth'})">Materials &amp; Finishes</div>
+            </div>
+            <div class="mega-features">
+              <div class="mega-feature" onclick="window.location.href='3d-studio.html'">
+                <svg class="mf-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                <div class="mf-cat">Interactive</div>
+                <h4>3D Configurator</h4>
+                <p>Customise legs, fabric &amp; finish on any product in real-time 3D.</p>
+              </div>
+              <div class="mega-feature" onclick="window.location.href='office-designer.html'">
+                <svg class="mf-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                <div class="mf-cat">Spatial</div>
+                <h4>Office Designer</h4>
+                <p>Drop products into a 3D room and design the whole space.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item" data-menu="documentation">
+        <a>Documentation <svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></a>
+        <div class="nav-dropdown">
+          <a href="#products"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span>Catalogues &amp; Brochures<small>Download full product catalogue PDFs</small></span></a>
+          <a href="#sustainability"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>Code of Conduct<small>Sustainability &amp; responsible sourcing</small></span></a>
+          <a href="#services"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>Mission &amp; Values<small>Our design philosophy</small></span></a>
+        </div>
+      </li>
+      <li class="nav-item" data-menu="partners">
+        <a>Partners <svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></a>
+        <div class="nav-dropdown">
+          <a href="#clients"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg><span>Partner Companies<small>Infiniti &middot; Noti &middot; Treku</small></span></a>
+          <a href="#portfolio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span>Project Portfolio<small>Landmark installations</small></span></a>
+        </div>
+      </li>
+      <li><a href="#portfolio">About</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
     <div class="nav-actions">
@@ -502,13 +618,25 @@
 </nav>
 
 <div class="mobile-menu" id="mobileMenu">
-  <a href="#products" class="mm-link">Products</a>
-  <a href="#configurator" class="mm-link">3D Studio</a>
-  <a href="office-designer.html" class="mm-link">Office Designer</a>
-  <a href="#rooms" class="mm-link">Spaces</a>
-  <a href="#portfolio" class="mm-link">Portfolio</a>
-  <a href="#services" class="mm-link">Services</a>
-  <a href="#contact" class="mm-link">Contact</a>
+  <div class="mm-section">
+    <button class="mm-acc-trigger">Products <svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+    <div class="mm-acc-body">
+      <a class="mm-cat" data-type="group" data-value="seating">Seating</a>
+      <a class="mm-cat" data-type="group" data-value="soft-seating">Soft Seating</a>
+      <a class="mm-cat" data-type="group" data-value="tables">Tables</a>
+      <a class="mm-cat" data-type="group" data-value="collaborative">Collaborative &amp; Pods</a>
+      <a class="mm-cat" data-type="group" data-value="storage">Storage</a>
+    </div>
+  </div>
+  <div class="mm-section">
+    <button class="mm-acc-trigger">Design Tools <svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+    <div class="mm-acc-body">
+      <a href="3d-studio.html">3D Configurator</a>
+      <a href="office-designer.html">Office Designer</a>
+    </div>
+  </div>
+  <a href="#portfolio" class="mm-link" style="font-family:var(--font-display);font-size:26px;">About</a>
+  <a href="#contact" class="mm-link" style="font-family:var(--font-display);font-size:26px;">Contact</a>
 </div>
 
 <div id="search-overlay">
@@ -622,26 +750,27 @@
 <section id="products" class="section section-pattern-dots">
   <div class="reveal">
     <div class="section-eyebrow">Product Catalogue</div>
-    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:48px;flex-wrap:wrap;gap:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;flex-wrap:wrap;gap:24px;">
       <div>
-        <h2 class="section-title">Explore by <em>Category</em></h2>
-        <p class="section-desc" style="margin-top:8px;">Intent-driven search finds what you need — and surfaces what you didn't know you wanted.</p>
+        <h2 class="section-title">Explore by <em id="catalogueTitle">Category</em></h2>
+        <p class="section-desc" style="margin-top:8px;" id="catalogueDesc">Browse MMA's catalogue by family — Seating, Soft Seating, Tables, Collaborative, and Storage.</p>
       </div>
       <button class="nav-search-btn" id="searchOpenAlt" aria-label="Search products" style="width:48px;height:48px;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
       </button>
     </div>
   </div>
-  <div class="product-filters reveal stagger-1">
-    <button class="filter-btn active" data-filter="all">All</button>
-    <button class="filter-btn" data-filter="chairs">Chairs</button>
-    <button class="filter-btn" data-filter="tables">Tables</button>
-    <button class="filter-btn" data-filter="sofas">Sofas &amp; Lounge</button>
-    <button class="filter-btn" data-filter="lounge">Lounge</button>
-    <button class="filter-btn" data-filter="storage">Storage</button>
-    <button class="filter-btn" data-filter="collaborative">Collaborative</button>
+  <div class="product-filters reveal stagger-1" id="productFilters">
+    <button class="filter-btn active" data-type="all" data-value="all">All</button>
+    <button class="filter-btn" data-type="group" data-value="seating">Seating</button>
+    <button class="filter-btn" data-type="group" data-value="soft-seating">Soft Seating</button>
+    <button class="filter-btn" data-type="group" data-value="tables">Tables</button>
+    <button class="filter-btn" data-type="group" data-value="collaborative">Collaborative &amp; Pods</button>
+    <button class="filter-btn" data-type="group" data-value="storage">Storage</button>
   </div>
+  <div class="reveal" id="catalogueMeta" style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:28px;"></div>
   <div class="products-grid reveal stagger-2" id="productsGrid"></div>
+  <div class="reveal" id="catalogueEmpty" style="display:none;text-align:center;padding:60px 0;color:var(--text-muted);font-size:14px;"></div>
 </section>
 
 <section id="configurator" class="section section-pattern-lines" style="background:var(--bg-warm);">
@@ -1200,23 +1329,54 @@
 </footer>
 
 <script>
+// Phase 1 taxonomy — each product carries a group + subcategory so the mega-menu,
+// catalogue filters, and (Phase 2) listing pages can all share one source of truth.
+const taxonomy = [
+  { group: 'seating', label: 'Seating', subs: [
+    { sub: 'executive-chairs', label: 'Executive Chairs' },
+    { sub: 'conference-chairs', label: 'Conference Chairs' }
+  ]},
+  { group: 'soft-seating', label: 'Soft Seating', subs: [
+    { sub: 'sofas', label: 'Sofas' },
+    { sub: 'lounge-chairs', label: 'Lounge Chairs' },
+    { sub: 'benches', label: 'Benches' },
+    { sub: 'breakout', label: 'Breakout' }
+  ]},
+  { group: 'tables', label: 'Tables', subs: [
+    { sub: 'conference-tables', label: 'Conference Tables' },
+    { sub: 'meeting-tables', label: 'Meeting Tables' },
+    { sub: 'reception', label: 'Reception' }
+  ]},
+  { group: 'collaborative', label: 'Collaborative & Pods', subs: [
+    { sub: 'hot-desking', label: 'Hot Desking' },
+    { sub: 'bar-tables', label: 'Bar & Standing' }
+  ]},
+  { group: 'storage', label: 'Storage', subs: [
+    { sub: 'storage-systems', label: 'Storage Systems' }
+  ]}
+];
+const groupOf = {};
+const groupLabel = {};
+const subLabel = {};
+taxonomy.forEach(g => { groupLabel[g.group] = g.label; g.subs.forEach(s => { groupOf[s.sub] = g.group; subLabel[s.sub] = s.label; }); });
+
 const productData = [
-  { id: 1, name: 'Meuse Executive', category: 'chairs', cat: 'Executive Seating', shape: 'curved', desc: 'Ergonomic mesh, hydraulic gas lift, solid structural frame with multiple base options.', tags: ['D9 Base','L30 Base','Leather','Mesh'], isNew: true, bases: ['D9','L14','L21','L30','R7'] },
-  { id: 2, name: 'Meuse Conference', category: 'chairs', cat: 'Conference Seating', shape: 'curved', desc: 'Stackable conference chair with cushioned seat, chrome sled base, and upholstered back.', tags: ['S7 Base','Upholstered','Stackable'], isNew: false, bases: ['S7','L14'] },
-  { id: 3, name: 'Diablo Modular Sofa', category: 'sofas', cat: 'Modular Lounge', shape: 'rectangular', desc: 'Plush modular felt cushions with architectural brass-tipped steel frame. Multiple configuration options.', tags: ['L31 Base','Felt','Modular','Brass Tips'], isNew: true, bases: ['L31','L32'] },
-  { id: 4, name: 'Diablo Bench', category: 'sofas', cat: 'Public Seating', shape: 'rectangular', desc: 'Linear bench system for waiting areas, corridors, and informal meeting zones.', tags: ['L32 Base','Fabric','Linear'], isNew: false, bases: ['L32'] },
-  { id: 5, name: 'Loire Boardroom', category: 'tables', cat: 'Conference Table', shape: 'rectangular', desc: 'Chamfered walnut wood slab table with steel modular legs. Seats 8-16.', tags: ['Walnut','Steel Legs','Grommet','Power'], isNew: true, bases: ['R13','L30'] },
-  { id: 6, name: 'Loire Round', category: 'tables', cat: 'Meeting Table', shape: 'circular', desc: 'Circular meeting table in solid oak or walnut. Perfect for 4-6 person huddle spaces.', tags: ['Circular','Oak','Walnut','Power'], isNew: false, bases: ['R7','R13'] },
-  { id: 7, name: 'Flamingo Lounge', category: 'lounge', cat: 'Lounge Chair', shape: 'curved', desc: 'Iconic swivel lounge chair. Sculptural walnut plywood shell with luxurious leather finish.', tags: ['Swivel','R13 Base','Leather','Plywood'], isNew: true, bases: ['R13','R7'] },
-  { id: 8, name: 'Seine Reception Desk', category: 'tables', cat: 'Reception', shape: 'rectangular', desc: 'Curved reception counter in premium wood veneer with integrated lighting and cable management.', tags: ['Curved','Veneer','LED','Counter'], isNew: false, bases: ['L21'] },
-  { id: 9, name: 'Rhone Collaborative Table', category: 'collaborative', cat: 'Hot Desking', shape: 'oval', desc: 'Oval collaborative table with power integration, cable management, and whiteboard surface.', tags: ['Oval','Power','Whiteboard','Hot Desk'], isNew: true, bases: ['L14','R7'] },
-  { id: 10, name: 'Marne Storage Wall', category: 'storage', cat: 'Storage System', shape: 'rectangular', desc: 'Modular storage wall with open shelving, closed cabinets, and integrated display niches.', tags: ['Modular','Shelving','Cabinets','Display'], isNew: false, bases: [] },
-  { id: 11, name: 'Durance Breakout Sofa', category: 'sofas', cat: 'Breakout', shape: 'curved', desc: 'Modular curved sofa for informal breakout spaces. Available in 30+ fabric options.', tags: ['Curved','Modular','Fabric','Breakout'], isNew: false, bases: ['L32','L31'] },
-  { id: 12, name: 'Garonne Bar Table', category: 'collaborative', cat: 'Standing Desk', shape: 'circular', desc: 'Height-adjustable round bar table for standing meetings and informal exchanges.', tags: ['Circular','Height Adj','Standing','Power'], isNew: true, bases: ['R7'] }
+  { id: 1, name: 'Meuse Executive', group: 'seating', sub: 'executive-chairs', category: 'chairs', cat: 'Executive Seating', shape: 'curved', desc: 'Ergonomic mesh, hydraulic gas lift, solid structural frame with multiple base options.', tags: ['D9 Base','L30 Base','Leather','Mesh'], isNew: true, bases: ['D9','L14','L21','L30','R7'] },
+  { id: 2, name: 'Meuse Conference', group: 'seating', sub: 'conference-chairs', category: 'chairs', cat: 'Conference Seating', shape: 'curved', desc: 'Stackable conference chair with cushioned seat, chrome sled base, and upholstered back.', tags: ['S7 Base','Upholstered','Stackable'], isNew: false, bases: ['S7','L14'] },
+  { id: 3, name: 'Diablo Modular Sofa', group: 'soft-seating', sub: 'sofas', category: 'sofas', cat: 'Modular Lounge', shape: 'rectangular', desc: 'Plush modular felt cushions with architectural brass-tipped steel frame. Multiple configuration options.', tags: ['L31 Base','Felt','Modular','Brass Tips'], isNew: true, bases: ['L31','L32'] },
+  { id: 4, name: 'Diablo Bench', group: 'soft-seating', sub: 'benches', category: 'sofas', cat: 'Public Seating', shape: 'rectangular', desc: 'Linear bench system for waiting areas, corridors, and informal meeting zones.', tags: ['L32 Base','Fabric','Linear'], isNew: false, bases: ['L32'] },
+  { id: 5, name: 'Loire Boardroom', group: 'tables', sub: 'conference-tables', category: 'tables', cat: 'Conference Table', shape: 'rectangular', desc: 'Chamfered walnut wood slab table with steel modular legs. Seats 8-16.', tags: ['Walnut','Steel Legs','Grommet','Power'], isNew: true, bases: ['R13','L30'] },
+  { id: 6, name: 'Loire Round', group: 'tables', sub: 'meeting-tables', category: 'tables', cat: 'Meeting Table', shape: 'circular', desc: 'Circular meeting table in solid oak or walnut. Perfect for 4-6 person huddle spaces.', tags: ['Circular','Oak','Walnut','Power'], isNew: false, bases: ['R7','R13'] },
+  { id: 7, name: 'Flamingo Lounge', group: 'soft-seating', sub: 'lounge-chairs', category: 'lounge', cat: 'Lounge Chair', shape: 'curved', desc: 'Iconic swivel lounge chair. Sculptural walnut plywood shell with luxurious leather finish.', tags: ['Swivel','R13 Base','Leather','Plywood'], isNew: true, bases: ['R13','R7'] },
+  { id: 8, name: 'Seine Reception Desk', group: 'tables', sub: 'reception', category: 'tables', cat: 'Reception', shape: 'rectangular', desc: 'Curved reception counter in premium wood veneer with integrated lighting and cable management.', tags: ['Curved','Veneer','LED','Counter'], isNew: false, bases: ['L21'] },
+  { id: 9, name: 'Rhone Collaborative Table', group: 'collaborative', sub: 'hot-desking', category: 'collaborative', cat: 'Hot Desking', shape: 'oval', desc: 'Oval collaborative table with power integration, cable management, and whiteboard surface.', tags: ['Oval','Power','Whiteboard','Hot Desk'], isNew: true, bases: ['L14','R7'] },
+  { id: 10, name: 'Marne Storage Wall', group: 'storage', sub: 'storage-systems', category: 'storage', cat: 'Storage System', shape: 'rectangular', desc: 'Modular storage wall with open shelving, closed cabinets, and integrated display niches.', tags: ['Modular','Shelving','Cabinets','Display'], isNew: false, bases: [] },
+  { id: 11, name: 'Durance Breakout Sofa', group: 'soft-seating', sub: 'breakout', category: 'sofas', cat: 'Breakout', shape: 'curved', desc: 'Modular curved sofa for informal breakout spaces. Available in 30+ fabric options.', tags: ['Curved','Modular','Fabric','Breakout'], isNew: false, bases: ['L32','L31'] },
+  { id: 12, name: 'Garonne Bar Table', group: 'collaborative', sub: 'bar-tables', category: 'collaborative', cat: 'Standing Desk', shape: 'circular', desc: 'Height-adjustable round bar table for standing meetings and informal exchanges.', tags: ['Circular','Height Adj','Standing','Power'], isNew: true, bases: ['R7'] }
 ];
 
 const productsGrid = document.getElementById('productsGrid');
-let activeFilter = 'all';
+let activeFilter = { type: 'all', value: 'all' };
 
 const productSVGs = {
   'Meuse Executive': `<svg width="200" height="200" viewBox="0 0 200 200" fill="none"><g stroke="#B8952F" stroke-width="1.2" opacity="0.2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="100" cy="170" rx="40" ry="6"/><path d="M75 170 L75 145 Q75 132 83 128 L83 100"/><path d="M125 170 L125 145 Q125 132 117 128 L117 100"/><path d="M70 100 Q70 65 100 52 Q130 65 130 100"/><path d="M70 100 L70 108 Q70 116 78 116 L122 116 Q130 116 130 108 L130 100"/><path d="M66 88 Q64 80 67 74 L70 72"/><path d="M134 88 Q136 80 133 74 L130 72"/><path d="M66 88 L66 104 Q66 112 70 112"/><path d="M134 88 L134 104 Q134 112 130 112"/><line x1="87" y1="170" x2="87" y2="178"/><line x1="113" y1="170" x2="113" y2="178"/><circle cx="87" cy="180" r="3"/><circle cx="113" cy="180" r="3"/><circle cx="100" cy="180" r="3"/><path d="M84 180 L116 180"/><path d="M80 116 L80 130 Q80 138 85 142"/><path d="M120 116 L120 130 Q120 138 115 142"/><line x1="90" y1="66" x2="90" y2="92" opacity="0.4"/><line x1="100" y1="62" x2="100" y2="92" opacity="0.4"/><line x1="110" y1="66" x2="110" y2="92" opacity="0.4"/></g></svg>`,
@@ -1248,10 +1408,35 @@ const productImages = {
   'Garonne Bar Table': 'https://images.unsplash.com/photo-1581539250439-c96689b516dd?w=600&h=600&fit=crop'
 };
 
+function filterProducts(filter) {
+  if (!filter || filter.type === 'all') return productData.slice();
+  if (filter.type === 'sub') return productData.filter(p => p.sub === filter.value);
+  return productData.filter(p => p.group === filter.value);
+}
+
 function renderProducts(filter) {
-  const filtered = filter === 'all' ? productData : productData.filter(p => p.category === filter);
+  activeFilter = filter || { type: 'all', value: 'all' };
+  const filtered = filterProducts(activeFilter);
+
+  // Heading + meta reflect the active taxonomy selection
+  const titleEl = document.getElementById('catalogueTitle');
+  const descEl = document.getElementById('catalogueDesc');
+  const metaEl = document.getElementById('catalogueMeta');
+  const emptyEl = document.getElementById('catalogueEmpty');
+  if (activeFilter.type === 'all') {
+    if (titleEl) titleEl.textContent = 'Category';
+    if (descEl) descEl.textContent = "Browse MMA's catalogue by family — Seating, Soft Seating, Tables, Collaborative, and Storage.";
+  } else if (activeFilter.type === 'group') {
+    if (titleEl) titleEl.textContent = groupLabel[activeFilter.value] || 'Category';
+    if (descEl) descEl.textContent = 'Every piece in the ' + (groupLabel[activeFilter.value] || '') + ' family, ready to configure in 3D.';
+  } else {
+    if (titleEl) titleEl.textContent = subLabel[activeFilter.value] || 'Category';
+    if (descEl) descEl.textContent = (subLabel[activeFilter.value] || '') + ' — part of the ' + (groupLabel[groupOf[activeFilter.value]] || '') + ' collection.';
+  }
+  if (metaEl) metaEl.textContent = filtered.length + (filtered.length === 1 ? ' piece' : ' pieces');
+
   productsGrid.innerHTML = filtered.map(p => `
-    <div class="product-card" data-category="${p.category}" data-shape="${p.shape}">
+    <div class="product-card" data-group="${p.group}" data-sub="${p.sub}" data-category="${p.category}" data-shape="${p.shape}">
       <div class="product-card-img">
         <div class="img-inner">
           <img src="${productImages[p.name]}" alt="${p.name}" loading="lazy">
@@ -1266,7 +1451,7 @@ function renderProducts(filter) {
         </div>
       </div>
       <div class="product-card-body">
-        <div class="product-card-cat">${p.cat}</div>
+        <div class="product-card-cat">${subLabel[p.sub] || p.cat}</div>
         <div class="product-card-name">${p.name}</div>
         <div class="product-card-desc">${p.desc}</div>
         <div class="product-card-meta">
@@ -1275,17 +1460,49 @@ function renderProducts(filter) {
       </div>
     </div>
   `).join('');
+
+  if (emptyEl) {
+    emptyEl.style.display = filtered.length ? 'none' : 'block';
+    emptyEl.textContent = filtered.length ? '' : 'No pieces in this category yet — explore the full catalogue.';
+  }
 }
 
-renderProducts('all');
-
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    activeFilter = btn.dataset.filter;
-    renderProducts(activeFilter);
+// Sync the filter-bar buttons to an active selection (group highlights for a sub too)
+function syncFilterButtons(filter) {
+  const targetGroup = filter.type === 'sub' ? groupOf[filter.value] : filter.value;
+  document.querySelectorAll('#productFilters .filter-btn').forEach(b => {
+    const isActive = (filter.type === 'all' && b.dataset.type === 'all') ||
+                     (b.dataset.type === 'group' && b.dataset.value === targetGroup);
+    b.classList.toggle('active', !!isActive);
   });
+}
+
+// Single entry point used by filter bar, mega-menu, and mobile accordion
+function selectCategory(type, value, scroll) {
+  const filter = { type, value };
+  renderProducts(filter);
+  syncFilterButtons(filter);
+  if (scroll !== false) {
+    document.getElementById('products').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  closeAllMenus();
+}
+
+renderProducts({ type: 'all', value: 'all' });
+
+document.querySelectorAll('#productFilters .filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    selectCategory(btn.dataset.type, btn.dataset.value, false);
+  });
+});
+
+// Mega-menu category links + live counts (kept in sync with the data, never hardcoded drift)
+document.querySelectorAll('.mega-link[data-type], .mega-all[data-type]').forEach(el => {
+  el.addEventListener('click', () => selectCategory(el.dataset.type, el.dataset.value));
+});
+document.querySelectorAll('.mega-link[data-type="sub"]').forEach(el => {
+  const countEl = el.querySelector('.mega-count');
+  if (countEl) countEl.textContent = productData.filter(p => p.sub === el.dataset.value).length;
 });
 
 const searchOverlay = document.getElementById('search-overlay');
@@ -1360,6 +1577,61 @@ const hamburger = document.getElementById('hamburgerBtn');
 const mobileMenu = document.getElementById('mobileMenu');
 hamburger.addEventListener('click', () => { hamburger.classList.toggle('open'); mobileMenu.classList.toggle('open'); });
 document.querySelectorAll('.mm-link').forEach(a => { a.addEventListener('click', () => { hamburger.classList.remove('open'); mobileMenu.classList.remove('open'); }); });
+
+// ── Desktop mega-menu / dropdown interactions ──
+const navItems = document.querySelectorAll('.nav-item');
+let megaCloseTimer = null;
+function closeAllMenus() {
+  navItems.forEach(i => i.classList.remove('open'));
+  navbar.classList.remove('menu-active');
+  hamburger.classList.remove('open');
+  mobileMenu.classList.remove('open');
+}
+navItems.forEach(item => {
+  item.addEventListener('mouseenter', () => {
+    if (window.innerWidth <= 768) return;
+    clearTimeout(megaCloseTimer);
+    navItems.forEach(i => { if (i !== item) i.classList.remove('open'); });
+    item.classList.add('open');
+    navbar.classList.add('menu-active');
+  });
+  item.addEventListener('mouseleave', () => {
+    if (window.innerWidth <= 768) return;
+    megaCloseTimer = setTimeout(() => {
+      item.classList.remove('open');
+      if (![...navItems].some(i => i.classList.contains('open'))) navbar.classList.remove('menu-active');
+    }, 160);
+  });
+  // click-to-toggle for touch / tablet
+  const trigger = item.querySelector(':scope > a');
+  if (trigger) trigger.addEventListener('click', e => {
+    e.preventDefault();
+    const isOpen = item.classList.contains('open');
+    navItems.forEach(i => i.classList.remove('open'));
+    item.classList.toggle('open', !isOpen);
+    navbar.classList.toggle('menu-active', !isOpen);
+  });
+});
+document.addEventListener('click', e => {
+  if (!e.target.closest('.nav-item')) {
+    navItems.forEach(i => i.classList.remove('open'));
+    if (window.scrollY <= 50) navbar.classList.remove('menu-active');
+  }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllMenus(); });
+
+// ── Mobile catalogue accordion ──
+document.querySelectorAll('.mm-acc-trigger').forEach(trigger => {
+  trigger.addEventListener('click', () => {
+    const section = trigger.closest('.mm-section');
+    const wasOpen = section.classList.contains('open');
+    document.querySelectorAll('.mm-section').forEach(s => s.classList.remove('open'));
+    if (!wasOpen) section.classList.add('open');
+  });
+});
+document.querySelectorAll('.mm-cat[data-type]').forEach(a => {
+  a.addEventListener('click', () => selectCategory(a.dataset.type, a.dataset.value));
+});
 
 document.querySelectorAll('.svc-panel').forEach(panel => {
   panel.addEventListener('click', () => {
