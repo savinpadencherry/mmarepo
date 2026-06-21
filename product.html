@@ -274,9 +274,15 @@
 
   <section class="section" style="background:var(--bg-warm);border-top:1px solid var(--border);">
     <div class="wrap">
-      <div class="section-eyebrow">Specified Together</div>
-      <h2 class="section-title">From the Same <em>Collection</em></h2>
-      <div class="related-grid" id="relatedGrid"></div>
+      <div class="section-eyebrow">Recommended</div>
+      <h2 class="section-title">Frequently <em>Specified Together</em></h2>
+      <p style="font-size:14px;color:var(--text-muted);max-width:540px;margin-top:-4px;" id="freqSub"></p>
+      <div class="related-grid" id="freqGrid"></div>
+      <div id="collectionBlock" style="margin-top:66px;display:none;">
+        <div class="section-eyebrow">Same Family</div>
+        <h2 class="section-title">More from the <em id="collName">Collection</em></h2>
+        <div class="related-grid" id="collectionGrid"></div>
+      </div>
     </div>
   </section>
 </main>
@@ -470,17 +476,29 @@
       specRow('Warranty', '10-year structural') +
       specRow('Sustainability', 'FSC timber · low-VOC finishes');
 
-    // ── Related (same group) ──
-    var related = productData.filter(function(x){ return x.group === p.group && x.id !== p.id; }).slice(0, 4);
-    if (related.length < 4) {
-      productData.forEach(function(x){ if (x.id !== p.id && related.indexOf(x) < 0 && related.length < 4) related.push(x); });
-    }
-    document.getElementById('relatedGrid').innerHTML = related.map(function(x) {
+    // ── Recommendations (engine: complementary across spaces + same collection) ──
+    function relCard(x) {
       return '<div class="rel-card" onclick="location.href=\'product.html?id=' + x.id + '\'">' +
         '<div class="rel-img"><img src="' + productImages[x.name] + '" alt="' + x.name + '" loading="lazy"></div>' +
         '<div class="rel-body"><div class="rel-cat">' + subLabel[x.sub] + '</div><div class="rel-name">' + x.name + '</div></div>' +
       '</div>';
-    }).join('');
+    }
+    var recs = recommendationsFor(p);
+    var freq = recs.frequentlyWith.slice(0, 4);
+    if (freq.length < 4) { // top up with other groups so the row never looks sparse
+      productData.forEach(function(x){ if (x.id !== p.id && x.group !== p.group && freq.indexOf(x) < 0 && freq.length < 4) freq.push(x); });
+    }
+    var sharedSpace = p.application.length ? (applicationLabel[p.application[0]] || '').toLowerCase() : '';
+    document.getElementById('freqSub').textContent = sharedSpace
+      ? 'Pieces our architects pair with the ' + p.name + ' in ' + sharedSpace + ' settings.'
+      : 'Pieces our architects pair with the ' + p.name + '.';
+    document.getElementById('freqGrid').innerHTML = freq.map(relCard).join('');
+
+    if (recs.sameCollection.length) {
+      document.getElementById('collectionBlock').style.display = 'block';
+      document.getElementById('collName').textContent = p.collectionLabel + ' Collection';
+      document.getElementById('collectionGrid').innerHTML = recs.sameCollection.slice(0, 4).map(relCard).join('');
+    }
   }
 
   function specRow(k, v) { return '<div class="spec-row"><span class="sk">' + k + '</span><span class="sv">' + v + '</span></div>'; }

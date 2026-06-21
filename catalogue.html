@@ -57,6 +57,28 @@
     .chip:hover { border-color: var(--gold); color: var(--dark); }
     .chip.active { background: var(--dark); border-color: var(--dark); color: #fff; }
     .filter-count { margin-left: auto; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); }
+    .refine-inner { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 0 0 16px; }
+    .refine-label { font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-right: 4px; }
+    .refine-chip { padding: 6px 13px; border-radius: 100px; border: 1px solid var(--border-medium); background: var(--bg-card); font-size: 10.5px; letter-spacing: 0.5px; color: var(--text-secondary); cursor: pointer; transition: all 0.25s; }
+    .refine-chip:hover { border-color: var(--gold); color: var(--dark); }
+    .refine-chip.active { background: var(--gold); border-color: var(--gold); color: #fff; font-weight: 500; }
+    .refine-clear { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--gold-dark); cursor: pointer; background: none; border: none; margin-left: 4px; }
+    .refine-clear:hover { text-decoration: underline; }
+    .refine-sep { width: 1px; height: 16px; background: var(--border); margin: 0 4px; }
+
+    /* Browse by space (grouping landing) */
+    .space-browse { margin-bottom: 8px; }
+    .space-head { font-family: var(--font-display); font-size: 28px; font-weight: 300; color: var(--dark); margin-bottom: 4px; }
+    .space-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; }
+    .space-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 64px; }
+    .space-card { position: relative; border-radius: 14px; overflow: hidden; cursor: pointer; padding: 24px; min-height: 150px; display: flex; flex-direction: column; justify-content: flex-end; background: linear-gradient(150deg, #EDE8DF, #E0D9CC); border: 1px solid var(--border); transition: all 0.45s var(--ease-out); }
+    .space-card::after { content: ''; position: absolute; top: -40px; right: -40px; width: 130px; height: 130px; border-radius: 50%; background: radial-gradient(circle, rgba(184,149,47,0.16), transparent 70%); transition: all 0.45s; }
+    .space-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .space-card:hover::after { transform: scale(1.3); }
+    .space-card .sc-count { position: relative; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-dark); margin-bottom: 6px; }
+    .space-card .sc-name { position: relative; font-family: var(--font-display); font-size: 22px; font-weight: 400; color: var(--dark); }
+    @media (max-width: 1024px) { .space-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px) { .space-grid { grid-template-columns: 1fr 1fr; } }
 
     /* ── Grid ── */
     .cat-grid-wrap { padding: 48px 0 100px; }
@@ -136,13 +158,19 @@
 <div class="filter-rail">
   <div class="wrap">
     <div class="filter-inner" id="filterInner"></div>
+    <div class="refine-inner" id="refineInner"></div>
   </div>
 </div>
 
 <main class="cat-grid-wrap">
   <div class="wrap">
+    <div class="space-browse" id="spaceBrowse" style="display:none;">
+      <div class="space-head">Browse by Space</div>
+      <div class="space-sub">Find pieces specified for the way each space is used.</div>
+      <div class="space-grid" id="spaceGrid"></div>
+    </div>
     <div class="products-grid" id="grid"></div>
-    <div class="empty" id="empty" style="display:none;">No pieces in this selection yet.</div>
+    <div class="empty" id="empty" style="display:none;">No pieces match these filters.</div>
   </div>
 </main>
 
@@ -162,7 +190,9 @@
 <script src="data/catalogue.js"></script>
 <script>
   function qp(k) { return new URLSearchParams(location.search).get(k); }
+  // type ∈ all | group | sub | application | collection ; plus material/shape refinement
   var state = { type: qp('type') || 'all', value: qp('value') || 'all' };
+  var refine = { material: [], shape: [] };
   if (state.type === 'all') state.value = 'all';
 
   function currentGroup() {
@@ -181,6 +211,14 @@
       eyebrow = groupLabel[groupOf[state.value]]; title = subLabel[state.value];
       blurb = 'Every ' + subLabel[state.value].toLowerCase() + ' in the MMA collection.';
       bc += '<span>/</span><a href="catalogue.html?type=group&value=' + groupOf[state.value] + '">' + groupLabel[groupOf[state.value]] + '</a><span>/</span><span style="color:var(--text-secondary)">' + subLabel[state.value] + '</span>';
+    } else if (state.type === 'application') {
+      var a = APPLICATIONS.find(function(x){ return x.id === state.value; });
+      eyebrow = 'For the Space'; title = (a ? a.label : '').replace(/&/, '&amp;');
+      blurb = a ? a.blurb : ''; bc += '<span>/</span><span style="color:var(--text-secondary)">' + (a ? a.label : '') + '</span>';
+    } else if (state.type === 'collection') {
+      eyebrow = 'Design Collection'; title = (COLLECTIONS[state.value] || '') + ' <em>Collection</em>';
+      blurb = 'The full ' + (COLLECTIONS[state.value] || '') + ' family — a cohesive design language across pieces.';
+      bc += '<span>/</span><span style="color:var(--text-secondary)">' + (COLLECTIONS[state.value] || '') + '</span>';
     }
     document.getElementById('catBreadcrumb').innerHTML = bc;
     document.getElementById('catEyebrow').textContent = eyebrow;
@@ -190,7 +228,7 @@
   }
 
   function renderFilters() {
-    // 'All' + every group, then (if a group is active) its subcategories
+    // Primary: All + every group, then (if a group is active) its subcategories
     var chips = [{ label:'All Products', type:'all', value:'all' }];
     taxonomy.forEach(function(g){ chips.push({ label: g.label, type:'group', value: g.group }); });
     var grp = currentGroup();
@@ -207,12 +245,53 @@
     document.querySelectorAll('#filterInner .chip').forEach(function(c) {
       c.addEventListener('click', function(){ apply(c.dataset.type, c.dataset.value); });
     });
+
+    // Refine: Material + Shape facets (applied on top of the current selection)
+    var html = '<span class="refine-label">Material</span>';
+    MATERIALS.forEach(function(m){
+      html += '<button class="refine-chip' + (refine.material.indexOf(m.id)>=0?' active':'') + '" data-facet="material" data-val="' + m.id + '">' + m.label + '</button>';
+    });
+    html += '<span class="refine-sep"></span><span class="refine-label">Shape</span>';
+    SHAPES.forEach(function(s){
+      html += '<button class="refine-chip' + (refine.shape.indexOf(s.id)>=0?' active':'') + '" data-facet="shape" data-val="' + s.id + '">' + s.label + '</button>';
+    });
+    if (refine.material.length || refine.shape.length) html += '<button class="refine-clear" id="refineClear">Clear refine</button>';
+    document.getElementById('refineInner').innerHTML = html;
+    document.querySelectorAll('#refineInner .refine-chip').forEach(function(c){
+      c.addEventListener('click', function(){
+        var arr = refine[c.dataset.facet], i = arr.indexOf(c.dataset.val);
+        if (i>=0) arr.splice(i,1); else arr.push(c.dataset.val);
+        renderFilters(); renderGrid();
+      });
+    });
+    var rc = document.getElementById('refineClear');
+    if (rc) rc.addEventListener('click', function(){ refine.material = []; refine.shape = []; renderFilters(); renderGrid(); });
   }
 
-  function listFor() {
-    if (state.type === 'all') return productData.slice();
+  function baseList() {
     if (state.type === 'sub') return productData.filter(function(p){ return p.sub === state.value; });
-    return productData.filter(function(p){ return p.group === state.value; });
+    if (state.type === 'group') return productData.filter(function(p){ return p.group === state.value; });
+    if (state.type === 'application') return productData.filter(function(p){ return p.application.indexOf(state.value) >= 0; });
+    if (state.type === 'collection') return productData.filter(function(p){ return p.collection === state.value; });
+    return productData.slice();
+  }
+  function listFor() {
+    return baseList().filter(function(p){
+      if (refine.material.length && !refine.material.some(function(m){ return p.materials.indexOf(m) >= 0; })) return false;
+      if (refine.shape.length && refine.shape.indexOf(p.shape) < 0) return false;
+      return true;
+    });
+  }
+
+  function renderSpaceBrowse() {
+    var show = (state.type === 'all' && !refine.material.length && !refine.shape.length);
+    document.getElementById('spaceBrowse').style.display = show ? 'block' : 'none';
+    if (!show) return;
+    document.getElementById('spaceGrid').innerHTML = APPLICATIONS.map(function(a){
+      var n = productData.filter(function(p){ return p.application.indexOf(a.id) >= 0; }).length;
+      return '<div class="space-card" onclick="apply(\'application\',\'' + a.id + '\')">' +
+        '<div class="sc-count">' + n + ' pieces</div><div class="sc-name">' + a.label + '</div></div>';
+    }).join('');
   }
 
   function renderGrid() {
@@ -220,6 +299,7 @@
     document.getElementById('filterCount').textContent = items.length + (items.length === 1 ? ' piece' : ' pieces');
     var grid = document.getElementById('grid');
     document.getElementById('empty').style.display = items.length ? 'none' : 'block';
+    renderSpaceBrowse();
     grid.innerHTML = items.map(function(p, i) {
       return '<div class="product-card reveal" style="transition-delay:' + (i*0.05) + 's" onclick="location.href=\'product.html?id=' + p.id + '\'">' +
         '<div class="pc-img"><img src="' + productImages[p.name] + '" alt="' + p.name + '" loading="lazy">' +
@@ -241,6 +321,7 @@
   function apply(type, value) {
     state.type = type; state.value = value;
     if (type === 'all') state.value = 'all';
+    refine.material = []; refine.shape = [];
     var url = type === 'all' ? 'catalogue.html' : 'catalogue.html?type=' + type + '&value=' + value;
     history.replaceState(null, '', url);
     renderBanner(); renderFilters(); renderGrid();
@@ -250,6 +331,8 @@
   // validate incoming params
   if (state.type === 'group' && !groupLabel[state.value]) { state.type = 'all'; state.value = 'all'; }
   if (state.type === 'sub' && !subLabel[state.value]) { state.type = 'all'; state.value = 'all'; }
+  if (state.type === 'application' && !applicationLabel[state.value]) { state.type = 'all'; state.value = 'all'; }
+  if (state.type === 'collection' && !COLLECTIONS[state.value]) { state.type = 'all'; state.value = 'all'; }
 
   renderBanner(); renderFilters(); renderGrid();
 </script>

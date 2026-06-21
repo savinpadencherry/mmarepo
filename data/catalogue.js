@@ -121,6 +121,95 @@ productData.forEach(p => { p.tags = productTags[p.id] || []; });
 
 const productById = id => productData.find(p => String(p.id) === String(id));
 
+/* ── Phase 3: discovery facets, collections, recommendation engine ──
+   application = the spaces a piece is specified for (maps to the office presets)
+   materials   = material facets for faceted search
+   collection  = named design family (drives "more from the collection") */
+const COLLECTIONS = { meuse:'Meuse', diablo:'Diablo', loire:'Loire', flamingo:'Flamingo', seine:'Seine', rhone:'Rhone', marne:'Marne', durance:'Durance', garonne:'Garonne' };
+
+const APPLICATIONS = [
+  { id:'executive', label:'Executive', blurb:'Commanding desks, lounge seating and storage for leadership floors.' },
+  { id:'boardroom', label:'Boardroom', blurb:'Conference tables and boardroom seating built for decisions.' },
+  { id:'reception', label:'Reception', blurb:'Welcoming counters, sofas and lounge chairs for first impressions.' },
+  { id:'workspace', label:'Open Workspace', blurb:'Task seating, benches, desks and storage for focused teams.' },
+  { id:'breakout', label:'Breakout', blurb:'Soft, modular seating and tables for informal collaboration.' },
+  { id:'cafeteria', label:'Café & Dining', blurb:'Bar tables and social seating where teams cross-pollinate.' },
+  { id:'huddle', label:'Huddle & Meeting', blurb:'Round tables and agile seating for quick syncs.' },
+  { id:'lounge', label:'Lounge', blurb:'Sculptural lounge seating and sofas for moments off the calendar.' }
+];
+const applicationLabel = {}; APPLICATIONS.forEach(a => applicationLabel[a.id] = a.label);
+
+const MATERIALS = [
+  { id:'leather', label:'Leather' },
+  { id:'fabric', label:'Fabric & Felt' },
+  { id:'mesh', label:'Mesh' },
+  { id:'wood', label:'Solid Wood' },
+  { id:'veneer', label:'Veneer' },
+  { id:'metal', label:'Metal' }
+];
+const materialLabel = {}; MATERIALS.forEach(m => materialLabel[m.id] = m.label);
+
+const SHAPES = [
+  { id:'curved', label:'Curved' },
+  { id:'rectangular', label:'Rectangular' },
+  { id:'circular', label:'Circular' },
+  { id:'oval', label:'Oval' }
+];
+
+const PRODUCT_FACETS = {
+  1:  { collection:'meuse',    application:['executive','workspace'],          materials:['mesh','leather','metal'] },
+  2:  { collection:'meuse',    application:['boardroom','huddle','workspace'], materials:['fabric','metal'] },
+  3:  { collection:'diablo',   application:['reception','lounge','breakout'],  materials:['fabric','metal'] },
+  4:  { collection:'diablo',   application:['reception','workspace'],          materials:['fabric','metal'] },
+  5:  { collection:'loire',    application:['boardroom'],                      materials:['wood','metal'] },
+  6:  { collection:'loire',    application:['huddle','workspace'],             materials:['wood','metal'] },
+  7:  { collection:'flamingo', application:['reception','lounge','executive'], materials:['leather','wood'] },
+  8:  { collection:'seine',    application:['reception'],                      materials:['veneer','wood'] },
+  9:  { collection:'rhone',    application:['workspace','breakout'],           materials:['wood','metal'] },
+  10: { collection:'marne',    application:['workspace','executive'],          materials:['wood','veneer'] },
+  11: { collection:'durance',  application:['breakout','lounge','cafeteria'],  materials:['fabric'] },
+  12: { collection:'garonne',  application:['cafeteria','breakout'],           materials:['wood','metal'] }
+};
+productData.forEach(p => {
+  const f = PRODUCT_FACETS[p.id] || {};
+  p.collection = f.collection || null;
+  p.collectionLabel = COLLECTIONS[f.collection] || '';
+  p.application = f.application || [];
+  p.materials = f.materials || [];
+});
+
+// Recommendation engine: same collection + "frequently specified together"
+// (a different family that shares a space, ranked by how many spaces overlap).
+function recommendationsFor(p) {
+  const sameCollection = productData.filter(x => x.collection === p.collection && x.id !== p.id);
+  const shared = x => x.application.filter(a => p.application.indexOf(a) >= 0).length;
+  const frequentlyWith = productData
+    .filter(x => x.id !== p.id && x.group !== p.group && shared(x) > 0)
+    .sort((a, b) => shared(b) - shared(a));
+  return { sameCollection, frequentlyWith };
+}
+
+// Faceted search: text + any combination of group / application / material / shape.
+// Within a facet the values are OR'd; across facets they are AND'd.
+function facetSearch(opts) {
+  opts = opts || {};
+  const q = (opts.text || '').toLowerCase().trim();
+  const inAny = (arr, vals) => !vals || !vals.length || vals.some(v => arr.indexOf(v) >= 0);
+  return productData.filter(p => {
+    if (q) {
+      const hay = (p.name + ' ' + p.cat + ' ' + p.desc + ' ' + p.tags.join(' ') + ' ' + p.shape + ' ' +
+        (p.collectionLabel || '') + ' ' + p.application.map(a => applicationLabel[a]).join(' ') + ' ' +
+        p.materials.map(m => materialLabel[m]).join(' ')).toLowerCase();
+      if (hay.indexOf(q) < 0) return false;
+    }
+    if (opts.group && opts.group.length && opts.group.indexOf(p.group) < 0) return false;
+    if (!inAny(p.application, opts.application)) return false;
+    if (!inAny(p.materials, opts.material)) return false;
+    if (opts.shape && opts.shape.length && opts.shape.indexOf(p.shape) < 0) return false;
+    return true;
+  });
+}
+
 // ── Material palettes (ids match 3d-studio.html for seamless deep-linking) ──
 const FABRICS = [
   { id:'charcoal',   name:'Charcoal',   value:'#1C1C19', type:'Aniline Leather' },
