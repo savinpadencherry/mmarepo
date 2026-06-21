@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MMA Design — Catalogue</title>
+  <meta name="description" content="Browse the MMA Design catalogue by family — Seating, Soft Seating, Tables, Collaborative and Storage.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #B8952F; --gold-light: #D4B24A; --gold-dark: #8A6E1F;
+      --gold-10: rgba(184,149,47,0.1); --gold-20: rgba(184,149,47,0.2);
+      --dark: #1A1A18; --text: #1A1A18; --text-secondary: #5A5854; --text-muted: #8A8880;
+      --bg: #FAFAF8; --bg-warm: #F5F2EC; --bg-cream: #F0EDE7; --bg-card: #FFFFFF;
+      --border: rgba(0,0,0,0.08); --border-medium: rgba(0,0,0,0.12);
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.04); --shadow-md: 0 8px 32px rgba(0,0,0,0.06); --shadow-lg: 0 24px 64px rgba(0,0,0,0.08);
+      --font-display: 'Cormorant Garamond', serif; --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-weight: 300; line-height: 1.6; overflow-x: hidden; }
+    ::selection { background: var(--gold); color: #fff; }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 900; height: 72px; padding: 0 48px; display: flex; align-items: center; background: rgba(250,250,248,0.86); backdrop-filter: blur(40px) saturate(1.8); -webkit-backdrop-filter: blur(40px) saturate(1.8); border-bottom: 1px solid var(--border); }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 1400px; margin: 0 auto; }
+    .nav-logo { font-family: var(--font-display); font-size: 22px; font-weight: 300; letter-spacing: 3px; color: var(--dark); cursor: pointer; }
+    .nav-logo em { font-style: italic; color: var(--gold); }
+    .nav-center { display: flex; gap: 30px; list-style: none; align-items: center; }
+    .nav-center a { font-size: 11px; font-weight: 400; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-secondary); transition: color 0.3s; }
+    .nav-center a:hover { color: var(--dark); }
+    .nav-cta { background: var(--dark); color: #fff; font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; padding: 10px 24px; border: none; border-radius: 100px; transition: all 0.4s var(--ease-out); }
+    .nav-cta:hover { background: var(--gold); transform: scale(1.02); }
+
+    .wrap { max-width: 1400px; margin: 0 auto; padding: 0 48px; }
+
+    /* ── Category banner ── */
+    .cat-banner { position: relative; padding: 150px 0 56px; background: linear-gradient(150deg, #EDE8DF, #E2DBCF); overflow: hidden; border-bottom: 1px solid var(--border); }
+    .cat-banner::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 1px 1px, rgba(184,149,47,0.06) 1px, transparent 0); background-size: 34px 34px; }
+    .cat-banner::after { content: ''; position: absolute; top: -120px; right: -80px; width: 380px; height: 380px; border-radius: 50%; background: radial-gradient(circle, rgba(184,149,47,0.14), transparent 70%); }
+    .cat-breadcrumb { position: relative; font-size: 11px; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 18px; display: flex; gap: 8px; }
+    .cat-breadcrumb a:hover { color: var(--gold-dark); }
+    .cat-eyebrow { position: relative; font-size: 10px; font-weight: 600; letter-spacing: 4px; text-transform: uppercase; color: var(--gold-dark); margin-bottom: 14px; }
+    .cat-title { position: relative; font-family: var(--font-display); font-size: clamp(44px, 6vw, 86px); font-weight: 300; line-height: 1.05; color: var(--dark); margin-bottom: 18px; }
+    .cat-title em { font-style: italic; color: var(--gold); }
+    .cat-blurb { position: relative; font-size: 16px; color: var(--text-secondary); line-height: 1.7; max-width: 560px; }
+
+    /* ── Filter rail ── */
+    .filter-rail { position: sticky; top: 72px; z-index: 800; background: rgba(250,250,248,0.92); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+    .filter-inner { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 18px 0; }
+    .chip { padding: 9px 18px; border-radius: 100px; border: 1px solid var(--border-medium); background: var(--bg-card); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-secondary); cursor: pointer; transition: all 0.3s var(--ease-out); white-space: nowrap; }
+    .chip:hover { border-color: var(--gold); color: var(--dark); }
+    .chip.active { background: var(--dark); border-color: var(--dark); color: #fff; }
+    .filter-count { margin-left: auto; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); }
+
+    /* ── Grid ── */
+    .cat-grid-wrap { padding: 48px 0 100px; }
+    .products-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .product-card { position: relative; border-radius: 16px; overflow: hidden; background: var(--bg-card); border: 1px solid var(--border); cursor: pointer; transition: all 0.5s var(--ease-out); }
+    .product-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .pc-img { height: 300px; position: relative; overflow: hidden; background: linear-gradient(145deg, #F5F2EC, #EBE8E2); }
+    .pc-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s var(--ease-out); }
+    .product-card:hover .pc-img img { transform: scale(1.05); }
+    .pc-badges { position: absolute; top: 14px; right: 14px; display: flex; gap: 8px; z-index: 2; }
+    .badge { padding: 4px 12px; border-radius: 100px; font-size: 9px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; }
+    .badge-new { background: var(--gold); color: #fff; }
+    .badge-shape { background: rgba(255,255,255,0.85); color: var(--dark); backdrop-filter: blur(8px); }
+    .pc-actions { position: absolute; bottom: 14px; left: 14px; right: 14px; display: flex; gap: 8px; opacity: 0; transform: translateY(8px); transition: all 0.4s var(--ease-out); z-index: 2; }
+    .product-card:hover .pc-actions { opacity: 1; transform: translateY(0); }
+    .pc-act { flex: 1; padding: 10px; border-radius: 8px; font-size: 10px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; text-align: center; transition: all 0.3s; }
+    .pc-act-1 { background: var(--dark); color: #fff; }
+    .pc-act-1:hover { background: var(--gold); }
+    .pc-act-2 { background: rgba(255,255,255,0.9); color: var(--dark); border: 1px solid var(--border); }
+    .pc-act-2:hover { border-color: var(--gold); color: var(--gold-dark); }
+    .pc-body { padding: 22px 24px 26px; }
+    .pc-cat { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-dark); margin-bottom: 7px; }
+    .pc-name { font-family: var(--font-display); font-size: 24px; font-weight: 400; color: var(--dark); margin-bottom: 7px; }
+    .pc-desc { font-size: 13px; color: var(--text-muted); line-height: 1.55; margin-bottom: 14px; }
+    .pc-meta { display: flex; gap: 7px; flex-wrap: wrap; }
+    .meta-tag { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border); color: var(--text-muted); }
+    .empty { text-align: center; padding: 80px 0; color: var(--text-muted); }
+
+    footer { background: var(--dark); padding: 60px 48px 36px; color: rgba(255,255,255,0.6); }
+    .footer-inner { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+    .footer-inner h3 { font-family: var(--font-display); font-size: 24px; color: var(--gold-light); font-weight: 300; }
+    .footer-links { display: flex; gap: 28px; }
+    .footer-links a { font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.5); transition: color 0.3s; }
+    .footer-links a:hover { color: var(--gold-light); }
+    .footer-copy { font-size: 11px; color: rgba(255,255,255,0.3); width: 100%; max-width: 1400px; margin: 28px auto 0; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.08); }
+
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out); }
+    .reveal.in { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 1024px) {
+      nav, .wrap, footer { padding-left: 32px; padding-right: 32px; }
+      .products-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      nav { padding: 0 18px; height: 60px; }
+      .nav-center { display: none; }
+      .wrap { padding: 0 18px; }
+      .cat-banner { padding-top: 120px; }
+      .products-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo" onclick="location.href='index.html'">MMA <em>Design</em></div>
+    <ul class="nav-center">
+      <li><a href="index.html#products">Home</a></li>
+      <li><a href="catalogue.html">All Products</a></li>
+      <li><a href="3d-studio.html">3D Studio</a></li>
+      <li><a href="office-designer.html">Office Designer</a></li>
+    </ul>
+    <button class="nav-cta" onclick="location.href='index.html#contact'">Enquire</button>
+  </div>
+</nav>
+
+<header class="cat-banner">
+  <div class="wrap">
+    <div class="cat-breadcrumb" id="catBreadcrumb"></div>
+    <div class="cat-eyebrow" id="catEyebrow">Product Catalogue</div>
+    <h1 class="cat-title" id="catTitle">All <em>Products</em></h1>
+    <p class="cat-blurb" id="catBlurb"></p>
+  </div>
+</header>
+
+<div class="filter-rail">
+  <div class="wrap">
+    <div class="filter-inner" id="filterInner"></div>
+  </div>
+</div>
+
+<main class="cat-grid-wrap">
+  <div class="wrap">
+    <div class="products-grid" id="grid"></div>
+    <div class="empty" id="empty" style="display:none;">No pieces in this selection yet.</div>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <h3>MMA <em style="font-style:italic;">Design</em></h3>
+    <div class="footer-links">
+      <a href="catalogue.html">Catalogue</a>
+      <a href="3d-studio.html">3D Studio</a>
+      <a href="office-designer.html">Office Designer</a>
+      <a href="index.html#contact">Contact</a>
+    </div>
+  </div>
+  <div class="footer-copy">&copy; 2026 MMA Design. All rights reserved. &nbsp;&middot;&nbsp; NCR · Mumbai · Pune · Chennai · Bangalore</div>
+</footer>
+
+<script src="data/catalogue.js"></script>
+<script>
+  function qp(k) { return new URLSearchParams(location.search).get(k); }
+  var state = { type: qp('type') || 'all', value: qp('value') || 'all' };
+  if (state.type === 'all') state.value = 'all';
+
+  function currentGroup() {
+    if (state.type === 'group') return state.value;
+    if (state.type === 'sub') return groupOf[state.value];
+    return null;
+  }
+
+  function renderBanner() {
+    var bc = '<a href="index.html">Home</a><span>/</span><a href="catalogue.html">Catalogue</a>';
+    var eyebrow = 'Product Catalogue', title = 'All <em>Products</em>', blurb = "The complete MMA collection — every piece configurable in 3D and ready to drop into your space.";
+    if (state.type === 'group') {
+      var g = taxonomy.find(function(x){ return x.group === state.value; });
+      if (g) { eyebrow = 'Collection'; title = g.label.replace(/&/, '&amp;'); blurb = g.blurb; bc += '<span>/</span><span style="color:var(--text-secondary)">' + g.label + '</span>'; }
+    } else if (state.type === 'sub') {
+      eyebrow = groupLabel[groupOf[state.value]]; title = subLabel[state.value];
+      blurb = 'Every ' + subLabel[state.value].toLowerCase() + ' in the MMA collection.';
+      bc += '<span>/</span><a href="catalogue.html?type=group&value=' + groupOf[state.value] + '">' + groupLabel[groupOf[state.value]] + '</a><span>/</span><span style="color:var(--text-secondary)">' + subLabel[state.value] + '</span>';
+    }
+    document.getElementById('catBreadcrumb').innerHTML = bc;
+    document.getElementById('catEyebrow').textContent = eyebrow;
+    document.getElementById('catTitle').innerHTML = title;
+    document.getElementById('catBlurb').textContent = blurb;
+    document.title = 'MMA Design — ' + (title.replace(/<[^>]+>/g,''));
+  }
+
+  function renderFilters() {
+    // 'All' + every group, then (if a group is active) its subcategories
+    var chips = [{ label:'All Products', type:'all', value:'all' }];
+    taxonomy.forEach(function(g){ chips.push({ label: g.label, type:'group', value: g.group }); });
+    var grp = currentGroup();
+    if (grp) {
+      var g = taxonomy.find(function(x){ return x.group === grp; });
+      g.subs.forEach(function(s){ chips.push({ label: s.label, type:'sub', value: s.sub, sub:true }); });
+    }
+    document.getElementById('filterInner').innerHTML = chips.map(function(c) {
+      var active = (c.type === state.type && c.value === state.value);
+      var style = c.sub ? 'background:var(--gold-10);border-color:var(--gold-20);color:var(--gold-dark);' : '';
+      if (c.sub && active) style = '';
+      return '<button class="chip' + (active?' active':'') + '" data-type="' + c.type + '" data-value="' + c.value + '" style="' + style + '">' + c.label + '</button>';
+    }).join('') + '<span class="filter-count" id="filterCount"></span>';
+    document.querySelectorAll('#filterInner .chip').forEach(function(c) {
+      c.addEventListener('click', function(){ apply(c.dataset.type, c.dataset.value); });
+    });
+  }
+
+  function listFor() {
+    if (state.type === 'all') return productData.slice();
+    if (state.type === 'sub') return productData.filter(function(p){ return p.sub === state.value; });
+    return productData.filter(function(p){ return p.group === state.value; });
+  }
+
+  function renderGrid() {
+    var items = listFor();
+    document.getElementById('filterCount').textContent = items.length + (items.length === 1 ? ' piece' : ' pieces');
+    var grid = document.getElementById('grid');
+    document.getElementById('empty').style.display = items.length ? 'none' : 'block';
+    grid.innerHTML = items.map(function(p, i) {
+      return '<div class="product-card reveal" style="transition-delay:' + (i*0.05) + 's" onclick="location.href=\'product.html?id=' + p.id + '\'">' +
+        '<div class="pc-img"><img src="' + productImages[p.name] + '" alt="' + p.name + '" loading="lazy">' +
+          '<div class="pc-badges">' + (p.isNew?'<span class="badge badge-new">New</span>':'') + '<span class="badge badge-shape">' + p.shape + '</span></div>' +
+          '<div class="pc-actions">' +
+            '<a class="pc-act pc-act-1" href="product.html?id=' + p.id + '" onclick="event.stopPropagation()">View Product</a>' +
+            '<a class="pc-act pc-act-2" href="3d-studio.html?model=' + p.studioModel + '" onclick="event.stopPropagation()">Configure 3D</a>' +
+          '</div>' +
+        '</div>' +
+        '<div class="pc-body"><div class="pc-cat">' + subLabel[p.sub] + '</div><div class="pc-name">' + p.name + '</div>' +
+          '<div class="pc-desc">' + p.desc + '</div>' +
+          '<div class="pc-meta">' + p.tags.map(function(t){ return '<span class="meta-tag">' + t + '</span>'; }).join('') + '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+    requestAnimationFrame(function(){ document.querySelectorAll('.product-card.reveal').forEach(function(el){ el.classList.add('in'); }); });
+  }
+
+  function apply(type, value) {
+    state.type = type; state.value = value;
+    if (type === 'all') state.value = 'all';
+    var url = type === 'all' ? 'catalogue.html' : 'catalogue.html?type=' + type + '&value=' + value;
+    history.replaceState(null, '', url);
+    renderBanner(); renderFilters(); renderGrid();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // validate incoming params
+  if (state.type === 'group' && !groupLabel[state.value]) { state.type = 'all'; state.value = 'all'; }
+  if (state.type === 'sub' && !subLabel[state.value]) { state.type = 'all'; state.value = 'all'; }
+
+  renderBanner(); renderFilters(); renderGrid();
+</script>
+</body>
+</html>

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MMA Design — Product</title>
+  <meta name="description" content="Explore the product in detail — fabric, colour, finish and base options, full specifications, and a one-click jump into the 3D configurator.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #B8952F; --gold-light: #D4B24A; --gold-dark: #8A6E1F;
+      --gold-10: rgba(184,149,47,0.1); --gold-20: rgba(184,149,47,0.2);
+      --dark: #1A1A18; --text: #1A1A18; --text-secondary: #5A5854; --text-muted: #8A8880; --text-light: #A8A6A0;
+      --bg: #FAFAF8; --bg-warm: #F5F2EC; --bg-cream: #F0EDE7; --bg-card: #FFFFFF;
+      --border: rgba(0,0,0,0.08); --border-medium: rgba(0,0,0,0.12);
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.04); --shadow-md: 0 8px 32px rgba(0,0,0,0.06);
+      --shadow-lg: 0 24px 64px rgba(0,0,0,0.08); --shadow-xl: 0 32px 80px rgba(0,0,0,0.1);
+      --font-display: 'Cormorant Garamond', serif; --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-weight: 300; line-height: 1.6; overflow-x: hidden; }
+    ::selection { background: var(--gold); color: #fff; }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; }
+
+    /* ── Inner-page nav ── */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 900; height: 72px; padding: 0 48px; display: flex; align-items: center; background: rgba(250,250,248,0.86); backdrop-filter: blur(40px) saturate(1.8); -webkit-backdrop-filter: blur(40px) saturate(1.8); border-bottom: 1px solid var(--border); }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 1400px; margin: 0 auto; }
+    .nav-logo { font-family: var(--font-display); font-size: 22px; font-weight: 300; letter-spacing: 3px; color: var(--dark); cursor: pointer; }
+    .nav-logo em { font-style: italic; color: var(--gold); }
+    .nav-center { display: flex; gap: 30px; list-style: none; align-items: center; }
+    .nav-center > li { position: relative; }
+    .nav-center a, .nav-trigger { font-size: 11px; font-weight: 400; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-secondary); transition: color 0.3s; background: none; border: none; display: flex; align-items: center; gap: 5px; }
+    .nav-center a:hover, .nav-trigger:hover { color: var(--dark); }
+    .nav-trigger .caret { width: 9px; height: 9px; opacity: 0.55; }
+    .nav-dd { position: absolute; top: 34px; left: 50%; transform: translateX(-50%) translateY(-8px); min-width: 220px; background: rgba(252,251,248,0.98); backdrop-filter: blur(40px) saturate(1.8); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow-lg); padding: 10px; opacity: 0; visibility: hidden; transition: all 0.3s var(--ease-out); }
+    .nav-center li:hover .nav-dd { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+    .nav-dd a { display: block; padding: 10px 14px; border-radius: 8px; text-transform: none; letter-spacing: 0; font-size: 13px; color: var(--text-secondary); transition: all 0.25s; }
+    .nav-dd a:hover { background: var(--gold-10); color: var(--gold-dark); padding-left: 20px; }
+    .nav-cta { background: var(--dark); color: #fff; font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; padding: 10px 24px; border: none; border-radius: 100px; transition: all 0.4s var(--ease-out); }
+    .nav-cta:hover { background: var(--gold); transform: scale(1.02); }
+
+    .wrap { max-width: 1400px; margin: 0 auto; padding: 0 48px; }
+    .breadcrumb { padding: 100px 0 0; font-size: 11px; letter-spacing: 1px; color: var(--text-muted); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .breadcrumb a:hover { color: var(--gold-dark); }
+    .breadcrumb .sep { opacity: 0.5; }
+    .breadcrumb .current { color: var(--text-secondary); }
+
+    /* ── Hero ── */
+    .pd-hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 64px; padding: 36px 0 80px; align-items: start; }
+    .gallery { position: sticky; top: 96px; }
+    .gallery-main { position: relative; border-radius: 20px; overflow: hidden; aspect-ratio: 1/1; background: linear-gradient(150deg, var(--bg-warm), var(--bg-cream)); border: 1px solid var(--border); box-shadow: var(--shadow-lg); }
+    .gallery-main img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.5s var(--ease-out); }
+    .gallery-main .tint { position: absolute; inset: 0; mix-blend-mode: soft-light; opacity: 0; transition: opacity 0.6s var(--ease-out), background-color 0.6s; pointer-events: none; }
+    .gallery-main.tinted .tint { opacity: 0.55; }
+    .gallery-svg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: linear-gradient(150deg, #FBFAF7, #F0EDE7); opacity: 0; visibility: hidden; transition: opacity 0.5s; }
+    .gallery-svg.show { opacity: 1; visibility: visible; }
+    .gallery-svg svg { width: 62%; height: 62%; }
+    .gallery-badge { position: absolute; top: 18px; left: 18px; background: var(--gold); color: #fff; font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 5px 13px; border-radius: 100px; z-index: 3; }
+    .thumbs { display: flex; gap: 12px; margin-top: 16px; }
+    .thumb { width: 76px; height: 76px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; background: var(--bg-warm); transition: all 0.3s; position: relative; flex-shrink: 0; }
+    .thumb.active { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .thumb svg { width: 100%; height: 100%; }
+    .thumb .tlabel { position: absolute; inset: 0; display: grid; place-items: center; font-size: 8px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); }
+
+    /* ── Info panel ── */
+    .pd-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--gold-dark); margin-bottom: 14px; }
+    .pd-title { font-family: var(--font-display); font-size: clamp(38px, 4.5vw, 60px); font-weight: 300; line-height: 1.08; color: var(--dark); margin-bottom: 18px; }
+    .pd-desc { font-size: 15.5px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 26px; }
+    .pd-quickmeta { display: flex; gap: 28px; padding: 18px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 30px; flex-wrap: wrap; }
+    .pd-quickmeta .qm-label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+    .pd-quickmeta .qm-val { font-size: 14px; color: var(--dark); font-weight: 400; }
+
+    .opt-group { margin-bottom: 26px; }
+    .opt-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
+    .opt-title { font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary); }
+    .opt-selected { font-size: 13px; color: var(--gold-dark); font-weight: 400; }
+    .opt-selected .opt-grade { color: var(--text-muted); font-size: 11px; }
+
+    .swatch-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .swatch { width: 38px; height: 38px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; position: relative; transition: transform 0.25s var(--ease-out); box-shadow: inset 0 2px 5px rgba(0,0,0,0.18), 0 1px 3px rgba(0,0,0,0.12); }
+    .swatch:hover { transform: scale(1.12); }
+    .swatch.active { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold), inset 0 2px 5px rgba(0,0,0,0.18); }
+
+    .chip-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .chip { display: flex; align-items: center; gap: 8px; padding: 9px 15px; border-radius: 100px; border: 1px solid var(--border-medium); background: var(--bg-card); font-size: 11px; letter-spacing: 0.5px; color: var(--text-secondary); cursor: pointer; transition: all 0.3s; }
+    .chip:hover { border-color: var(--gold-20); }
+    .chip.active { border-color: var(--gold); background: var(--gold-10); color: var(--gold-dark); font-weight: 500; }
+    .chip .chip-dot { width: 14px; height: 14px; border-radius: 50%; box-shadow: inset 0 1px 2px rgba(0,0,0,0.25); }
+    .chip-code { font-weight: 600; color: var(--dark); }
+    .chip.active .chip-code { color: var(--gold-dark); }
+
+    .pd-ctas { display: flex; gap: 14px; margin: 34px 0 16px; flex-wrap: wrap; }
+    .btn-primary { display: inline-flex; align-items: center; gap: 10px; background: var(--dark); color: #fff; font-size: 12px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; padding: 15px 30px; border: none; border-radius: 100px; transition: all 0.4s var(--ease-out); }
+    .btn-primary:hover { background: var(--gold); transform: translateY(-1px); box-shadow: 0 8px 32px rgba(184,149,47,0.3); }
+    .btn-secondary { display: inline-flex; align-items: center; gap: 8px; background: none; border: 1px solid var(--border-medium); color: var(--dark); font-size: 12px; font-weight: 400; letter-spacing: 1.5px; text-transform: uppercase; padding: 15px 30px; border-radius: 100px; transition: all 0.4s var(--ease-out); }
+    .btn-secondary:hover { border-color: var(--gold); color: var(--gold-dark); }
+    .pd-fineprint { font-size: 11px; color: var(--text-muted); letter-spacing: 0.5px; }
+
+    /* ── Sections ── */
+    .section { padding: 80px 0; }
+    .section-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 4px; text-transform: uppercase; color: var(--gold-dark); margin-bottom: 14px; }
+    .section-title { font-family: var(--font-display); font-size: clamp(30px, 3.5vw, 46px); font-weight: 300; color: var(--dark); margin-bottom: 14px; }
+    .section-title em { font-style: italic; color: var(--gold); }
+    .pd-features { background: var(--bg-warm); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px; }
+    .feature-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 26px; transition: all 0.4s var(--ease-out); }
+    .feature-card:hover { border-color: var(--gold); transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .feature-ico { width: 40px; height: 40px; border-radius: 10px; background: var(--gold-10); color: var(--gold-dark); display: grid; place-items: center; margin-bottom: 16px; }
+    .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.55; }
+
+    .specs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; margin-top: 36px; }
+    .spec-block h4 { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-dark); margin-bottom: 18px; }
+    .spec-row { display: flex; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+    .spec-row .sk { color: var(--text-muted); }
+    .spec-row .sv { color: var(--dark); font-weight: 400; }
+
+    .related-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; margin-top: 40px; }
+    .rel-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; cursor: pointer; transition: all 0.5s var(--ease-out); }
+    .rel-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .rel-img { height: 200px; overflow: hidden; background: var(--bg-warm); }
+    .rel-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s var(--ease-out); }
+    .rel-card:hover .rel-img img { transform: scale(1.06); }
+    .rel-body { padding: 18px 20px 22px; }
+    .rel-cat { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-dark); margin-bottom: 5px; }
+    .rel-name { font-family: var(--font-display); font-size: 21px; font-weight: 400; color: var(--dark); }
+
+    footer { background: var(--dark); padding: 60px 48px 36px; color: rgba(255,255,255,0.6); }
+    .footer-inner { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+    .footer-inner h3 { font-family: var(--font-display); font-size: 24px; color: var(--gold-light); font-weight: 300; }
+    .footer-links { display: flex; gap: 28px; }
+    .footer-links a { font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.5); transition: color 0.3s; }
+    .footer-links a:hover { color: var(--gold-light); }
+    .footer-copy { font-size: 11px; color: rgba(255,255,255,0.3); width: 100%; max-width: 1400px; margin: 28px auto 0; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.08); }
+
+    #toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(12px); background: rgba(26,26,24,0.9); color: #fff; backdrop-filter: blur(12px); padding: 12px 26px; border-radius: 100px; font-size: 12px; letter-spacing: 0.5px; z-index: 950; opacity: 0; pointer-events: none; transition: all 0.4s var(--ease-out); }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast em { font-style: normal; color: var(--gold-light); }
+
+    #notfound { display: none; min-height: 70vh; flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center; padding: 120px 24px; }
+    #notfound h1 { font-family: var(--font-display); font-size: 44px; font-weight: 300; }
+
+    @media (max-width: 1024px) {
+      nav, .wrap, footer { padding-left: 32px; padding-right: 32px; }
+      .pd-hero { grid-template-columns: 1fr; gap: 36px; }
+      .gallery { position: static; }
+      .gallery-main { max-width: 520px; }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .related-grid { grid-template-columns: repeat(2, 1fr); }
+      .specs-grid { grid-template-columns: 1fr; gap: 32px; }
+    }
+    @media (max-width: 640px) {
+      nav { padding: 0 18px; height: 60px; }
+      .nav-center { display: none; }
+      .wrap { padding: 0 18px; }
+      .breadcrumb { padding-top: 84px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .related-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .pd-ctas { flex-direction: column; }
+      .pd-ctas .btn-primary, .pd-ctas .btn-secondary { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo" onclick="location.href='index.html'">MMA <em>Design</em></div>
+    <ul class="nav-center">
+      <li>
+        <button class="nav-trigger">Products <svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="nav-dd" id="navGroups"></div>
+      </li>
+      <li><a href="catalogue.html">All Products</a></li>
+      <li><a href="3d-studio.html">3D Studio</a></li>
+      <li><a href="office-designer.html">Office Designer</a></li>
+    </ul>
+    <button class="nav-cta" onclick="location.href='index.html#contact'">Enquire</button>
+  </div>
+</nav>
+
+<div id="notfound">
+  <h1>Product not found</h1>
+  <p style="color:var(--text-muted);">We couldn't find that piece. Browse the full catalogue instead.</p>
+  <a href="catalogue.html" class="btn-primary" style="margin-top:8px;">View Catalogue</a>
+</div>
+
+<main id="pd" style="display:none;">
+  <div class="wrap">
+    <div class="breadcrumb" id="breadcrumb"></div>
+    <div class="pd-hero">
+      <div class="gallery">
+        <div class="gallery-main" id="galleryMain">
+          <span class="gallery-badge" id="galleryBadge" style="display:none;">New</span>
+          <img id="mainImg" src="" alt="">
+          <div class="tint" id="mainTint"></div>
+          <div class="gallery-svg" id="gallerySvg"></div>
+        </div>
+        <div class="thumbs" id="thumbs"></div>
+      </div>
+      <div class="info">
+        <div class="pd-eyebrow" id="pdEyebrow"></div>
+        <h1 class="pd-title" id="pdTitle"></h1>
+        <p class="pd-desc" id="pdDesc"></p>
+        <div class="pd-quickmeta" id="pdQuickmeta"></div>
+
+        <div class="opt-group" id="materialGroup">
+          <div class="opt-head">
+            <span class="opt-title" id="materialTitle">Upholstery</span>
+            <span class="opt-selected" id="materialSelected"></span>
+          </div>
+          <div class="swatch-row" id="materialRow"></div>
+        </div>
+
+        <div class="opt-group">
+          <div class="opt-head">
+            <span class="opt-title">Structure Finish</span>
+            <span class="opt-selected" id="structureSelected"></span>
+          </div>
+          <div class="chip-row" id="structureRow"></div>
+        </div>
+
+        <div class="opt-group" id="baseGroup">
+          <div class="opt-head">
+            <span class="opt-title">Base / Leg</span>
+            <span class="opt-selected" id="baseSelected"></span>
+          </div>
+          <div class="chip-row" id="baseRow"></div>
+        </div>
+
+        <div class="pd-ctas">
+          <a class="btn-primary" id="configureBtn" href="#">
+            Configure in 3D
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a class="btn-secondary" href="office-designer.html" id="officeBtn">See It in an Office</a>
+          <button class="btn-secondary" onclick="copyShare()">Share</button>
+        </div>
+        <div class="pd-fineprint">Made to order &middot; Price on request &middot; <a href="index.html#contact" style="color:var(--gold-dark);">Request a quote &rarr;</a></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="section pd-features">
+    <div class="wrap">
+      <div class="section-eyebrow">Detail</div>
+      <h2 class="section-title">Considered <em>Features</em></h2>
+      <div class="features-grid" id="featuresGrid"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-eyebrow">Reference</div>
+      <h2 class="section-title">Specifications</h2>
+      <div class="specs-grid">
+        <div class="spec-block">
+          <h4>Dimensions &amp; Detail</h4>
+          <div id="specDims"></div>
+        </div>
+        <div class="spec-block">
+          <h4>Materials &amp; Assurance</h4>
+          <div id="specMaterials"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--bg-warm);border-top:1px solid var(--border);">
+    <div class="wrap">
+      <div class="section-eyebrow">Specified Together</div>
+      <h2 class="section-title">From the Same <em>Collection</em></h2>
+      <div class="related-grid" id="relatedGrid"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <h3>MMA <em style="font-style:italic;">Design</em></h3>
+    <div class="footer-links">
+      <a href="catalogue.html">Catalogue</a>
+      <a href="3d-studio.html">3D Studio</a>
+      <a href="office-designer.html">Office Designer</a>
+      <a href="index.html#contact">Contact</a>
+    </div>
+  </div>
+  <div class="footer-copy">&copy; 2026 MMA Design. All rights reserved. &nbsp;&middot;&nbsp; NCR · Mumbai · Pune · Chennai · Bangalore</div>
+</footer>
+
+<div id="toast"></div>
+
+<script src="data/catalogue.js"></script>
+<script>
+  function qp(k) { return new URLSearchParams(location.search).get(k); }
+  function toast(html) {
+    var t = document.getElementById('toast');
+    t.innerHTML = html; t.classList.add('show');
+    clearTimeout(t._timer); t._timer = setTimeout(function(){ t.classList.remove('show'); }, 2800);
+  }
+
+  // Populate the nav Products dropdown from taxonomy
+  document.getElementById('navGroups').innerHTML = taxonomy.map(function(g){
+    return '<a href="catalogue.html?type=group&value=' + g.group + '">' + g.label + '</a>';
+  }).join('') + '<a href="catalogue.html">All Products</a>';
+
+  var product = productById(qp('id'));
+
+  if (!product) {
+    document.getElementById('notfound').style.display = 'flex';
+  } else {
+    document.getElementById('pd').style.display = 'block';
+    document.title = 'MMA Design — ' + product.name;
+    renderProduct(product);
+  }
+
+  function renderProduct(p) {
+    var isUph = p.materialType === 'upholstery';
+    var palette = isUph ? FABRICS : WOODS;
+    var state = {
+      material: palette[0].id,
+      structure: 'matte-black',
+      base: p.bases.length ? p.bases[0] : null
+    };
+    // honour incoming config (e.g. shared link)
+    if (qp('material') && palette.find(function(m){return m.id===qp('material');})) state.material = qp('material');
+    if (qp('structure') && STRUCTURES.find(function(s){return s.id===qp('structure');})) state.structure = qp('structure');
+
+    // ── Breadcrumb ──
+    document.getElementById('breadcrumb').innerHTML =
+      '<a href="index.html">Home</a><span class="sep">/</span>' +
+      '<a href="catalogue.html?type=group&value=' + p.group + '">' + groupLabel[p.group] + '</a><span class="sep">/</span>' +
+      '<a href="catalogue.html?type=sub&value=' + p.sub + '">' + subLabel[p.sub] + '</a><span class="sep">/</span>' +
+      '<span class="current">' + p.name + '</span>';
+
+    // ── Header ──
+    document.getElementById('pdEyebrow').textContent = subLabel[p.sub];
+    document.getElementById('pdTitle').textContent = p.name;
+    document.getElementById('pdDesc').textContent = p.longDesc || p.desc;
+    if (p.isNew) document.getElementById('galleryBadge').style.display = 'block';
+
+    var d = p.dims;
+    document.getElementById('pdQuickmeta').innerHTML =
+      '<div><div class="qm-label">Dimensions (cm)</div><div class="qm-val">W' + d.w + ' · D' + d.d + ' · H' + d.h + '</div></div>' +
+      '<div><div class="qm-label">Detail</div><div class="qm-val">' + p.meta + '</div></div>' +
+      '<div><div class="qm-label">Lead Time</div><div class="qm-val">' + p.lead + '</div></div>';
+
+    // ── Gallery ──
+    var mainImg = document.getElementById('mainImg');
+    var galleryMain = document.getElementById('galleryMain');
+    var gallerySvg = document.getElementById('gallerySvg');
+    var tint = document.getElementById('mainTint');
+    gallerySvg.innerHTML = productSVGs[p.name] || '';
+    var views = [
+      { type:'img', src: productImages[p.name], label:'Studio' },
+      { type:'img', src: productImagesAlt[p.name] || productImages[p.name], label:'In Situ' },
+      { type:'svg', label:'Schematic' }
+    ];
+    function showView(v) {
+      if (v.type === 'svg') {
+        gallerySvg.classList.add('show');
+      } else {
+        gallerySvg.classList.remove('show');
+        mainImg.src = v.src;
+      }
+    }
+    document.getElementById('thumbs').innerHTML = views.map(function(v, i) {
+      var inner = v.type === 'svg' ? (productSVGs[p.name] || '') : '<img src="' + v.src + '" alt="">';
+      return '<div class="thumb' + (i===0?' active':'') + '" data-i="' + i + '">' + inner + '<span class="tlabel" style="' + (v.type==='img'?'display:none;':'') + '"></span></div>';
+    }).join('');
+    document.querySelectorAll('.thumb').forEach(function(t) {
+      t.addEventListener('click', function() {
+        document.querySelectorAll('.thumb').forEach(function(x){ x.classList.remove('active'); });
+        t.classList.add('active');
+        showView(views[+t.dataset.i]);
+      });
+    });
+
+    // ── Material (fabric/wood) selector ──
+    document.getElementById('materialTitle').textContent = isUph ? 'Upholstery' : 'Wood Finish';
+    var materialRow = document.getElementById('materialRow');
+    function paintMaterial() {
+      var m = palette.find(function(x){ return x.id === state.material; });
+      materialRow.innerHTML = palette.map(function(x) {
+        return '<div class="swatch' + (x.id===state.material?' active':'') + '" title="' + x.name + '" data-id="' + x.id + '" style="background:' + x.value + ';"></div>';
+      }).join('');
+      document.getElementById('materialSelected').innerHTML = m.name + (m.type ? ' <span class="opt-grade">· ' + m.type + '</span>' : '');
+      // live preview tint on the hero
+      tint.style.backgroundColor = m.value;
+      galleryMain.classList.add('tinted');
+      materialRow.querySelectorAll('.swatch').forEach(function(s) {
+        s.addEventListener('click', function(){ state.material = s.dataset.id; paintMaterial(); updateConfigure(); });
+      });
+    }
+
+    // ── Structure chips ──
+    var structureRow = document.getElementById('structureRow');
+    function paintStructure() {
+      var s = STRUCTURES.find(function(x){ return x.id === state.structure; });
+      structureRow.innerHTML = STRUCTURES.map(function(x) {
+        return '<div class="chip' + (x.id===state.structure?' active':'') + '" data-id="' + x.id + '"><span class="chip-dot" style="background:' + x.value + ';"></span>' + x.name + '</div>';
+      }).join('');
+      document.getElementById('structureSelected').textContent = s.name;
+      structureRow.querySelectorAll('.chip').forEach(function(c) {
+        c.addEventListener('click', function(){ state.structure = c.dataset.id; paintStructure(); updateConfigure(); });
+      });
+    }
+
+    // ── Base chips ──
+    var baseGroup = document.getElementById('baseGroup');
+    var baseRow = document.getElementById('baseRow');
+    function paintBase() {
+      if (!p.bases.length) { baseGroup.style.display = 'none'; return; }
+      baseRow.innerHTML = p.bases.map(function(code) {
+        return '<div class="chip' + (code===state.base?' active':'') + '" data-code="' + code + '"><span class="chip-code">' + code + '</span> ' + (BASE_NAMES[code]||'') + '</div>';
+      }).join('');
+      document.getElementById('baseSelected').textContent = BASE_NAMES[state.base] || '';
+      baseRow.querySelectorAll('.chip').forEach(function(c) {
+        c.addEventListener('click', function(){ state.base = c.dataset.code; paintBase(); updateConfigure(); });
+      });
+    }
+
+    // ── Configure-in-3D deep link carries the live selection into the studio ──
+    function updateConfigure() {
+      var params = 'model=' + p.studioModel + '&structure=' + state.structure;
+      params += isUph ? ('&upholstery=' + state.material + '&topColor=' + state.material) : ('&wood=' + state.material);
+      if (state.base) params += '&base=' + state.base;
+      document.getElementById('configureBtn').href = '3d-studio.html?' + params;
+      window._shareState = state;
+    }
+
+    // Carry the configured piece straight into the office room (same handoff the studio uses)
+    document.getElementById('officeBtn').onclick = function(e) {
+      e.preventDefault();
+      try {
+        localStorage.setItem('mmaStudioConfig', JSON.stringify({
+          model: p.studioModel, base: state.base || 'D9',
+          upholstery: isUph ? state.material : 'charcoal',
+          topColor: isUph ? state.material : 'charcoal',
+          wood: isUph ? 'ash-oak' : state.material,
+          structure: state.structure
+        }));
+      } catch(err) {}
+      location.href = 'office-designer.html?fromStudio=1';
+    };
+
+    paintMaterial(); paintStructure(); paintBase(); updateConfigure();
+
+    // ── Features ──
+    var ico = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+    document.getElementById('featuresGrid').innerHTML = (p.features||[]).map(function(f) {
+      return '<div class="feature-card"><div class="feature-ico">' + ico + '</div><p>' + f + '</p></div>';
+    }).join('');
+
+    // ── Specs ──
+    document.getElementById('specDims').innerHTML =
+      specRow('Width', d.w + ' cm') + specRow('Depth', d.d + ' cm') + specRow('Height', d.h + ' cm') +
+      specRow('Configuration', p.meta) + specRow('Family', groupLabel[p.group]) + specRow('Type', subLabel[p.sub]);
+    document.getElementById('specMaterials').innerHTML =
+      specRow(isUph ? 'Upholstery' : 'Surface', isUph ? 'Leather / Felt / Bouclé / Velvet' : 'Solid timber & veneer') +
+      specRow('Structure', 'Steel — chrome, brass, bronze or matte black') +
+      specRow('Base options', p.bases.length ? p.bases.join(', ') : 'Wall-mounted / fixed') +
+      specRow('Lead time', p.lead) +
+      specRow('Warranty', '10-year structural') +
+      specRow('Sustainability', 'FSC timber · low-VOC finishes');
+
+    // ── Related (same group) ──
+    var related = productData.filter(function(x){ return x.group === p.group && x.id !== p.id; }).slice(0, 4);
+    if (related.length < 4) {
+      productData.forEach(function(x){ if (x.id !== p.id && related.indexOf(x) < 0 && related.length < 4) related.push(x); });
+    }
+    document.getElementById('relatedGrid').innerHTML = related.map(function(x) {
+      return '<div class="rel-card" onclick="location.href=\'product.html?id=' + x.id + '\'">' +
+        '<div class="rel-img"><img src="' + productImages[x.name] + '" alt="' + x.name + '" loading="lazy"></div>' +
+        '<div class="rel-body"><div class="rel-cat">' + subLabel[x.sub] + '</div><div class="rel-name">' + x.name + '</div></div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function specRow(k, v) { return '<div class="spec-row"><span class="sk">' + k + '</span><span class="sv">' + v + '</span></div>'; }
+
+  function copyShare() {
+    var s = window._shareState || {};
+    var url = location.href.split('?')[0] + '?id=' + qp('id') + '&material=' + (s.material||'') + '&structure=' + (s.structure||'');
+    navigator.clipboard.writeText(url).then(function(){ toast('Link <em>copied</em> — your configured piece.'); })
+      .catch(function(){ toast('Copy this link: ' + url); });
+  }
+</script>
+</body>
+</html>
