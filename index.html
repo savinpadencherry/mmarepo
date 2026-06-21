@@ -148,6 +148,18 @@
     .search-result-card .src-tags { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
     .search-result-card .src-tag { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; border: 1px solid var(--border-medium); color: var(--text-muted); }
     .search-suggestion-title { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; }
+    /* faceted search (Phase 3) */
+    .search-facets { display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px; }
+    .facet-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .facet-label { font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); width: 70px; flex-shrink: 0; }
+    .facet-chip { background: var(--bg-card); border: 1px solid var(--border-medium); padding: 6px 14px; border-radius: 100px; font-size: 11px; letter-spacing: 0.5px; color: var(--text-secondary); cursor: pointer; transition: all 0.25s; }
+    .facet-chip:hover { border-color: var(--gold); color: var(--dark); }
+    .facet-chip.active { background: var(--gold); border-color: var(--gold); color: #fff; font-weight: 500; }
+    .search-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .search-count { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); }
+    .search-clear { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--gold-dark); cursor: pointer; background: none; border: none; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .search-clear.show { opacity: 1; pointer-events: auto; }
+    .search-clear:hover { text-decoration: underline; }
 
     #hero { position: relative; height: 100vh; min-height: 700px; display: flex; align-items: center; overflow: hidden; background: var(--bg-warm); }
     .hero-video-wrap { position: absolute; inset: 0; z-index: 1; overflow: hidden; background: linear-gradient(145deg, #E8E4DC 0%, #D5CFC4 25%, #C8C0B3 50%, #DDD8D0 75%, #E8E4DC 100%); background-size: 400% 400%; animation: heroGradientShift 15s ease infinite; }
@@ -648,15 +660,11 @@
       <input type="text" id="search-input" placeholder="Search products, collections, forms..." autocomplete="off">
       <button class="search-close" id="searchClose">&times;</button>
     </div>
-    <div class="search-suggestion-title">Popular Searches</div>
-    <div class="search-chips" id="searchChips">
-      <span class="search-chip" data-query="circular">Circular</span>
-      <span class="search-chip" data-query="executive chair">Executive Chair</span>
-      <span class="search-chip" data-query="boardroom table">Boardroom</span>
-      <span class="search-chip" data-query="lounge">Lounge</span>
-      <span class="search-chip" data-query="walnut">Walnut</span>
-      <span class="search-chip" data-query="sofa">Sofa</span>
-      <span class="search-chip" data-query="reception">Reception</span>
+    <div class="search-suggestion-title">Refine by</div>
+    <div class="search-facets" id="searchFacets"></div>
+    <div class="search-meta">
+      <span class="search-count" id="searchCount"></span>
+      <button class="search-clear" id="searchClear">Clear all</button>
     </div>
     <div id="search-results"></div>
   </div>
@@ -1451,50 +1459,77 @@ document.getElementById('searchOpenAlt').addEventListener('click', () => { searc
 document.getElementById('searchClose').addEventListener('click', () => { searchOverlay.classList.remove('open'); searchInput.value = ''; searchResults.innerHTML = ''; });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { searchOverlay.classList.remove('open'); searchInput.value = ''; } });
 
-document.querySelectorAll('.search-chip').forEach(chip => {
+// ── Faceted search (Phase 3) ──
+// Text + Space / Material / Type / Shape facets, OR within a facet, AND across.
+const searchFacets = { application: [], material: [], group: [], shape: [] };
+const facetDefs = [
+  { key: 'application', label: 'Space',    options: APPLICATIONS.map(a => ({ v: a.id, l: a.label })) },
+  { key: 'material',    label: 'Material', options: MATERIALS.map(m => ({ v: m.id, l: m.label })) },
+  { key: 'group',       label: 'Type',     options: taxonomy.map(g => ({ v: g.group, l: g.label })) },
+  { key: 'shape',       label: 'Shape',    options: SHAPES.map(s => ({ v: s.id, l: s.label })) }
+];
+
+const searchFacetsEl = document.getElementById('searchFacets');
+const searchCountEl = document.getElementById('searchCount');
+const searchClearEl = document.getElementById('searchClear');
+
+searchFacetsEl.innerHTML = facetDefs.map(f => (
+  '<div class="facet-group"><span class="facet-label">' + f.label + '</span>' +
+  f.options.map(o => '<button class="facet-chip" data-key="' + f.key + '" data-val="' + o.v + '">' + o.l + '</button>').join('') +
+  '</div>'
+)).join('');
+
+searchFacetsEl.querySelectorAll('.facet-chip').forEach(chip => {
   chip.addEventListener('click', () => {
-    searchInput.value = chip.dataset.query;
-    performSearch(chip.dataset.query);
+    const key = chip.dataset.key, val = chip.dataset.val;
+    const arr = searchFacets[key];
+    const i = arr.indexOf(val);
+    if (i >= 0) { arr.splice(i, 1); chip.classList.remove('active'); }
+    else { arr.push(val); chip.classList.add('active'); }
+    runSearch();
   });
 });
 
-searchInput.addEventListener('input', e => { performSearch(e.target.value); });
+searchClearEl.addEventListener('click', () => {
+  Object.keys(searchFacets).forEach(k => searchFacets[k] = []);
+  searchInput.value = '';
+  searchFacetsEl.querySelectorAll('.facet-chip').forEach(c => c.classList.remove('active'));
+  runSearch();
+});
 
-function performSearch(query) {
-  if (!query.trim()) { searchResults.innerHTML = ''; return; }
-  const q = query.toLowerCase().trim();
-  let results = productData.filter(p => {
-    const searchable = `${p.name} ${p.cat} ${p.category} ${p.desc} ${p.tags.join(' ')} ${p.shape} ${p.bases.join(' ')}`.toLowerCase();
-    return searchable.includes(q);
+searchInput.addEventListener('input', () => runSearch());
+
+function searchActive() {
+  return searchInput.value.trim() || Object.keys(searchFacets).some(k => searchFacets[k].length);
+}
+
+function runSearch() {
+  const results = facetSearch({
+    text: searchInput.value,
+    application: searchFacets.application,
+    material: searchFacets.material,
+    group: searchFacets.group,
+    shape: searchFacets.shape
   });
-  const shapeMap = { 'circular': 'circular', 'round': 'circular', 'oval': 'oval', 'rectangular': 'rectangular', 'linear': 'rectangular', 'curved': 'curved' };
-  const matchedShape = Object.keys(shapeMap).find(k => q.includes(k));
-  if (matchedShape && results.length < 8) {
-    const related = productData.filter(p => p.shape === shapeMap[matchedShape] && !results.find(r => r.id === p.id));
-    results = results.concat(related.slice(0, 4));
-  }
-  const materialKeywords = ['walnut','oak','wenge','leather','fabric','felt','mesh','chrome','brass','ash'];
-  const matchedMaterials = materialKeywords.filter(m => q.includes(m));
-  if (matchedMaterials.length > 0 && results.length < 8) {
-    const materialRelated = productData.filter(p => {
-      const searchable = `${p.desc} ${p.tags.join(' ')}`.toLowerCase();
-      return matchedMaterials.some(m => searchable.includes(m)) && !results.find(r => r.id === p.id);
-    });
-    results = results.concat(materialRelated.slice(0, 3));
-  }
+  searchClearEl.classList.toggle('show', searchActive());
+  searchCountEl.textContent = results.length + (results.length === 1 ? ' result' : ' results');
   if (results.length === 0) {
-    searchResults.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">No products found. Try "circular", "executive", or "walnut".</div>';
+    searchResults.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">No pieces match those filters. Try removing one.</div>';
     return;
   }
   searchResults.innerHTML = results.map(p => `
     <div class="search-result-card" onclick="location.href='product.html?id=${p.id}'">
-      <div class="src-cat">${p.cat}</div>
+      <div class="src-cat">${subLabel[p.sub] || p.cat}</div>
       <h4>${p.name}</h4>
       <div class="src-desc">${p.desc.substring(0,80)}...</div>
-      <div class="src-tags">${p.tags.map(t => `<span class="src-tag">${t}</span>`).join('')}</div>
+      <div class="src-tags">${[applicationLabel[p.application[0]] || '', ...p.tags.slice(0,3)].filter(Boolean).map(t => `<span class="src-tag">${t}</span>`).join('')}</div>
     </div>
   `).join('');
 }
+
+// expose for the search-open handlers to seed an initial list
+function performSearch() { runSearch(); }
+runSearch();
 
 function pinToPinterest(productName) {
   const url = encodeURIComponent(window.location.href + '?utm_source=pinterest&utm_medium=pin&utm_campaign=product_share&utm_content=' + encodeURIComponent(productName));
