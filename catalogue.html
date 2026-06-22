@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/brand.css">
   <style>
     :root {
       --gold: #B8952F; --gold-light: #D4B24A; --gold-dark: #8A6E1F;
@@ -135,7 +136,10 @@
 
 <nav>
   <div class="nav-inner">
-    <div class="nav-logo" onclick="location.href='index.html'">MMA <em>Design</em></div>
+    <a class="mma-logo" href="index.html" aria-label="MMA Design — home">
+      <svg class="mma-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M6 34V17C6 10.6 12.3 6 20 6C27.7 6 34 10.6 34 17V34" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" opacity="0.92"/><path d="M20 6V34" stroke="#B8952F" stroke-width="1.7" stroke-linecap="round"/><path d="M5.5 34H34.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" opacity="0.92"/><circle cx="20" cy="16.5" r="2.6" fill="#B8952F"/></svg>
+      <span class="mma-wordmark">MMA&nbsp;<em>Design</em></span>
+    </a>
     <ul class="nav-center">
       <li><a href="index.html#products">Home</a></li>
       <li><a href="catalogue.html">All Products</a></li>
@@ -176,11 +180,16 @@
 
 <footer>
   <div class="footer-inner">
-    <h3>MMA <em style="font-style:italic;">Design</em></h3>
+    <a class="mma-logo on-dark" href="index.html" aria-label="MMA Design — home">
+      <svg class="mma-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M6 34V17C6 10.6 12.3 6 20 6C27.7 6 34 10.6 34 17V34" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" opacity="0.92"/><path d="M20 6V34" stroke="#D4B24A" stroke-width="1.7" stroke-linecap="round"/><path d="M5.5 34H34.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" opacity="0.92"/><circle cx="20" cy="16.5" r="2.6" fill="#D4B24A"/></svg>
+      <span class="mma-wordmark">MMA&nbsp;<em>Design</em></span>
+    </a>
     <div class="footer-links">
       <a href="catalogue.html">Catalogue</a>
       <a href="3d-studio.html">3D Studio</a>
       <a href="office-designer.html">Office Designer</a>
+      <a href="brand-guideline.html">Guidelines</a>
+      <a href="cms.html">Content Console</a>
       <a href="index.html#contact">Contact</a>
     </div>
   </div>
@@ -302,7 +311,7 @@
     renderSpaceBrowse();
     grid.innerHTML = items.map(function(p, i) {
       return '<div class="product-card reveal" style="transition-delay:' + (i*0.05) + 's" onclick="location.href=\'product.html?id=' + p.id + '\'">' +
-        '<div class="pc-img"><img src="' + productImages[p.name] + '" alt="' + p.name + '" loading="lazy">' +
+        '<div class="pc-img"><img src="' + imgFor(productImages[p.name], 700) + '" alt="' + p.name + '" loading="lazy" decoding="async">' +
           '<div class="pc-badges">' + (p.isNew?'<span class="badge badge-new">New</span>':'') + '<span class="badge badge-shape">' + p.shape + '</span></div>' +
           '<div class="pc-actions">' +
             '<a class="pc-act pc-act-1" href="product.html?id=' + p.id + '" onclick="event.stopPropagation()">View Product</a>' +

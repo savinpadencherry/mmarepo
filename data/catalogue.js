@@ -392,3 +392,195 @@ const productSVGs = {
   'Durance Breakout Sofa': `<svg viewBox="0 0 200 200" fill="none"><g stroke="#B8952F" stroke-width="1.2" opacity="0.32" stroke-linecap="round" stroke-linejoin="round"><path d="M30 100 Q30 75 50 70 L150 70 Q170 75 170 100 L170 130 Q170 140 160 140 L40 140 Q30 140 30 130 Z"/><rect x="40" y="100" width="50" height="30" rx="4" opacity="0.5"/><rect x="95" y="100" width="50" height="30" rx="4" opacity="0.5"/></g></svg>`,
   'Garonne Bar Table': `<svg viewBox="0 0 200 200" fill="none"><g stroke="#B8952F" stroke-width="1.2" opacity="0.32" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="100" cy="60" rx="45" ry="12"/><ellipse cx="100" cy="57" rx="42" ry="10" opacity="0.6"/><line x1="100" y1="72" x2="100" y2="155"/><ellipse cx="100" cy="158" rx="25" ry="5"/></g></svg>`
 };
+
+/* ════════════════════════════════════════════════════════════════════════
+   PHASE 5 — CMS-READY CONTENT MODEL
+   The data above is the canonical seed. Everything below makes it a proper
+   content model: a published schema, a loader/adapter that today reads the
+   in-file seed but is shaped to be swapped for a headless CMS or a JSON
+   endpoint (`data/products.json`) with no page changes, and validators so
+   editors get immediate feedback when they add or edit a product.
+
+   The existing globals (productData, taxonomy, FABRICS, …) are unchanged —
+   the CMS object simply wraps them. Pages and the smoke harness keep working.
+   ════════════════════════════════════════════════════════════════════════ */
+
+var CONTENT_MODEL = {
+  version: 5,
+  product: {
+    fields: {
+      id:           { type: 'integer', required: true, unique: true, label: 'SKU id' },
+      name:         { type: 'string',  required: true, label: 'Product name' },
+      group:        { type: 'enum',    required: true, values: function () { return taxonomy.map(function (g) { return g.group; }); }, label: 'Family' },
+      sub:          { type: 'enum',    required: true, values: function () { return Object.keys(subLabel); }, label: 'Sub-category' },
+      category:     { type: 'string',  required: true, label: 'Category slug' },
+      cat:          { type: 'string',  required: true, label: 'Category label' },
+      shape:        { type: 'enum',    required: true, values: ['curved','rectangular','circular','oval'], label: 'Form' },
+      isNew:        { type: 'boolean', required: false, label: 'New badge' },
+      bases:        { type: 'array',   required: false, items: function () { return Object.keys(BASE_NAMES); }, label: 'Compatible bases' },
+      studioModel:  { type: 'string',  required: true, label: '3D studio model id' },
+      materialType: { type: 'enum',    required: true, values: ['upholstery','wood'], label: 'Material family' },
+      desc:         { type: 'string',  required: true, label: 'Short description' },
+      longDesc:     { type: 'string',  required: false, label: 'Long description' },
+      dims:         { type: 'object',  required: true, keys: ['w','d','h'], label: 'Dimensions (cm)' },
+      meta:         { type: 'string',  required: true, label: 'Detail line' },
+      lead:         { type: 'string',  required: true, label: 'Lead time' },
+      features:     { type: 'array',   required: true, items: 'string', label: 'Features' },
+      tags:         { type: 'array',   required: false, items: 'string', label: 'Search tags' },
+      collection:   { type: 'enum',    required: false, values: function () { return Object.keys(COLLECTIONS); }, label: 'Design collection' },
+      application:  { type: 'array',   required: false, items: function () { return APPLICATIONS.map(function (a) { return a.id; }); }, label: 'Applications' },
+      materials:    { type: 'array',   required: false, items: function () { return MATERIALS.map(function (m) { return m.id; }); }, label: 'Material facets' }
+    },
+    required: ['id','name','group','sub','category','cat','shape','studioModel','materialType','desc','dims','meta','lead','features']
+  },
+  fabric: {
+    fields: { id: { type:'string', required:true }, name: { type:'string', required:true }, value: { type:'string', required:true }, collection: { type:'enum', required:true, values: function () { return Object.keys(FABRIC_COLLECTIONS); } }, grade: { type:'integer', required:true, min:2, max:4 }, type: { type:'string', required:true } },
+    required: ['id','name','value','collection','grade','type']
+  }
+};
+
+// Resolve a possibly-function enum value to a plain array.
+function _modelValues(v) { return typeof v === 'function' ? v() : (v || []); }
+
+// Validate one product against the schema. Returns { valid, errors }.
+function validateProduct(p) {
+  var errors = [];
+  if (!p || typeof p !== 'object') return { valid: false, errors: ['product is required'] };
+  var schema = CONTENT_MODEL.product;
+  schema.required.forEach(function (f) {
+    if (p[f] == null || (typeof p[f] === 'string' && !p[f].trim()) || (Array.isArray(p[f]) && !p[f].length)) errors.push(f + ' is required');
+  });
+  Object.keys(schema.fields).forEach(function (f) {
+    var def = schema.fields[f], v = p[f];
+    if (v == null) return;
+    if (def.type === 'enum') { if (_modelValues(def.values).indexOf(String(v)) < 0) errors.push(f + ' "' + v + '" is not a recognised value'); }
+    if (def.type === 'array' && def.items) {
+      var allowed = typeof def.items === 'function' ? def.items() : null;
+      v.forEach(function (item) { if (allowed && allowed.indexOf(String(item)) < 0) errors.push(f + ' has unknown value "' + item + '"'); });
+    }
+    if (def.type === 'object' && def.keys) { def.keys.forEach(function (k) { if (v[k] == null) errors.push(f + '.' + k + ' is required'); }); }
+    if (def.min != null && v < def.min) errors.push(f + ' must be >= ' + def.min);
+    if (def.max != null && v > def.max) errors.push(f + ' must be <= ' + def.max);
+  });
+  var ids = productData.map(function (x) { return x.id; });
+  if (p.id != null && ids.filter(function (i) { return String(i) === String(p.id); }).length > 1) errors.push('id must be unique');
+  return { valid: !errors.length, errors: errors };
+}
+
+// Validate every seed product (used by the CMS console + smoke harness).
+function validateAll() {
+  var bad = [];
+  productData.forEach(function (p) { var r = validateProduct(p); if (!r.valid) bad.push({ id: p.id, errors: r.errors }); });
+  return { valid: !bad.length, products: bad };
+}
+
+/* ── CMS adapter ──────────────────────────────────────────────────────
+   Today every loader returns the in-file seed synchronously. The same
+   signatures, returning Promises, can later be backed by fetch() against a
+   headless CMS or data/products.json — the pages call CMS.fetchProducts()
+   and render from the result, so the swap needs no UI changes.            */
+var CMS = {
+  version: CONTENT_MODEL.version,
+  source: 'seed',
+  _store: (function () {
+    try { return typeof localStorage !== 'undefined' && localStorage ? localStorage : null; } catch (e) { return null; }
+  })(),
+
+  loadTaxonomy: function () { return taxonomy.slice(); },
+  loadProducts: function () { return productData.slice(); },
+  loadFabrics: function () { return FABRICS.slice(); },
+  loadWoods: function () { return WOODS.slice(); },
+  loadStructures: function () { return STRUCTURES.slice(); },
+  loadBases: function () { return Object.keys(BASE_NAMES).map(function (c) { return { code: c, name: BASE_NAMES[c] }; }); },
+  loadApplications: function () { return APPLICATIONS.slice(); },
+  loadCollections: function () { return Object.keys(COLLECTIONS).map(function (k) { return { id: k, label: COLLECTIONS[k] }; }); },
+
+  // Async-ready entry point. Resolves to a product array. If a localStorage
+  // override set exists (from the CMS console), it wins over the seed.
+  fetchProducts: function () {
+    var self = this;
+    return new Promise(function (resolve) {
+      var overrides = self._readOverrides();
+      resolve(overrides && overrides.length ? overrides : self.loadProducts());
+    });
+  },
+
+  // ── editor operations (CMS console) ──
+  _readOverrides: function () {
+    if (!this._store) return null;
+    try { var raw = this._store.getItem('mma_cms_products'); return raw ? JSON.parse(raw) : null; } catch (e) { return null; }
+  },
+  _writeOverrides: function (list) {
+    if (!this._store) return false;
+    try { this._store.setItem('mma_cms_products', JSON.stringify(list)); return true; } catch (e) { return false; }
+  },
+  resetOverrides: function () { if (this._store) try { this._store.removeItem('mma_cms_products'); } catch (e) {} },
+
+  upsertProduct: function (p) {
+    var v = validateProduct(p);
+    if (!v.valid) return { ok: false, errors: v.errors };
+    var overrides = this._readOverrides() || this.loadProducts().map(function (x) { return Object.assign({}, x); });
+    var i = overrides.findIndex(function (x) { return String(x.id) === String(p.id); });
+    if (i >= 0) overrides[i] = Object.assign({}, overrides[i], p); else overrides.push(p);
+    this._writeOverrides(overrides);
+    return { ok: true, product: p };
+  },
+  deleteProduct: function (id) {
+    var overrides = this._readOverrides() || this.loadProducts().map(function (x) { return Object.assign({}, x); });
+    var next = overrides.filter(function (x) { return String(x.id) !== String(id); });
+    this._writeOverrides(next);
+    return { ok: true };
+  },
+  validateProduct: validateProduct,
+  validateAll: validateAll,
+  schema: CONTENT_MODEL,
+
+  // Full content export — the exact shape persisted to data/products.json.
+  exportJSON: function () {
+    return {
+      model: CONTENT_MODEL.version,
+      generatedAt: new Date().toISOString(),
+      taxonomy: taxonomy,
+      products: productData,
+      fabrics: FABRICS,
+      fabricCollections: FABRIC_COLLECTIONS,
+      woods: WOODS,
+      structures: STRUCTURES,
+      bases: this.loadBases(),
+      applications: APPLICATIONS,
+      materials: MATERIALS,
+      shapes: SHAPES,
+      collections: this.loadCollections()
+    };
+  }
+};
+
+/* ── Connection-adaptive image helper (mobile/perf hardening) ────────
+   Rewrites Unsplash `w=`/`h=` query params to match the rendered size and
+   the visitor's connection class, so phones on 3g/2g pull smaller bytes
+   while desktops on fibre keep full fidelity. Falls through unchanged for
+   non-parametric URLs (e.g. local /assets PNGs).                            */
+function _effectiveConnection() {
+  try { return (typeof navigator !== 'undefined' && navigator && navigator.connection && navigator.connection.effectiveType) || null; }
+  catch (e) { return null; }
+}
+function _connCap() {
+  var c = _effectiveConnection();
+  if (c === 'slow-2g' || c === '2g') return 320;
+  if (c === '3g') return 480;
+  if (c === '4g') return 900;
+  return 0; // unknown / wifi → don't downscale
+}
+function imgFor(url, sizeHint = 700) {
+  if (!url || url.indexOf('images.unsplash.com') < 0) return url;
+  var cap = _connCap();
+  var w = Math.min(sizeHint, cap || sizeHint);
+  try {
+    var u = new URL(url);
+    u.searchParams.set('w', String(w));
+    u.searchParams.set('h', String(w));
+    return u.toString();
+  } catch (e) {
+    return url.replace(/([?&]w=)\d+/, '$1' + w).replace(/([?&]h=)\d+/, '$1' + w);
+  }
+}

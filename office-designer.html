@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/brand.css">
   <style>
     :root {
       --gold: #B8952F;
@@ -157,9 +158,10 @@
   </div>
 
   <header>
-    <div class="logo-container" onclick="window.location.href='index.html'">
-      <div class="logo-text">MMA <em>Office Designer</em></div>
-    </div>
+    <a class="mma-logo compact" href="index.html" aria-label="MMA Design — home">
+      <svg class="mma-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M6 34V17C6 10.6 12.3 6 20 6C27.7 6 34 10.6 34 17V34" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" opacity="0.92"/><path d="M20 6V34" stroke="#B8952F" stroke-width="1.7" stroke-linecap="round"/><path d="M5.5 34H34.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" opacity="0.92"/><circle cx="20" cy="16.5" r="2.6" fill="#B8952F"/></svg>
+      <span class="mma-wordmark">MMA&nbsp;<em>Office Designer</em></span>
+    </a>
     <div class="header-actions">
       <button class="header-btn" onclick="window.location.href='3d-studio.html'">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
@@ -175,6 +177,8 @@
       </button>
     </div>
   </header>
+
+  <div class="quality-badge" id="qualityBadge" data-tier="medium" title="Rendering quality auto-tuned to your device"><span class="qd"></span><span class="qt">Balanced</span></div>
 
   <div class="mobile-tabs">
     <button class="mobile-tab-btn" id="tab-btn-spaces" onclick="selectMobileTab('spaces')">Spaces</button>
@@ -1384,6 +1388,46 @@
     var lightGroups = {};
     var sunLight, ceilingFixtures = [];
 
+    // ═══════════════════════════════════════
+    // ADAPTIVE QUALITY (Phase 5 · mobile/perf hardening)
+    // The office scene is heavier than the product studio, so it auto-tunes
+    // pixel ratio, antialiasing, shadow resolution and env-map blur to the
+    // device. Same scoring as the product studio for a consistent feel.
+    // ═══════════════════════════════════════
+    var QUALITY_TIERS = {
+      high:   { pixelRatio: 2,   antialias: true,  shadowMap: 2048, envSigma: 0.04, label: 'High fidelity' },
+      medium: { pixelRatio: 1.5, antialias: true,  shadowMap: 1024, envSigma: 0.06, label: 'Balanced' },
+      low:    { pixelRatio: 1,   antialias: false, shadowMap: 512,  envSigma: 0.10, label: 'Performance' }
+    };
+    function detectQuality() {
+      var dpr = window.devicePixelRatio || 1;
+      var mem = (navigator && navigator.deviceMemory) || 0;
+      var cores = (navigator && navigator.hardwareConcurrency) || 0;
+      var conn = (navigator && navigator.connection && navigator.connection.effectiveType) || '';
+      var isMobile = window.innerWidth <= 768;
+      var reduced = false;
+      try { reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (e) {}
+      var score = 0;
+      if (dpr >= 2) score += 1;
+      if (mem >= 8) score += 2; else if (mem >= 4) score += 1;
+      if (cores >= 8) score += 2; else if (cores >= 4) score += 1;
+      if (conn === '4g') score += 1; else if (conn === '3g') score -= 1; else if (conn === 'slow-2g' || conn === '2g') score -= 3;
+      if (isMobile) score -= 2;
+      if (reduced) score -= 1;
+      if (score >= 4) return 'high';
+      if (score >= 2) return 'medium';
+      return 'low';
+    }
+    var qualityTier = detectQuality();
+    var qualityCfg = QUALITY_TIERS[qualityTier] || QUALITY_TIERS.medium;
+    function applyQualityBadge() {
+      var b = document.getElementById('qualityBadge');
+      if (!b || typeof b.setAttribute !== 'function') return;
+      b.setAttribute('data-tier', qualityTier);
+      var qt = b.querySelector('.qt');
+      if (qt) qt.textContent = qualityCfg.label;
+    }
+
     function initEngine() {
       scene = new THREE.Scene();
       scene.background = new THREE.Color(0xE9E5DC);
@@ -1391,8 +1435,8 @@
       camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 120);
       camera.position.set(7.5, 5.2, 8.5);
 
-      renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('three-canvas'), antialias: true, preserveDrawingBuffer: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('three-canvas'), antialias: qualityCfg.antialias, preserveDrawingBuffer: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, qualityCfg.pixelRatio));
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -1418,13 +1462,14 @@
       ep2.position.set(-10, 5, 0); ep2.rotation.y = Math.PI / 2; envScene.add(ep2);
       var ep3 = new THREE.Mesh(new THREE.PlaneGeometry(8, 8), new THREE.MeshBasicMaterial({ color: 0xFFF0DD, side: THREE.DoubleSide }));
       ep3.position.set(10, 4, 2); ep3.rotation.y = -Math.PI / 2; envScene.add(ep3);
-      scene.environment = pmremGen.fromScene(envScene, 0.04).texture;
+      scene.environment = pmremGen.fromScene(envScene, qualityCfg.envSigma).texture;
       pmremGen.dispose();
 
       roomGroup = new THREE.Group(); scene.add(roomGroup);
       furnitureGroup = new THREE.Group(); scene.add(furnitureGroup);
 
       setupLights();
+      applyQualityBadge();
       animate();
     }
 
@@ -1435,8 +1480,8 @@
       sunLight = new THREE.DirectionalLight(0xFFF6E8, 1.5);
       sunLight.position.set(1.5, 5.5, -9);
       sunLight.castShadow = true;
-      sunLight.shadow.mapSize.width = 2048;
-      sunLight.shadow.mapSize.height = 2048;
+      sunLight.shadow.mapSize.width = qualityCfg.shadowMap;
+      sunLight.shadow.mapSize.height = qualityCfg.shadowMap;
       sunLight.shadow.bias = -0.0003;
       sunLight.shadow.radius = 3;
       sunLight.shadow.camera.near = 0.5;
@@ -1455,7 +1500,7 @@
       var duskSun = new THREE.DirectionalLight(0xFFB070, 1.6);
       duskSun.position.set(-3, 2.2, -8);
       duskSun.castShadow = true;
-      duskSun.shadow.mapSize.width = 2048; duskSun.shadow.mapSize.height = 2048;
+      duskSun.shadow.mapSize.width = qualityCfg.shadowMap; duskSun.shadow.mapSize.height = qualityCfg.shadowMap;
       duskSun.shadow.bias = -0.0003; duskSun.shadow.radius = 3;
       duskSun.shadow.camera.near = 0.5; duskSun.shadow.camera.far = 30;
       duskSun.shadow.camera.left = -7; duskSun.shadow.camera.right = 7;
@@ -1474,7 +1519,7 @@
       var sKey = new THREE.DirectionalLight(0xFFFFFF, 1.0);
       sKey.position.set(4, 7, 4);
       sKey.castShadow = true;
-      sKey.shadow.mapSize.width = 2048; sKey.shadow.mapSize.height = 2048;
+      sKey.shadow.mapSize.width = qualityCfg.shadowMap; sKey.shadow.mapSize.height = qualityCfg.shadowMap;
       sKey.shadow.bias = -0.0003; sKey.shadow.radius = 4;
       sKey.shadow.camera.near = 0.5; sKey.shadow.camera.far = 30;
       sKey.shadow.camera.left = -7; sKey.shadow.camera.right = 7;
@@ -2117,11 +2162,23 @@
       renderer.domElement.style.cursor = over ? 'pointer' : '';
     });
 
+    var _resizeT;
     window.addEventListener('resize', function() {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
+      clearTimeout(_resizeT);
+      _resizeT = setTimeout(function () {
+        var next = detectQuality();
+        if (next !== qualityTier) {
+          qualityTier = next;
+          qualityCfg = QUALITY_TIERS[qualityTier] || QUALITY_TIERS.medium;
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, qualityCfg.pixelRatio));
+          applyQualityBadge();
+        }
+      }, 220);
     });
+    applyQualityBadge();
 
     setTimeout(function() {
       document.getElementById('loader').classList.add('done');

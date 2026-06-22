@@ -1,0 +1,120 @@
+/* ════════════════════════════════════════════════════════════════════════
+   MMA Design — Brand Design System  (Phase 5 · brand-system polish)
+   The single source of truth for the brand's visual language. Linked by
+   every page before its inline <style>, so each page inherits the canonical
+   tokens and may override only what it needs (e.g. the 3D studio's --bg).
+   This file is intentionally side-effect-free: tokens + the logo component +
+   the reduced-motion policy. Page-specific layout stays in each page.
+   ════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Signature gold ── */
+  --gold: #B8952F;
+  --gold-light: #D4B24A;
+  --gold-dark: #8A6E1F;
+  --gold-10: rgba(184,149,47,0.10);
+  --gold-20: rgba(184,149,47,0.20);
+  --gold-30: rgba(184,149,47,0.30);
+
+  /* ── Ink & paper ── */
+  --dark: #1A1A18;
+  --dark-2: #2A2A28;
+  --text: #1A1A18;
+  --text-secondary: #5A5854;
+  --text-muted: #8A8880;
+  --text-light: #A8A6A0;
+
+  /* ── Surfaces ── */
+  --bg: #FAFAF8;
+  --bg-warm: #F5F2EC;
+  --bg-cream: #F0EDE7;
+  --bg-card: #FFFFFF;
+
+  /* ── Lines ── */
+  --border: rgba(0,0,0,0.08);
+  --border-medium: rgba(0,0,0,0.12);
+
+  /* ── Elevation ── */
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+  --shadow-md: 0 8px 32px rgba(0,0,0,0.06);
+  --shadow-lg: 0 24px 64px rgba(0,0,0,0.08);
+  --shadow-xl: 0 32px 80px rgba(0,0,0,0.10);
+
+  /* ── Typography ── */
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* ── Motion ── */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  /* ── Radii ── */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-pill: 100px;
+
+  /* ── Layout ── */
+  --container: 1400px;
+  --gutter: 60px;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   LOGO SYSTEM
+   A single inline-SVG wordmark used identically across nav + footer, in
+   light (dark ink) and dark (on dark grounds) variants. The mark is a
+   minimal architectural arch — a nod to MMA's architect-facing market.
+   ════════════════════════════════════════════════════════════════════════ */
+.mma-logo { display: inline-flex; align-items: center; gap: 11px; cursor: pointer; text-decoration: none; user-select: none; }
+.mma-logo .mma-mark { width: 30px; height: 30px; flex-shrink: 0; }
+.mma-logo .mma-wordmark { font-family: var(--font-display); font-size: 22px; font-weight: 300; letter-spacing: 3px; color: var(--dark); line-height: 1; white-space: nowrap; }
+.mma-logo .mma-wordmark em { font-style: italic; color: var(--gold); font-weight: 400; }
+.mma-logo.on-dark .mma-wordmark { color: #fff; }
+.mma-logo.on-dark .mma-wordmark em { color: var(--gold-light); }
+.mma-logo.on-dark .mma-mark { color: rgba(255,255,255,0.82); }
+.mma-logo.compact .mma-wordmark { font-size: 18px; letter-spacing: 2px; }
+.mma-logo.compact .mma-mark { width: 24px; height: 24px; }
+
+/* ════════════════════════════════════════════════════════════════════════
+   REDUCED-MOTION POLICY  (Phase 5 · mobile/perf hardening)
+   Visitors who ask for reduced motion get a calm, static experience: no
+   scroll parallax, no Ken Burns, no floating cells, no shimmer. Reveal
+   transitions collapse to near-instant fades so content still appears.
+   ════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .ken-burns, .float-animation, .hex-inner, .marquee-track { animation: none !important; }
+  .reveal, .reveal-scale, .reveal-slide-left, .reveal-slide-right, .img-reveal {
+    opacity: 1 !important; transform: none !important; filter: none !important;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   PERFORMANCE PRIMITIVES  (Phase 5 · mobile/perf hardening)
+   `content-visibility: auto` lets the browser skip rendering off-screen
+   sections until they approach the viewport — a big paint win on the long
+   landing page. `contain-intrinsic-size` keeps scrollbar jitter out.
+   ════════════════════════════════════════════════════════════════════════ */
+.cv-auto { content-visibility: auto; contain-intrinsic-size: auto 700px; }
+
+/* Quality-tier badge shown by the 3D studio so adaptive quality is visible */
+.quality-badge {
+  position: absolute; top: 70px; left: 50%; transform: translateX(-50%); z-index: 9;
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(255,255,255,0.72); backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.45); border-radius: 100px;
+  padding: 6px 13px; font-family: var(--font-body); font-size: 9px;
+  font-weight: 600; letter-spacing: 1.4px; text-transform: uppercase;
+  color: var(--text-muted); box-shadow: 0 4px 16px rgba(26,26,24,0.06);
+  transition: opacity 0.4s var(--ease-out); pointer-events: none;
+}
+.quality-badge .qd { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); }
+.quality-badge[data-tier="high"]   .qd { background: #4A8F5A; }
+.quality-badge[data-tier="medium"] .qd { background: var(--gold); }
+.quality-badge[data-tier="low"]    .qd { background: #C36241; }

@@ -1,0 +1,963 @@
+{
+  "model": 5,
+  "generatedAt": "2026-06-22T11:07:29.966Z",
+  "taxonomy": [
+    {
+      "group": "seating",
+      "label": "Seating",
+      "blurb": "Task, executive and conference seating engineered for the working day.",
+      "subs": [
+        {
+          "sub": "executive-chairs",
+          "label": "Executive Chairs"
+        },
+        {
+          "sub": "conference-chairs",
+          "label": "Conference Chairs"
+        }
+      ]
+    },
+    {
+      "group": "soft-seating",
+      "label": "Soft Seating",
+      "blurb": "Sofas, lounge chairs and benches for reception, breakout and lounge.",
+      "subs": [
+        {
+          "sub": "sofas",
+          "label": "Sofas"
+        },
+        {
+          "sub": "lounge-chairs",
+          "label": "Lounge Chairs"
+        },
+        {
+          "sub": "benches",
+          "label": "Benches"
+        },
+        {
+          "sub": "breakout",
+          "label": "Breakout"
+        }
+      ]
+    },
+    {
+      "group": "tables",
+      "label": "Tables",
+      "blurb": "Conference, meeting and reception tables with integrated power and data.",
+      "subs": [
+        {
+          "sub": "conference-tables",
+          "label": "Conference Tables"
+        },
+        {
+          "sub": "meeting-tables",
+          "label": "Meeting Tables"
+        },
+        {
+          "sub": "reception",
+          "label": "Reception"
+        }
+      ]
+    },
+    {
+      "group": "collaborative",
+      "label": "Collaborative & Pods",
+      "blurb": "Hot-desking, standing and bar-height tables for the agile workplace.",
+      "subs": [
+        {
+          "sub": "hot-desking",
+          "label": "Hot Desking"
+        },
+        {
+          "sub": "bar-tables",
+          "label": "Bar & Standing"
+        }
+      ]
+    },
+    {
+      "group": "storage",
+      "label": "Storage",
+      "blurb": "Modular storage walls and credenzas that organise and divide space.",
+      "subs": [
+        {
+          "sub": "storage-systems",
+          "label": "Storage Systems"
+        }
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "Meuse Executive",
+      "group": "seating",
+      "sub": "executive-chairs",
+      "category": "chairs",
+      "cat": "Executive Seating",
+      "shape": "curved",
+      "isNew": true,
+      "bases": [
+        "D9",
+        "L14",
+        "L21",
+        "L30",
+        "R7"
+      ],
+      "studioModel": "chair-executive",
+      "materialType": "upholstery",
+      "desc": "Ergonomic mesh, hydraulic gas lift, solid structural frame with multiple base options.",
+      "longDesc": "The definitive executive chair. A breathable mesh back is paired with a deep, hand-upholstered seat and a synchro-tilt mechanism that follows the body through the day. Specified across leadership floors and focus rooms alike.",
+      "dims": {
+        "w": 68,
+        "d": 65,
+        "h": "118–128"
+      },
+      "meta": "Seat height 46–56 cm",
+      "lead": "4–6 weeks",
+      "features": [
+        "Breathable mesh back",
+        "Pneumatic height adjustment",
+        "Synchro-tilt with tension control",
+        "Adjustable lumbar support",
+        "4D adjustable armrests"
+      ],
+      "tags": [
+        "D9 Base",
+        "L30 Base",
+        "Leather",
+        "Mesh"
+      ],
+      "collection": "meuse",
+      "collectionLabel": "Meuse",
+      "application": [
+        "executive",
+        "workspace"
+      ],
+      "materials": [
+        "mesh",
+        "leather",
+        "metal"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Meuse Conference",
+      "group": "seating",
+      "sub": "conference-chairs",
+      "category": "chairs",
+      "cat": "Conference Seating",
+      "shape": "curved",
+      "isNew": false,
+      "bases": [
+        "S7",
+        "L14"
+      ],
+      "studioModel": "chair-conference",
+      "materialType": "upholstery",
+      "desc": "Stackable conference chair with cushioned seat, chrome sled base, and upholstered back.",
+      "longDesc": "A refined visitor and conference chair with a fully upholstered seat and back. The sprung sled base flexes subtly as you settle, and chairs stack four-high for fast room turnarounds.",
+      "dims": {
+        "w": 58,
+        "d": 60,
+        "h": 95
+      },
+      "meta": "Stacks 4 high",
+      "lead": "3–4 weeks",
+      "features": [
+        "Cushioned upholstered seat",
+        "Sprung sled or 4-leg base",
+        "Stackable four-high",
+        "Optional padded armrests",
+        "Linking brackets available"
+      ],
+      "tags": [
+        "S7 Base",
+        "Upholstered",
+        "Stackable"
+      ],
+      "collection": "meuse",
+      "collectionLabel": "Meuse",
+      "application": [
+        "boardroom",
+        "huddle",
+        "workspace"
+      ],
+      "materials": [
+        "fabric",
+        "metal"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Diablo Modular Sofa",
+      "group": "soft-seating",
+      "sub": "sofas",
+      "category": "sofas",
+      "cat": "Modular Lounge",
+      "shape": "rectangular",
+      "isNew": true,
+      "bases": [
+        "L31",
+        "L32"
+      ],
+      "studioModel": "sofa-modular",
+      "materialType": "upholstery",
+      "desc": "Plush modular felt cushions with architectural brass-tipped steel frame. Multiple configuration options.",
+      "longDesc": "A modular lounge system built around an architectural brass-tipped steel frame. Specify straight runs, corners and islands; high-resilience foam holds its shape through years of reception traffic.",
+      "dims": {
+        "w": 192,
+        "d": 88,
+        "h": 82
+      },
+      "meta": "Modular — extendable",
+      "lead": "6–8 weeks",
+      "features": [
+        "Modular felt cushions",
+        "Brass-tipped steel frame",
+        "Straight, corner & island modules",
+        "High-resilience foam",
+        "30+ fabric options"
+      ],
+      "tags": [
+        "L31 Base",
+        "Felt",
+        "Modular",
+        "Brass Tips"
+      ],
+      "collection": "diablo",
+      "collectionLabel": "Diablo",
+      "application": [
+        "reception",
+        "lounge",
+        "breakout"
+      ],
+      "materials": [
+        "fabric",
+        "metal"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Diablo Bench",
+      "group": "soft-seating",
+      "sub": "benches",
+      "category": "sofas",
+      "cat": "Public Seating",
+      "shape": "rectangular",
+      "isNew": false,
+      "bases": [
+        "L32"
+      ],
+      "studioModel": "sofa-bench",
+      "materialType": "upholstery",
+      "desc": "Linear bench system for waiting areas, corridors, and informal meeting zones.",
+      "longDesc": "A linear upholstered bench for waiting areas, corridors and transit zones. Gang multiple units into continuous runs; an optional low back adds comfort without blocking sightlines.",
+      "dims": {
+        "w": 130,
+        "d": 48,
+        "h": 42
+      },
+      "meta": "Gangable",
+      "lead": "4–5 weeks",
+      "features": [
+        "Continuous gangable runs",
+        "Powder-coated steel frame",
+        "Optional low back",
+        "Hard-wearing contract foam",
+        "Reception & corridor rated"
+      ],
+      "tags": [
+        "L32 Base",
+        "Fabric",
+        "Linear"
+      ],
+      "collection": "diablo",
+      "collectionLabel": "Diablo",
+      "application": [
+        "reception",
+        "workspace"
+      ],
+      "materials": [
+        "fabric",
+        "metal"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Loire Boardroom",
+      "group": "tables",
+      "sub": "conference-tables",
+      "category": "tables",
+      "cat": "Conference Table",
+      "shape": "rectangular",
+      "isNew": true,
+      "bases": [
+        "R13",
+        "L30"
+      ],
+      "studioModel": "table-boardroom",
+      "materialType": "wood",
+      "desc": "Chamfered walnut wood slab table with steel modular legs. Seats 8-16.",
+      "longDesc": "A statement boardroom table with a chamfered solid-timber slab and architectural steel legs. Integrated power and data grommets keep the surface clear; lengths are made to order.",
+      "dims": {
+        "w": 230,
+        "d": 110,
+        "h": 74
+      },
+      "meta": "Seats 8–16",
+      "lead": "8–10 weeks",
+      "features": [
+        "Chamfered solid-timber slab",
+        "Architectural steel legs",
+        "Integrated power & data grommets",
+        "Concealed cable management",
+        "Bespoke lengths to order"
+      ],
+      "tags": [
+        "Walnut",
+        "Steel Legs",
+        "Grommet",
+        "Power"
+      ],
+      "collection": "loire",
+      "collectionLabel": "Loire",
+      "application": [
+        "boardroom"
+      ],
+      "materials": [
+        "wood",
+        "metal"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Loire Round",
+      "group": "tables",
+      "sub": "meeting-tables",
+      "category": "tables",
+      "cat": "Meeting Table",
+      "shape": "circular",
+      "isNew": false,
+      "bases": [
+        "R7",
+        "R13"
+      ],
+      "studioModel": "table-round",
+      "materialType": "wood",
+      "desc": "Circular meeting table in solid oak or walnut. Perfect for 4-6 person huddle spaces.",
+      "longDesc": "A circular meeting table on a sculpted central column, sized for four-to-six person huddles. Available in solid oak or walnut with an optional flush power module.",
+      "dims": {
+        "w": 120,
+        "d": 120,
+        "h": 75
+      },
+      "meta": "Seats 4–6",
+      "lead": "6–8 weeks",
+      "features": [
+        "Solid oak or walnut top",
+        "Sculpted central column base",
+        "Optional flush power module",
+        "Self-levelling feet",
+        "Huddle & focus rooms"
+      ],
+      "tags": [
+        "Circular",
+        "Oak",
+        "Walnut",
+        "Power"
+      ],
+      "collection": "loire",
+      "collectionLabel": "Loire",
+      "application": [
+        "huddle",
+        "workspace"
+      ],
+      "materials": [
+        "wood",
+        "metal"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Flamingo Lounge",
+      "group": "soft-seating",
+      "sub": "lounge-chairs",
+      "category": "lounge",
+      "cat": "Lounge Chair",
+      "shape": "curved",
+      "isNew": true,
+      "bases": [
+        "R13",
+        "R7"
+      ],
+      "studioModel": "lounge-chair",
+      "materialType": "upholstery",
+      "desc": "Iconic swivel lounge chair. Sculptural walnut plywood shell with luxurious leather finish.",
+      "longDesc": "An iconic swivel lounge chair: a sculptural moulded-plywood shell cradles a deep leather or fabric cushion, returning gently to centre on its polished base. A signature piece for reception and executive lounges.",
+      "dims": {
+        "w": 76,
+        "d": 72,
+        "h": 92
+      },
+      "meta": "Swivel return",
+      "lead": "6–8 weeks",
+      "features": [
+        "Sculptural moulded-plywood shell",
+        "Self-returning swivel base",
+        "Leather or fabric cushion",
+        "Walnut or oak veneer shell",
+        "Loop or round base options"
+      ],
+      "tags": [
+        "Swivel",
+        "R13 Base",
+        "Leather",
+        "Plywood"
+      ],
+      "collection": "flamingo",
+      "collectionLabel": "Flamingo",
+      "application": [
+        "reception",
+        "lounge",
+        "executive"
+      ],
+      "materials": [
+        "leather",
+        "wood"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Seine Reception Desk",
+      "group": "tables",
+      "sub": "reception",
+      "category": "tables",
+      "cat": "Reception",
+      "shape": "rectangular",
+      "isNew": false,
+      "bases": [
+        "L21"
+      ],
+      "studioModel": "table-reception",
+      "materialType": "wood",
+      "desc": "Curved reception counter in premium wood veneer with integrated lighting and cable management.",
+      "longDesc": "A curved reception counter in premium veneer with an integrated LED light line and a DDA-compliant lowered section. Configured to your lobby footprint in custom widths and radii.",
+      "dims": {
+        "w": 160,
+        "d": 75,
+        "h": 110
+      },
+      "meta": "Custom widths",
+      "lead": "8–10 weeks",
+      "features": [
+        "Curved premium veneer counter",
+        "Integrated LED light line",
+        "DDA-compliant lowered section",
+        "Concealed cable management",
+        "Made to lobby footprint"
+      ],
+      "tags": [
+        "Curved",
+        "Veneer",
+        "LED",
+        "Counter"
+      ],
+      "collection": "seine",
+      "collectionLabel": "Seine",
+      "application": [
+        "reception"
+      ],
+      "materials": [
+        "veneer",
+        "wood"
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Rhone Collaborative Table",
+      "group": "collaborative",
+      "sub": "hot-desking",
+      "category": "collaborative",
+      "cat": "Hot Desking",
+      "shape": "oval",
+      "isNew": true,
+      "bases": [
+        "L14",
+        "R7"
+      ],
+      "studioModel": "table-standing",
+      "materialType": "wood",
+      "desc": "Oval collaborative table with power integration, cable management, and whiteboard surface.",
+      "longDesc": "An oval collaborative bench for hot-desking and project teams. A central cable spine routes power to every seat, and an optional writable top turns the surface into a thinking space.",
+      "dims": {
+        "w": 180,
+        "d": 90,
+        "h": 74
+      },
+      "meta": "4–6 person bench",
+      "lead": "6–8 weeks",
+      "features": [
+        "Oval collaborative top",
+        "Central powered cable spine",
+        "Optional writable surface",
+        "Hot-desking & project teams",
+        "Bench or 4-leg base"
+      ],
+      "tags": [
+        "Oval",
+        "Power",
+        "Whiteboard",
+        "Hot Desk"
+      ],
+      "collection": "rhone",
+      "collectionLabel": "Rhone",
+      "application": [
+        "workspace",
+        "breakout"
+      ],
+      "materials": [
+        "wood",
+        "metal"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Marne Storage Wall",
+      "group": "storage",
+      "sub": "storage-systems",
+      "category": "storage",
+      "cat": "Storage System",
+      "shape": "rectangular",
+      "isNew": false,
+      "bases": [],
+      "studioModel": "storage-wall",
+      "materialType": "wood",
+      "desc": "Modular storage wall with open shelving, closed cabinets, and integrated display niches.",
+      "longDesc": "A modular storage wall that organises and divides open-plan space. Combine open shelving, push-to-open cabinets and lit display niches into bespoke widths and heights.",
+      "dims": {
+        "w": 150,
+        "d": 40,
+        "h": 180
+      },
+      "meta": "Modular widths",
+      "lead": "8–10 weeks",
+      "features": [
+        "Open & closed modules",
+        "Lit display niches",
+        "Adjustable shelves",
+        "Push-to-open doors",
+        "Bespoke width & height"
+      ],
+      "tags": [
+        "Modular",
+        "Shelving",
+        "Cabinets",
+        "Display"
+      ],
+      "collection": "marne",
+      "collectionLabel": "Marne",
+      "application": [
+        "workspace",
+        "executive"
+      ],
+      "materials": [
+        "wood",
+        "veneer"
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Durance Breakout Sofa",
+      "group": "soft-seating",
+      "sub": "breakout",
+      "category": "sofas",
+      "cat": "Breakout",
+      "shape": "curved",
+      "isNew": false,
+      "bases": [
+        "L32",
+        "L31"
+      ],
+      "studioModel": "sofa-modular",
+      "materialType": "upholstery",
+      "desc": "Modular curved sofa for informal breakout spaces. Available in 30+ fabric options.",
+      "longDesc": "A gently curved modular sofa that shapes informal breakout zones. Arc segments build circles and serpentines; an acoustic-backed option helps tame open-plan noise.",
+      "dims": {
+        "w": 170,
+        "d": 80,
+        "h": 75
+      },
+      "meta": "Curved modular",
+      "lead": "6–8 weeks",
+      "features": [
+        "Curved arc modules",
+        "30+ fabric options",
+        "Optional acoustic back",
+        "Powered modules available",
+        "Builds circles & serpentines"
+      ],
+      "tags": [
+        "Curved",
+        "Modular",
+        "Fabric",
+        "Breakout"
+      ],
+      "collection": "durance",
+      "collectionLabel": "Durance",
+      "application": [
+        "breakout",
+        "lounge",
+        "cafeteria"
+      ],
+      "materials": [
+        "fabric"
+      ]
+    },
+    {
+      "id": 12,
+      "name": "Garonne Bar Table",
+      "group": "collaborative",
+      "sub": "bar-tables",
+      "category": "collaborative",
+      "cat": "Standing Desk",
+      "shape": "circular",
+      "isNew": true,
+      "bases": [
+        "R7"
+      ],
+      "studioModel": "table-standing",
+      "materialType": "wood",
+      "desc": "Height-adjustable round bar table for standing meetings and informal exchanges.",
+      "longDesc": "A round bar-height table for stand-up meetings and informal exchanges. A weighted column keeps it stable, with an optional footrest ring and flush power for laptops.",
+      "dims": {
+        "w": 90,
+        "d": 90,
+        "h": 105
+      },
+      "meta": "Bar height",
+      "lead": "5–6 weeks",
+      "features": [
+        "Bar-height round top",
+        "Weighted stable column",
+        "Optional footrest ring",
+        "Flush power option",
+        "Stand-up meeting spaces"
+      ],
+      "tags": [
+        "Circular",
+        "Height Adj",
+        "Standing",
+        "Power"
+      ],
+      "collection": "garonne",
+      "collectionLabel": "Garonne",
+      "application": [
+        "cafeteria",
+        "breakout"
+      ],
+      "materials": [
+        "wood",
+        "metal"
+      ]
+    }
+  ],
+  "fabrics": [
+    {
+      "id": "charcoal",
+      "name": "Charcoal",
+      "value": "#1C1C19",
+      "collection": "aniline-leather",
+      "grade": 4,
+      "type": "Aniline Leather"
+    },
+    {
+      "id": "camel",
+      "name": "Camel",
+      "value": "#C19A6B",
+      "collection": "aniline-leather",
+      "grade": 4,
+      "type": "Aniline Leather"
+    },
+    {
+      "id": "cognac",
+      "name": "Cognac",
+      "value": "#9A4F2A",
+      "collection": "aniline-leather",
+      "grade": 4,
+      "type": "Aniline Leather"
+    },
+    {
+      "id": "oxblood",
+      "name": "Oxblood",
+      "value": "#7A1C1C",
+      "collection": "velvet",
+      "grade": 3,
+      "type": "Cotton Velvet"
+    },
+    {
+      "id": "ivory",
+      "name": "Ivory",
+      "value": "#FAF8F0",
+      "collection": "boucle",
+      "grade": 3,
+      "type": "Bouclé"
+    },
+    {
+      "id": "emerald",
+      "name": "Emerald",
+      "value": "#123524",
+      "collection": "wool-felt",
+      "grade": 2,
+      "type": "Wool Felt"
+    },
+    {
+      "id": "navy",
+      "name": "Navy",
+      "value": "#1B2838",
+      "collection": "wool-felt",
+      "grade": 2,
+      "type": "Wool Felt"
+    },
+    {
+      "id": "terracotta",
+      "name": "Terracotta",
+      "value": "#C36241",
+      "collection": "wool-felt",
+      "grade": 2,
+      "type": "Wool Felt"
+    }
+  ],
+  "fabricCollections": {
+    "wool-felt": {
+      "label": "Wool Felt",
+      "grade": 2,
+      "blurb": "Dense contract wool felt — the hard-wearing everyday workhorse."
+    },
+    "boucle": {
+      "label": "Bouclé",
+      "grade": 3,
+      "blurb": "Textured wool bouclé with a soft, tactile loop."
+    },
+    "velvet": {
+      "label": "Cotton Velvet",
+      "grade": 3,
+      "blurb": "Deep-pile cotton velvet with a quiet, directional sheen."
+    },
+    "aniline-leather": {
+      "label": "Aniline Leather",
+      "grade": 4,
+      "blurb": "Full-grain aniline leather that patinas beautifully with age."
+    }
+  },
+  "woods": [
+    {
+      "id": "ash-oak",
+      "name": "Natural Oak",
+      "value": "#E2D8C5"
+    },
+    {
+      "id": "medium-walnut",
+      "name": "Walnut",
+      "value": "#5C4331"
+    },
+    {
+      "id": "dark-walnut",
+      "name": "Dark Walnut",
+      "value": "#3E2D20"
+    },
+    {
+      "id": "ash-wenge",
+      "name": "Wenge",
+      "value": "#2B2624"
+    },
+    {
+      "id": "black-ash",
+      "name": "Black Ash",
+      "value": "#181818"
+    }
+  ],
+  "structures": [
+    {
+      "id": "matte-black",
+      "name": "Matte Black",
+      "value": "#222222"
+    },
+    {
+      "id": "chrome",
+      "name": "Polished Chrome",
+      "value": "#E0E0E0"
+    },
+    {
+      "id": "brass",
+      "name": "Brushed Brass",
+      "value": "#D4AF37"
+    },
+    {
+      "id": "bronze",
+      "name": "Oil-Rubbed Bronze",
+      "value": "#7B7059"
+    }
+  ],
+  "bases": [
+    {
+      "code": "D9",
+      "name": "5-Star Castor"
+    },
+    {
+      "code": "L14",
+      "name": "4-Leg Sled"
+    },
+    {
+      "code": "L21",
+      "name": "Tubular Frame"
+    },
+    {
+      "code": "L30",
+      "name": "Pedestal"
+    },
+    {
+      "code": "L31",
+      "name": "Wide Sled"
+    },
+    {
+      "code": "L32",
+      "name": "Low Frame"
+    },
+    {
+      "code": "R13",
+      "name": "Round Swivel"
+    },
+    {
+      "code": "R7",
+      "name": "Round Base"
+    },
+    {
+      "code": "S7",
+      "name": "Sled Base"
+    }
+  ],
+  "applications": [
+    {
+      "id": "executive",
+      "label": "Executive",
+      "blurb": "Commanding desks, lounge seating and storage for leadership floors."
+    },
+    {
+      "id": "boardroom",
+      "label": "Boardroom",
+      "blurb": "Conference tables and boardroom seating built for decisions."
+    },
+    {
+      "id": "reception",
+      "label": "Reception",
+      "blurb": "Welcoming counters, sofas and lounge chairs for first impressions."
+    },
+    {
+      "id": "workspace",
+      "label": "Open Workspace",
+      "blurb": "Task seating, benches, desks and storage for focused teams."
+    },
+    {
+      "id": "breakout",
+      "label": "Breakout",
+      "blurb": "Soft, modular seating and tables for informal collaboration."
+    },
+    {
+      "id": "cafeteria",
+      "label": "Café & Dining",
+      "blurb": "Bar tables and social seating where teams cross-pollinate."
+    },
+    {
+      "id": "huddle",
+      "label": "Huddle & Meeting",
+      "blurb": "Round tables and agile seating for quick syncs."
+    },
+    {
+      "id": "lounge",
+      "label": "Lounge",
+      "blurb": "Sculptural lounge seating and sofas for moments off the calendar."
+    }
+  ],
+  "materials": [
+    {
+      "id": "leather",
+      "label": "Leather"
+    },
+    {
+      "id": "fabric",
+      "label": "Fabric & Felt"
+    },
+    {
+      "id": "mesh",
+      "label": "Mesh"
+    },
+    {
+      "id": "wood",
+      "label": "Solid Wood"
+    },
+    {
+      "id": "veneer",
+      "label": "Veneer"
+    },
+    {
+      "id": "metal",
+      "label": "Metal"
+    }
+  ],
+  "shapes": [
+    {
+      "id": "curved",
+      "label": "Curved"
+    },
+    {
+      "id": "rectangular",
+      "label": "Rectangular"
+    },
+    {
+      "id": "circular",
+      "label": "Circular"
+    },
+    {
+      "id": "oval",
+      "label": "Oval"
+    }
+  ],
+  "collections": [
+    {
+      "id": "meuse",
+      "label": "Meuse"
+    },
+    {
+      "id": "diablo",
+      "label": "Diablo"
+    },
+    {
+      "id": "loire",
+      "label": "Loire"
+    },
+    {
+      "id": "flamingo",
+      "label": "Flamingo"
+    },
+    {
+      "id": "seine",
+      "label": "Seine"
+    },
+    {
+      "id": "rhone",
+      "label": "Rhone"
+    },
+    {
+      "id": "marne",
+      "label": "Marne"
+    },
+    {
+      "id": "durance",
+      "label": "Durance"
+    },
+    {
+      "id": "garonne",
+      "label": "Garonne"
+    }
+  ]
+}

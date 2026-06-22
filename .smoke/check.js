@@ -3,7 +3,7 @@ const path = require('path');
 const root = path.join(__dirname, '..');
 
 // ── 1. syntax check every inline script ──
-const files = ['index.html', 'office-designer.html', '3d-studio.html'];
+const files = ['index.html', 'office-designer.html', '3d-studio.html', 'catalogue.html', 'product.html', 'brand-guideline.html', 'cms.html'];
 for (const f of files) {
   const html = fs.readFileSync(path.join(root, f), 'utf8');
   const scripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)]
@@ -219,4 +219,84 @@ console.log('PHASE4 STUDIO DEEP-LINK OK (grade snap + option carry + SKU)');
     { getItem(k){ return store[k]||null; }, setItem(k,v){ store[k]=v; } },
     anything, anything, ()=>0, ()=>0, ()=>{});
 }
+// ── 9. Phase 5: shared brand system (brand.css + inline SVG logo) ──
+{
+  const brand = fs.readFileSync(path.join(root, 'assets', 'brand.css'), 'utf8');
+  ['--gold','--gold-light','--gold-dark','--dark','--bg','--bg-warm','--font-display','--font-body','--ease-out','--radius-lg'].forEach(t => {
+    if (brand.indexOf(t) < 0) throw new Error('brand.css missing token ' + t);
+  });
+  if (!/\.mma-logo\b/.test(brand)) throw new Error('brand.css missing .mma-logo system');
+  if (!/prefers-reduced-motion/.test(brand)) throw new Error('brand.css missing reduced-motion policy');
+  if (!/content-visibility:\s*auto/.test(brand)) throw new Error('brand.css missing cv-auto perf primitive');
+  if (!/\.quality-badge/.test(brand)) throw new Error('brand.css missing quality-badge styles');
+  ['index.html','catalogue.html','product.html','3d-studio.html','office-designer.html','brand-guideline.html','cms.html'].forEach(f => {
+    const html = fs.readFileSync(path.join(root, f), 'utf8');
+    if (html.indexOf('assets/brand.css') < 0) throw new Error(f + ' does not link assets/brand.css');
+    if (html.indexOf('mma-mark') < 0) throw new Error(f + ' missing inline SVG mma-mark logo');
+    if (html.indexOf('mmadesign.in') >= 0) throw new Error(f + ' still depends on the fragile external logo host');
+  });
+  console.log('PHASE5 BRAND OK (brand.css tokens + logo + reduced-motion + cv-auto, linked on 7 pages, no external logo)');
+}
+
+// ── 10. Phase 5: CMS-ready content model ──
+{
+  const src = fs.readFileSync(path.join(root, 'data', 'catalogue.js'), 'utf8');
+  const api = new Function(src + ';return {CMS,CONTENT_MODEL,validateProduct,validateAll,imgFor};')();
+  if (api.CONTENT_MODEL.version !== 5) throw new Error('content model version not 5');
+  if (!api.CONTENT_MODEL.product.fields.id) throw new Error('content model missing product schema');
+  if (typeof api.CMS.fetchProducts !== 'function') throw new Error('CMS.fetchProducts missing');
+  if (typeof api.CMS.fetchProducts().then !== 'function') throw new Error('fetchProducts is not promise-returning');
+  if (api.CMS.loadProducts().length !== 12) throw new Error('seed product count drifted');
+  const all = api.validateAll();
+  if (!all.valid) throw new Error('seed products fail validation: ' + JSON.stringify(all.products));
+  const bad = api.validateProduct({ id: 1 });
+  if (bad.valid) throw new Error('validateProduct accepted an incomplete product');
+  const ok = api.CMS.upsertProduct({ id:99, name:'T', group:'seating', sub:'executive-chairs', category:'x', cat:'y', shape:'curved', studioModel:'chair-executive', materialType:'upholstery', desc:'d', dims:{w:1,d:1,h:1}, meta:'m', lead:'l', features:['f'] });
+  if (!ok.ok) throw new Error('upsert rejected a valid product');
+  const no = api.CMS.upsertProduct({ id:99 });
+  if (no.ok) throw new Error('upsert accepted an invalid product');
+  api.CMS.resetOverrides();
+  if (api.imgFor('https://images.unsplash.com/x?w=900&h=900', 700).indexOf('w=') < 0) throw new Error('imgFor did not rewrite an unsplash url');
+  if (api.imgFor('assets/foo.png', 700) !== 'assets/foo.png') throw new Error('imgFor should pass through local urls');
+  const json = JSON.parse(fs.readFileSync(path.join(root, 'data', 'products.json'), 'utf8'));
+  if (json.products.length !== 12) throw new Error('products.json product count mismatch');
+  if (json.model !== 5) throw new Error('products.json model version mismatch');
+  console.log('PHASE5 CMS OK (schema v5, adapter, validation, upsert, imgFor, products.json)');
+}
+
+// ── 11. Phase 5: adaptive 3D quality + reduced-motion ──
+{
+  ['3d-studio.html','office-designer.html'].forEach(f => {
+    const html = fs.readFileSync(path.join(root, f), 'utf8');
+    if (!/function detectQuality/.test(html)) throw new Error(f + ' missing detectQuality');
+    if (!/QUALITY_TIERS/.test(html)) throw new Error(f + ' missing QUALITY_TIERS');
+    if (!/qualityCfg\.shadowMap/.test(html)) throw new Error(f + ' shadows not quality-scaled');
+    if (!/qualityCfg\.pixelRatio/.test(html)) throw new Error(f + ' pixel ratio not quality-scaled');
+    if (html.indexOf('quality-badge') < 0) throw new Error(f + ' missing quality-badge element');
+    if (html.indexOf('prefers-reduced-motion') < 0) throw new Error(f + ' quality tier ignores reduced-motion');
+  });
+  // runtime: studio detectQuality returns a valid tier and tiers are complete
+  const html = fs.readFileSync(path.join(root, '3d-studio.html'), 'utf8');
+  const src = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m=>m[1]).filter(s=>s.trim())[0];
+  const store = {};
+  const win = { innerWidth: 1400, innerHeight: 900, location: { href: 'http://x/', search: '' }, addEventListener(){}, __store: store };
+  new Function('window','document','navigator','localStorage','THREE','gsap','requestAnimationFrame','setTimeout','clearTimeout', src + `
+    ;if (['high','medium','low'].indexOf(detectQuality()) < 0) throw new Error('detectQuality returned an invalid tier');
+    if (Object.keys(QUALITY_TIERS).length !== 3) throw new Error('expected 3 quality tiers');
+    if (!QUALITY_TIERS[qualityTier]) throw new Error('active tier has no config');
+    console.log('PHASE5 ADAPTIVE OK (tier=' + qualityTier + ', shadows=' + QUALITY_TIERS[qualityTier].shadowMap + ', antialias=' + QUALITY_TIERS[qualityTier].antialias + ')');
+  `)(win, makeDoc(), { clipboard:{ writeText(){return Promise.resolve();} } }, { getItem(k){return store[k]||null;}, setItem(k,v){store[k]=v;} }, anything, anything, ()=>0, ()=>0, ()=>{});
+}
+
+// ── 12. Phase 5: index.html mobile/perf hardening ──
+{
+  const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  if (html.indexOf('cv-auto') < 0) throw new Error('index.html missing content-visibility sections');
+  if (html.indexOf('prefers-reduced-motion') < 0) throw new Error('index.html missing reduced-motion guard');
+  if (!/imgFor\(/.test(html)) throw new Error('index.html not using connection-adaptive images');
+  if (!/decoding="async"/.test(html)) throw new Error('index.html missing async image decoding');
+  if (!/touchend/.test(html)) throw new Error('index.html missing touch-swipe interaction');
+  console.log('PHASE5 INDEX PERF OK (cv-auto, reduced-motion, adaptive images, async decoding, touch swipe)');
+}
+
 console.log('ALL CHECKS PASSED');

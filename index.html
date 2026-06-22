@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/brand.css">
   <style>
     :root {
       --gold: #B8952F;
@@ -542,9 +543,10 @@
 
 <nav id="navbar">
   <div class="nav-inner">
-    <div class="nav-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-      <img src="https://www.mmadesign.in/assets/images/logo/mmadesignlogo.png" alt="MMA Design" onerror="this.style.display='none';this.parentNode.innerHTML='<span class=\'nav-logo-text\'>MMA <em>Design</em></span>'">
-    </div>
+    <a class="mma-logo" href="#" onclick="event.preventDefault();window.scrollTo({top:0,behavior:'smooth'})" aria-label="MMA Design — home">
+      <svg class="mma-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M6 34V17C6 10.6 12.3 6 20 6C27.7 6 34 10.6 34 17V34" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" opacity="0.92"/><path d="M20 6V34" stroke="#B8952F" stroke-width="1.7" stroke-linecap="round"/><path d="M5.5 34H34.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" opacity="0.92"/><circle cx="20" cy="16.5" r="2.6" fill="#B8952F"/></svg>
+      <span class="mma-wordmark">MMA&nbsp;<em>Design</em></span>
+    </a>
     <ul class="nav-center">
       <li class="nav-item" data-menu="products">
         <a>Products <svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></a>
@@ -695,7 +697,7 @@
   </div>
 </section>
 
-<section id="featured" class="section">
+<section id="featured" class="section cv-auto">
   <div class="reveal" style="text-align:center;margin-bottom:64px;">
     <div class="section-eyebrow" style="display:inline-block;">Featured</div>
     <h2 class="section-title" style="margin-left:auto;margin-right:auto;">Signature <em>Pieces</em></h2>
@@ -755,7 +757,7 @@
   </div>
 </section>
 
-<section id="products" class="section section-pattern-dots">
+<section id="products" class="section section-pattern-dots cv-auto">
   <div class="reveal">
     <div class="section-eyebrow">Product Catalogue</div>
     <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;flex-wrap:wrap;gap:24px;">
@@ -781,7 +783,7 @@
   <div class="reveal" id="catalogueEmpty" style="display:none;text-align:center;padding:60px 0;color:var(--text-muted);font-size:14px;"></div>
 </section>
 
-<section id="configurator" class="section section-pattern-lines" style="background:var(--bg-warm);">
+<section id="configurator" class="section section-pattern-lines cv-auto" style="background:var(--bg-warm);">
   <div class="config-wrapper reveal">
     <div>
       <div class="section-eyebrow">Interactive 3D Studio</div>
@@ -836,7 +838,7 @@
   </div>
 </section>
 
-<section id="materials" class="section">
+<section id="materials" class="section cv-auto">
   <div class="reveal" style="text-align:center;margin-bottom:16px;">
     <div class="section-eyebrow" style="display:inline-block;">Craft</div>
     <h2 class="section-title" style="margin-left:auto;margin-right:auto;">Materials &amp; <em>Finishes</em></h2>
@@ -906,7 +908,7 @@
   </div>
 </section>
 
-<section id="sustainability" class="section">
+<section id="sustainability" class="section cv-auto">
   <div class="sustain-wrapper reveal">
     <div class="sustain-content">
       <div class="section-eyebrow">Responsibility</div>
@@ -943,7 +945,7 @@
   </div>
 </section>
 
-<section id="rooms" class="section section-pattern-diagonal">
+<section id="rooms" class="section section-pattern-diagonal cv-auto">
   <div class="reveal">
     <div class="section-eyebrow">3D Office Designer</div>
     <h2 class="section-title">Design Your <em>Space</em></h2>
@@ -995,7 +997,7 @@
   </div>
 </section>
 
-<section id="portfolio" class="section section-pattern-dots">
+<section id="portfolio" class="section section-pattern-dots cv-auto">
   <div class="portfolio-header reveal">
     <div>
       <div class="section-eyebrow">Projects</div>
@@ -1051,7 +1053,7 @@
   </div>
 </section>
 
-<section id="hive" class="section">
+<section id="hive" class="section cv-auto">
   <div class="reveal" style="text-align:center;">
     <div class="section-eyebrow" style="display:inline-block;">Gallery</div>
     <h2 class="section-title" style="margin-left:auto;margin-right:auto;">The Work, in <em>Motion</em></h2>
@@ -1084,7 +1086,7 @@
   <div class="lb-caption"></div>
 </div>
 
-<section id="collections" class="section" style="background:var(--bg-warm);">
+<section id="collections" class="section cv-auto" style="background:var(--bg-warm);">
   <div class="reveal" style="text-align:center;margin-bottom:64px;">
     <div class="section-eyebrow" style="display:inline-block;">Collections</div>
     <h2 class="section-title" style="margin-left:auto;margin-right:auto;">Curated for <em>Every Space</em></h2>
@@ -1126,7 +1128,7 @@
   </div>
 </section>
 
-<section id="services" class="section">
+<section id="services" class="section cv-auto">
   <div class="reveal" style="margin-bottom:48px;">
     <div class="section-eyebrow">Services</div>
     <h2 class="section-title">End-to-End <em>Workspace</em> Solutions</h2>
@@ -1180,7 +1182,7 @@
   </div>
 </section>
 
-<section id="testimonials" class="section" style="background:var(--bg-warm);">
+<section id="testimonials" class="section cv-auto" style="background:var(--bg-warm);">
   <div class="reveal" style="margin-bottom:48px;">
     <div class="section-eyebrow">Trusted By Leaders</div>
     <h2 class="section-title">What Our <em>Clients</em> Say</h2>
@@ -1285,7 +1287,10 @@
 <footer>
   <div class="footer-top">
     <div class="footer-brand">
-      <h3>MMA <em style="font-style:italic;color:var(--gold-light);">Design</em></h3>
+      <a class="mma-logo on-dark" href="index.html" aria-label="MMA Design — home" style="margin-bottom:16px;">
+        <svg class="mma-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M6 34V17C6 10.6 12.3 6 20 6C27.7 6 34 10.6 34 17V34" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" opacity="0.92"/><path d="M20 6V34" stroke="#D4B24A" stroke-width="1.7" stroke-linecap="round"/><path d="M5.5 34H34.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" opacity="0.92"/><circle cx="20" cy="16.5" r="2.6" fill="#D4B24A"/></svg>
+        <span class="mma-wordmark">MMA&nbsp;<em>Design</em></span>
+      </a>
       <p class="footer-tagline">Architectural seating and workspace systems designed for modern corporate leaders, R&amp;D hubs, and collaborative sanctuaries.</p>
       <div class="footer-socials">
         <a href="#" class="footer-social" aria-label="Instagram" title="Instagram">
@@ -1322,10 +1327,11 @@
     <div>
       <div class="footer-col-title">Resources</div>
       <ul class="footer-links">
-        <li><a href="#products">Catalogue PDF</a></li>
+        <li><a href="catalogue.html">Catalogue</a></li>
         <li><a href="office-designer.html">Office Designer</a></li>
         <li><a href="3d-studio.html">3D Studio</a></li>
-        <li><a href="#contact">Request Sample</a></li>
+        <li><a href="brand-guideline.html">Brand Guidelines</a></li>
+        <li><a href="cms.html">Content Console</a></li>
         <li><a href="#contact">Trade Enquiry</a></li>
       </ul>
     </div>
@@ -1341,6 +1347,9 @@
 // Catalogue data (taxonomy, productData, productImages, productSVGs, material
 // palettes, helper maps) lives in data/catalogue.js and is shared with
 // catalogue.html and product.html.
+
+// Phase 5 · mobile/perf hardening — respect visitors who ask for less motion.
+const PRM = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
 const productsGrid = document.getElementById('productsGrid');
 let activeFilter = { type: 'all', value: 'all' };
@@ -1376,7 +1385,7 @@ function renderProducts(filter) {
     <div class="product-card" data-group="${p.group}" data-sub="${p.sub}" data-category="${p.category}" data-shape="${p.shape}" onclick="location.href='product.html?id=${p.id}'" style="cursor:pointer;">
       <div class="product-card-img">
         <div class="img-inner">
-          <img src="${productImages[p.name]}" alt="${p.name}" loading="lazy">
+          <img src="${imgFor(productImages[p.name], 700)}" alt="${p.name}" loading="lazy" decoding="async">
         </div>
         <div class="card-badges">
           ${p.isNew ? '<span class="badge badge-new">New</span>' : ''}
@@ -1629,6 +1638,21 @@ document.getElementById('tNext').addEventListener('click', () => showTestimonial
 showTestimonial(0);
 setInterval(() => showTestimonial((currentTestimonial + 1) % slides.length), 6000);
 
+// Touch swipe for the testimonials carousel (mobile/perf hardening).
+(() => {
+  const inner = document.querySelector('.testimonials-inner');
+  if (!inner) return;
+  let sx = 0, sy = 0;
+  inner.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+  inner.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - sx;
+    const dy = e.changedTouches[0].clientY - sy;
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
+      showTestimonial((currentTestimonial + (dx < 0 ? 1 : -1) + slides.length) % slides.length);
+    }
+  }, { passive: true });
+})();
+
 // ═══════════════════════════════════════════════════════════════════════
 // PREMIUM REVEAL ANIMATIONS - Apple-style smooth reveals
 // ═══════════════════════════════════════════════════════════════════════
@@ -1648,6 +1672,7 @@ revealEls.forEach(el => observer.observe(el));
 // ═══════════════════════════════════════════════════════════════════════
 let ticking = false;
 window.addEventListener('scroll', () => {
+  if (PRM) return;
   if (!ticking) {
     window.requestAnimationFrame(() => {
       const scrolled = window.pageYOffset;
@@ -1689,6 +1714,7 @@ window.addEventListener('scroll', () => {
 // ═══════════════════════════════════════════════════════════════════════
 let activeMagnet = null;
 document.addEventListener('mousemove', (e) => {
+  if (PRM) return;
   const btn = e.target instanceof Element ? e.target.closest('.btn-primary, .btn-secondary, .card-action-btn') : null;
   if (activeMagnet && activeMagnet !== btn) { activeMagnet.style.transform = ''; activeMagnet = null; }
   if (!btn) return;
@@ -1706,6 +1732,7 @@ document.addEventListener('mousemove', (e) => {
 // ═══════════════════════════════════════════════════════════════════════
 let activeTilt = null;
 document.addEventListener('mousemove', (e) => {
+  if (PRM) return;
   const card = e.target instanceof Element ? e.target.closest('.featured-card, .product-card, .room-card') : null;
   if (activeTilt && activeTilt !== card) { activeTilt.style.transform = ''; activeTilt = null; }
   if (!card) return;
@@ -1729,6 +1756,7 @@ const hiveSection = document.getElementById('hive');
 const hexes = document.querySelectorAll('#hiveGrid .hex');
 let hiveRAF = null;
 hiveSection.addEventListener('mousemove', e => {
+  if (PRM) return;
   if (hiveRAF) return;
   hiveRAF = requestAnimationFrame(() => {
     const rect = hiveSection.getBoundingClientRect();
