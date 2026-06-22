@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MMA Design — Content Console</title>
+  <meta name="description" content="Content management console for the MMA Design catalogue — add, edit, organise and validate products against the published content model.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/brand.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg-warm); color: var(--text); font-family: var(--font-body); font-weight: 300; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; }
+
+    nav { position: sticky; top: 0; z-index: 900; height: 68px; padding: 0 40px; display: flex; align-items: center; background: rgba(250,250,248,0.92); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: var(--container); margin: 0 auto; gap: 24px; }
+    .nav-center { display: flex; gap: 26px; list-style: none; align-items: center; }
+    .nav-center a { font-size: 11px; font-weight: 400; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-secondary); transition: color 0.3s; }
+    .nav-center a:hover, .nav-center a.active { color: var(--dark); }
+    .nav-actions { display: flex; gap: 10px; }
+
+    .btn { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 500; letter-spacing: 1.2px; text-transform: uppercase; padding: 10px 18px; border-radius: 100px; border: 1px solid var(--border-medium); background: var(--bg-card); color: var(--dark); transition: all 0.3s var(--ease-out); }
+    .btn:hover { border-color: var(--gold); color: var(--gold-dark); }
+    .btn.primary { background: var(--dark); color: #fff; border-color: var(--dark); }
+    .btn.primary:hover { background: var(--gold); border-color: var(--gold); color: #fff; }
+    .btn.ghost { background: transparent; border-color: var(--border); color: var(--text-secondary); }
+    .btn.danger { color: #A04A2E; border-color: rgba(195,98,65,0.3); }
+    .btn.danger:hover { background: rgba(195,98,65,0.08); border-color: #C36241; color: #A04A2E; }
+    .btn svg { width: 14px; height: 14px; }
+
+    .wrap { max-width: var(--container); margin: 0 auto; padding: 36px 40px 80px; }
+    .page-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; margin-bottom: 28px; }
+    .page-head .eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--gold-dark); }
+    .page-head h1 { font-family: var(--font-display); font-size: 38px; font-weight: 300; color: var(--dark); margin-top: 6px; }
+    .page-head h1 em { font-style: italic; color: var(--gold); }
+    .page-head .sub { font-size: 14px; color: var(--text-muted); margin-top: 6px; max-width: 540px; }
+
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+    .stat { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px 22px; }
+    .stat .sl { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); }
+    .stat .sv { font-family: var(--font-display); font-size: 30px; font-weight: 400; color: var(--dark); margin-top: 4px; }
+    .stat .sx { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .stat.ok .sv { color: #3E6B47; }
+    .stat.warn .sv { color: #C36241; }
+
+    .toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 18px; flex-wrap: wrap; }
+    .search-box { flex: 1; min-width: 220px; position: relative; }
+    .search-box input { width: 100%; padding: 11px 16px 11px 40px; border: 1px solid var(--border-medium); border-radius: 100px; font-family: var(--font-body); font-size: 13px; color: var(--dark); background: var(--bg-card); outline: none; transition: border-color 0.3s; }
+    .search-box input:focus { border-color: var(--gold); }
+    .search-box svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-muted); }
+
+    .table-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead th { text-align: left; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); padding: 16px 18px; border-bottom: 1px solid var(--border); background: var(--bg-cream); }
+    tbody td { padding: 14px 18px; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: var(--gold-10); }
+    .t-name { font-family: var(--font-display); font-size: 16px; color: var(--dark); font-weight: 400; }
+    .t-id { font-variant-numeric: tabular-nums; color: var(--text-muted); font-size: 12px; }
+    .pill { display: inline-block; padding: 3px 10px; border-radius: 100px; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; font-weight: 500; }
+    .pill.valid { background: rgba(74,143,90,0.12); color: #3E6B47; }
+    .pill.invalid { background: rgba(195,98,65,0.12); color: #A04A2E; }
+    .pill.mat-wood { background: rgba(92,67,49,0.1); color: #5C4331; }
+    .pill.mat-uph { background: rgba(184,149,47,0.12); color: var(--gold-dark); }
+    .row-actions { display: flex; gap: 6px; }
+    .icon-btn { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-muted); display: grid; place-items: center; transition: all 0.25s; }
+    .icon-btn:hover { border-color: var(--gold); color: var(--gold-dark); }
+    .icon-btn.del:hover { border-color: #C36241; color: #A04A2E; }
+    .icon-btn svg { width: 15px; height: 15px; }
+    .empty-row { text-align: center; padding: 48px; color: var(--text-muted); }
+
+    /* Editor panel */
+    .panel-backdrop { position: fixed; inset: 0; background: rgba(26,26,24,0.4); backdrop-filter: blur(4px); z-index: 990; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .panel-backdrop.open { opacity: 1; pointer-events: auto; }
+    .panel { position: fixed; top: 0; right: 0; bottom: 0; width: min(560px, 100vw); background: var(--bg); z-index: 991; transform: translateX(100%); transition: transform 0.4s var(--ease-out); display: flex; flex-direction: column; box-shadow: -24px 0 64px rgba(0,0,0,0.12); }
+    .panel.open { transform: translateX(0); }
+    .panel-head { padding: 24px 28px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .panel-head h3 { font-family: var(--font-display); font-size: 24px; font-weight: 400; color: var(--dark); }
+    .panel-head h3 em { font-style: italic; color: var(--gold); }
+    .panel-body { flex: 1; overflow-y: auto; padding: 24px 28px; }
+    .panel-foot { padding: 18px 28px; border-top: 1px solid var(--border); display: flex; gap: 12px; justify-content: flex-end; background: var(--bg-card); }
+
+    .field { margin-bottom: 18px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .field label { display: block; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+    .field label .req { color: var(--gold-dark); margin-left: 2px; }
+    .field input, .field select, .field textarea { width: 100%; padding: 11px 14px; border: 1px solid var(--border-medium); border-radius: 10px; font-family: var(--font-body); font-size: 13px; color: var(--dark); background: var(--bg-card); outline: none; transition: border-color 0.25s; }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--gold); }
+    .field textarea { resize: vertical; min-height: 72px; line-height: 1.5; }
+    .field .hint { font-size: 11px; color: var(--text-muted); margin-top: 5px; }
+    .check-row { display: flex; align-items: center; gap: 10px; }
+    .check-row input { width: 18px; height: 18px; accent-color: var(--gold); }
+    .check-row label { margin: 0; font-size: 13px; color: var(--text-secondary); text-transform: none; letter-spacing: 0; font-weight: 400; }
+    .multi-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+    .multi-chip { padding: 6px 12px; border-radius: 100px; border: 1px solid var(--border-medium); font-size: 11px; letter-spacing: 0.5px; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; user-select: none; }
+    .multi-chip:hover { border-color: var(--gold-20); }
+    .multi-chip.on { background: var(--gold); border-color: var(--gold); color: #fff; font-weight: 500; }
+
+    .errors { background: rgba(195,98,65,0.07); border: 1px solid rgba(195,98,65,0.25); border-radius: 10px; padding: 14px 16px; margin-bottom: 18px; display: none; }
+    .errors.show { display: block; }
+    .errors h5 { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #A04A2E; margin-bottom: 8px; }
+    .errors ul { list-style: none; }
+    .errors li { font-size: 12px; color: #A04A2E; padding: 2px 0; }
+
+    #toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(12px); background: rgba(26,26,24,0.92); color: #fff; backdrop-filter: blur(12px); padding: 12px 24px; border-radius: 100px; font-size: 12px; letter-spacing: 0.5px; z-index: 999; opacity: 0; pointer-events: none; transition: all 0.4s var(--ease-out); }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast em { font-style: normal; color: var(--gold-light); }
+
+    .dirty-note { font-size: 11px; color: var(--text-muted); margin-left: auto; padding: 6px 12px; background: var(--gold-10); border: 1px solid var(--gold-20); border-radius: 100px; }
+    .dirty-note.show { display: inline-block; }
+    .dirty-note { display: none; }
+
+    @media (max-width: 1024px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 768px) { .nav-center { display: none; } .wrap { padding: 24px 18px 60px; } .stats { grid-template-columns: 1fr 1fr; } .hide-sm { display: none; } .field-row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="mma-logo compact" href="index.html" aria-label="MMA Design — home">
+      <svg class="mma-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M6 34V17C6 10.6 12.3 6 20 6C27.7 6 34 10.6 34 17V34" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" opacity="0.92"/><path d="M20 6V34" stroke="#B8952F" stroke-width="1.7" stroke-linecap="round"/><path d="M5.5 34H34.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" opacity="0.92"/><circle cx="20" cy="16.5" r="2.6" fill="#B8952F"/></svg>
+      <span class="mma-wordmark">MMA&nbsp;<em>Console</em></span>
+    </a>
+    <ul class="nav-center">
+      <li><a href="index.html">Website</a></li>
+      <li><a href="catalogue.html">Catalogue</a></li>
+      <li><a href="brand-guideline.html">Guidelines</a></li>
+      <li><a href="cms.html" class="active">Content Console</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="btn ghost" id="exportBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export JSON</button>
+      <button class="btn primary" id="addBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add product</button>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="page-head">
+    <div>
+      <div class="eyebrow">Content Model · v<span id="modelVer">5</span></div>
+      <h1>Catalogue <em>Console</em></h1>
+      <div class="sub">Add, edit and organise the MMA catalogue against the published content model. Edits are saved to your browser and can be exported as JSON for the production pipeline — no developer required.</div>
+    </div>
+    <span class="dirty-note" id="dirtyNote">Local edits in play · <a href="#" id="resetLink" style="color:var(--gold-dark);text-decoration:underline;">reset to seed</a></span>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="sl">Products</div><div class="sv" id="statCount">—</div><div class="sx" id="statCountX">in catalogue</div></div>
+    <div class="stat"><div class="sl">Families</div><div class="sv" id="statFamilies">—</div><div class="sx">taxonomy groups</div></div>
+    <div class="stat ok"><div class="sl">Validation</div><div class="sv" id="statValid">—</div><div class="sx" id="statValidX">all products</div></div>
+    <div class="stat"><div class="sl">Source</div><div class="sv" id="statSource" style="font-size:18px;">—</div><div class="sx" id="statSourceX">content origin</div></div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="searchInput" placeholder="Search by name, family, collection…">
+    </div>
+  </div>
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th class="hide-sm">Family</th>
+          <th class="hide-sm">Material</th>
+          <th>Status</th>
+          <th style="text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="productTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="panel-backdrop" id="panelBackdrop"></div>
+<aside class="panel" id="editorPanel" aria-hidden="true">
+  <div class="panel-head">
+    <h3 id="panelTitle">Add <em>product</em></h3>
+    <button class="icon-btn" id="panelClose" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="panel-body">
+    <div class="errors" id="errorsBox"><h5>Please fix the following</h5><ul id="errorsList"></ul></div>
+    <form id="editorForm" autocomplete="off"></form>
+  </div>
+  <div class="panel-foot">
+    <button class="btn ghost" id="cancelBtn">Cancel</button>
+    <button class="btn primary" id="saveBtn">Save product</button>
+  </div>
+</aside>
+
+<div id="toast"></div>
+
+<script src="data/catalogue.js"></script>
+<script>
+  // ── Content Console (Phase 5 · CMS-ready content model) ──
+  // Renders the catalogue from the CMS adapter, edits against CONTENT_MODEL,
+  // validates with CMS.validateProduct, and persists to localStorage through
+  // CMS.upsertProduct / deleteProduct. Export produces a JSON ready for a
+  // headless CMS or the data/products.json pipeline file.
+  (function () {
+    var working = [];          // products currently being listed (seed + overrides)
+    var editing = null;        // product being edited, or null for "add"
+    var multiState = {};       // { fieldId: Set }
+
+    function toast(html) {
+      var t = document.getElementById('toast');
+      if (!t) return;
+      t.innerHTML = html; t.classList.add('show');
+      clearTimeout(t._tm); t._tm = setTimeout(function () { t.classList.remove('show'); }, 2600);
+    }
+
+    function load() {
+      CMS.fetchProducts().then(function (list) {
+        working = list;
+        renderStats();
+        renderTable();
+        renderDirtyNote();
+      });
+    }
+
+    function renderStats() {
+      document.getElementById('statCount').textContent = working.length;
+      document.getElementById('statFamilies').textContent = new Set(working.map(function (p) { return p.group; })).size;
+      var report = CMS.validateAll();
+      // validateAll runs against the seed; recompute for the working set too.
+      var bad = 0; working.forEach(function (p) { if (!CMS.validateProduct(p).valid) bad++; });
+      var sv = document.getElementById('statValid'), sx = document.getElementById('statValidX');
+      sv.textContent = bad ? bad + ' issues' : 'OK';
+      sv.parentElement.className = 'stat ' + (bad ? 'warn' : 'ok');
+      sx.textContent = bad ? (working.length - bad) + ' of ' + working.length + ' valid' : 'all products valid';
+      document.getElementById('modelVer').textContent = CMS.version;
+      var overridden = !!(CMS._readOverrides && CMS._readOverrides());
+      var src = overridden ? 'Local edits' : 'Seed';
+      document.getElementById('statSource').textContent = src;
+      document.getElementById('statSourceX').textContent = overridden ? 'localStorage override' : 'data/catalogue.js';
+    }
+
+    function renderDirtyNote() {
+      var overridden = !!(CMS._readOverrides && CMS._readOverrides());
+      var n = document.getElementById('dirtyNote');
+      if (n) n.classList.toggle('show', overridden);
+    }
+
+    function matchesSearch(p, q) {
+      if (!q) return true;
+      q = q.toLowerCase();
+      return (p.name + ' ' + (p.cat || '') + ' ' + (p.group || '') + ' ' + (p.collectionLabel || '') + ' ' + (p.sub || '')).toLowerCase().indexOf(q) >= 0;
+    }
+
+    function renderTable() {
+      var q = (document.getElementById('searchInput').value || '').trim();
+      var rows = working.filter(function (p) { return matchesSearch(p, q); });
+      var tb = document.getElementById('productTable');
+      if (!rows.length) { tb.innerHTML = '<tr><td colspan="5" class="empty-row">No products match "' + q + '".</td></tr>'; return; }
+      tb.innerHTML = rows.map(function (p) {
+        var v = CMS.validateProduct(p);
+        var matPill = p.materialType === 'wood' ? '<span class="pill mat-wood">Wood</span>' : '<span class="pill mat-uph">Upholstery</span>';
+        var statusPill = v.valid ? '<span class="pill valid">Valid</span>' : '<span class="pill invalid">' + v.errors.length + ' issue' + (v.errors.length > 1 ? 's' : '') + '</span>';
+        return '<tr>' +
+          '<td><div class="t-name">' + p.name + '</div><div class="t-id">SKU ' + p.id + ' · ' + (p.studioModel || '') + '</div></td>' +
+          '<td class="hide-sm">' + (groupLabel[p.group] || p.group) + '<br><span style="font-size:11px;color:var(--text-muted);">' + (subLabel[p.sub] || '') + '</span></td>' +
+          '<td class="hide-sm">' + matPill + '</td>' +
+          '<td>' + statusPill + '</td>' +
+          '<td><div class="row-actions" style="justify-content:flex-end;">' +
+            '<a class="icon-btn" href="product.html?id=' + p.id + '" title="View on site"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></a>' +
+            '<button class="icon-btn" data-edit="' + p.id + '" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>' +
+            '<button class="icon-btn del" data-del="' + p.id + '" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>' +
+          '</div></td>' +
+        '</tr>';
+      }).join('');
+      tb.querySelectorAll('[data-edit]').forEach(function (b) { b.addEventListener('click', function () { openEditor(+b.getAttribute('data-edit')); }); });
+      tb.querySelectorAll('[data-del]').forEach(function (b) { b.addEventListener('click', function () { deleteProduct(+b.getAttribute('data-del')); }); });
+    }
+
+    // ── Editor: build the form from the content schema ──
+    function fieldDefs() {
+      var groups = taxonomy.map(function (g) { return { v: g.group, l: g.label }; });
+      var subs = Object.keys(subLabel).map(function (s) { return { v: s, l: subLabel[s] }; });
+      return [
+        { id: 'id', label: 'SKU id', type: 'number', req: true },
+        { id: 'name', label: 'Product name', type: 'text', req: true },
+        { id: 'studioModel', label: '3D studio model id', type: 'text', req: true, hint: 'e.g. chair-executive · matches the configurator' },
+        { id: 'group', label: 'Family', type: 'select', req: true, options: groups },
+        { id: 'sub', label: 'Sub-category', type: 'select', req: true, options: subs },
+        { id: 'materialType', label: 'Material family', type: 'select', req: true, options: [{ v: 'upholstery', l: 'Upholstery' }, { v: 'wood', l: 'Wood' }] },
+        { id: 'shape', label: 'Form', type: 'select', req: true, options: SHAPES.map(function (s) { return { v: s.id, l: s.label }; }) },
+        { id: 'category', label: 'Category slug', type: 'text', req: true },
+        { id: 'cat', label: 'Category label', type: 'text', req: true },
+        { id: 'isNew', label: 'Show "New" badge', type: 'check' },
+        { id: 'bases', label: 'Compatible bases', type: 'multi', options: CMS.loadBases().map(function (b) { return { v: b.code, l: b.code + ' · ' + b.name }; }) },
+        { id: 'collection', label: 'Design collection', type: 'select', req: false, options: [{ v: '', l: '— none —' }].concat(CMS.loadCollections().map(function (c) { return { v: c.id, l: c.label }; })) },
+        { id: 'application', label: 'Applications', type: 'multi', options: APPLICATIONS.map(function (a) { return { v: a.id, l: a.label }; }) },
+        { id: 'materials', label: 'Material facets', type: 'multi', options: MATERIALS.map(function (m) { return { v: m.id, l: m.label }; }) },
+        { id: 'dims', label: 'Dimensions (cm)', type: 'dims', req: true, keys: ['w', 'd', 'h'] },
+        { id: 'meta', label: 'Detail line', type: 'text', req: true, hint: 'e.g. "Seats 8–16"' },
+        { id: 'lead', label: 'Lead time', type: 'text', req: true, hint: 'e.g. "8–10 weeks"' },
+        { id: 'desc', label: 'Short description', type: 'textarea', req: true },
+        { id: 'longDesc', label: 'Long description', type: 'textarea', req: false },
+        { id: 'features', label: 'Features', type: 'lines', req: true, hint: 'One feature per line' },
+        { id: 'tags', label: 'Search tags', type: 'csv', req: false, hint: 'Comma separated' }
+      ];
+    }
+
+    function openEditor(id) {
+      editing = id != null ? working.find(function (p) { return String(p.id) === String(id); }) : null;
+      var isNew = !editing;
+      document.getElementById('panelTitle').innerHTML = isNew ? 'Add <em>product</em>' : 'Edit <em>product</em>';
+      var base = editing ? JSON.parse(JSON.stringify(editing)) : { id: nextId(), isNew: false, bases: [], application: [], materials: [], tags: [], features: [], dims: { w: 0, d: 0, h: 0 }, materialType: 'upholstery', shape: 'rectangular', group: 'seating', sub: 'executive-chairs' };
+      buildForm(base);
+      document.getElementById('errorsBox').classList.remove('show');
+      document.getElementById('editorPanel').classList.add('open');
+      document.getElementById('panelBackdrop').classList.add('open');
+    }
+
+    function closeEditor() {
+      document.getElementById('editorPanel').classList.remove('open');
+      document.getElementById('panelBackdrop').classList.remove('open');
+      editing = null;
+    }
+
+    function nextId() {
+      var max = 0; working.forEach(function (p) { if (+p.id > max) max = +p.id; });
+      return max + 1;
+    }
+
+    function buildForm(base) {
+      multiState = {};
+      var f = document.getElementById('editorForm');
+      var html = '';
+      fieldDefs().forEach(function (fd) {
+        var val = base[fd.id];
+        var req = fd.req ? '<span class="req">*</span>' : '';
+        if (fd.type === 'text' || fd.type === 'number') {
+          html += '<div class="field"><label>' + fd.label + ' ' + req + '</label><input type="' + fd.type + '" data-f="' + fd.id + '" value="' + esc(val != null ? val : '') + '">' + (fd.hint ? '<div class="hint">' + fd.hint + '</div>' : '') + '</div>';
+        } else if (fd.type === 'textarea') {
+          html += '<div class="field"><label>' + fd.label + ' ' + req + '</label><textarea data-f="' + fd.id + '">' + esc(val != null ? val : '') + '</textarea>' + (fd.hint ? '<div class="hint">' + fd.hint + '</div>' : '') + '</div>';
+        } else if (fd.type === 'select') {
+          var opts = fd.options.map(function (o) { return '<option value="' + esc(o.v) + '"' + (String(val) === String(o.v) ? ' selected' : '') + '>' + esc(o.l) + '</option>'; }).join('');
+          html += '<div class="field"><label>' + fd.label + ' ' + req + '</label><select data-f="' + fd.id + '">' + opts + '</select></div>';
+        } else if (fd.type === 'check') {
+          html += '<div class="field"><div class="check-row"><input type="checkbox" data-f="' + fd.id + '"' + (val ? ' checked' : '') + '><label>' + fd.label + '</label></div></div>';
+        } else if (fd.type === 'multi') {
+          var set = new Set(val || []);
+          multiState[fd.id] = set;
+          var chips = fd.options.map(function (o) { return '<span class="multi-chip' + (set.has(o.v) ? ' on' : '') + '" data-f="' + fd.id + '" data-v="' + esc(o.v) + '">' + esc(o.l) + '</span>'; }).join('');
+          html += '<div class="field"><label>' + fd.label + '</label><div class="multi-chips">' + chips + '</div></div>';
+        } else if (fd.type === 'dims') {
+          var d = val || {};
+          html += '<div class="field"><label>' + fd.label + ' ' + req + '</label><div class="field-row">' +
+            '<input type="text" data-f="dims.w" placeholder="W" value="' + esc(d.w != null ? d.w : '') + '">' +
+            '<input type="text" data-f="dims.d" placeholder="D" value="' + esc(d.d != null ? d.d : '') + '">' +
+            '</div><div style="margin-top:8px;"><input type="text" data-f="dims.h" placeholder="H (number or range e.g. 118–128)" value="' + esc(d.h != null ? d.h : '') + '"></div></div>';
+        } else if (fd.type === 'lines') {
+          var lines = (val || []).join('\n');
+          html += '<div class="field"><label>' + fd.label + ' ' + req + '</label><textarea data-f="' + fd.id + '">' + esc(lines) + '</textarea>' + (fd.hint ? '<div class="hint">' + fd.hint + '</div>' : '') + '</div>';
+        } else if (fd.type === 'csv') {
+          html += '<div class="field"><label>' + fd.label + '</label><input type="text" data-f="' + fd.id + '" value="' + esc((val || []).join(', ')) + '">' + (fd.hint ? '<div class="hint">' + fd.hint + '</div>' : '') + '</div>';
+        }
+      });
+      f.innerHTML = html;
+      f.querySelectorAll('.multi-chip').forEach(function (c) {
+        c.addEventListener('click', function () {
+          var fid = c.getAttribute('data-f'), v = c.getAttribute('data-v');
+          var s = multiState[fid];
+          if (s.has(v)) s.delete(v); else s.add(v);
+          c.classList.toggle('on');
+        });
+      });
+    }
+
+    function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+    function collectForm() {
+      var f = document.getElementById('editorForm');
+      var p = {};
+      // start from editing so unspecified optional fields are preserved
+      if (editing) p = JSON.parse(JSON.stringify(editing));
+      fieldDefs().forEach(function (fd) {
+        if (fd.type === 'dims') {
+          p.dims = { w: num(f.querySelector('[data-f="dims.w"]').value), d: num(f.querySelector('[data-f="dims.d"]').value), h: f.querySelector('[data-f="dims.h"]').value };
+        } else if (fd.type === 'multi') {
+          p[fd.id] = Array.from(multiState[fd.id] || []);
+        } else if (fd.type === 'check') {
+          p[fd.id] = !!f.querySelector('[data-f="' + fd.id + '"]').checked;
+        } else if (fd.type === 'lines') {
+          p[fd.id] = f.querySelector('[data-f="' + fd.id + '"]').value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+        } else if (fd.type === 'csv') {
+          p[fd.id] = f.querySelector('[data-f="' + fd.id + '"]').value.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+        } else if (fd.type === 'number') {
+          p[fd.id] = num(f.querySelector('[data-f="' + fd.id + '"]').value);
+        } else {
+          p[fd.id] = f.querySelector('[data-f="' + fd.id + '"]').value.trim();
+        }
+      });
+      // keep derived display fields consistent
+      p.collectionLabel = p.collection ? (COLLECTIONS[p.collection] || '') : '';
+      return p;
+    }
+    function num(v) { var n = parseInt(v, 10); return isNaN(n) ? 0 : n; }
+
+    function saveProduct() {
+      var p = collectForm();
+      var v = CMS.validateProduct(p);
+      if (!v.valid) {
+        var box = document.getElementById('errorsBox');
+        document.getElementById('errorsList').innerHTML = v.errors.map(function (e) { return '<li>' + esc(e) + '</li>'; }).join('');
+        box.classList.add('show');
+        toast('Please fix the <em>' + v.errors.length + '</em> issue' + (v.errors.length > 1 ? 's' : '') + '.');
+        return;
+      }
+      CMS.upsertProduct(p);
+      toast('Saved <em>' + esc(p.name) + '</em> · SKU ' + p.id);
+      closeEditor();
+      load();
+    }
+
+    function deleteProduct(id) {
+      var p = working.find(function (x) { return String(x.id) === String(id); });
+      if (!p) return;
+      if (!confirm('Remove "' + p.name + '" from your local catalogue? This only affects your browser\'s override — the seed stays intact.')) return;
+      CMS.deleteProduct(id);
+      toast('Removed <em>' + esc(p.name) + '</em>.');
+      load();
+    }
+
+    function exportJSON() {
+      var data = CMS.exportJSON();
+      var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      var url = (typeof URL !== 'undefined' && URL.createObjectURL) ? URL.createObjectURL(blob) : null;
+      if (!url) { toast('Export ready — <em>open console</em> for the JSON.'); return; }
+      var a = document.createElement('a');
+      a.href = url; a.download = 'products.json';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function () { if (URL.revokeObjectURL) URL.revokeObjectURL(url); }, 1000);
+      toast('Exported <em>products.json</em>.');
+    }
+
+    // ── wire up ──
+    var addBtn = document.getElementById('addBtn');
+    if (addBtn) addBtn.addEventListener('click', function () { openEditor(null); });
+    var exportBtn = document.getElementById('exportBtn');
+    if (exportBtn) exportBtn.addEventListener('click', exportJSON);
+    var saveBtn = document.getElementById('saveBtn');
+    if (saveBtn) saveBtn.addEventListener('click', saveProduct);
+    var cancelBtn = document.getElementById('cancelBtn');
+    if (cancelBtn) cancelBtn.addEventListener('click', closeEditor);
+    var panelClose = document.getElementById('panelClose');
+    if (panelClose) panelClose.addEventListener('click', closeEditor);
+    var backdrop = document.getElementById('panelBackdrop');
+    if (backdrop) backdrop.addEventListener('click', closeEditor);
+    var search = document.getElementById('searchInput');
+    if (search) search.addEventListener('input', renderTable);
+    var resetLink = document.getElementById('resetLink');
+    if (resetLink) resetLink.addEventListener('click', function (e) { e.preventDefault(); if (confirm('Discard all local edits and restore the seed catalogue?')) { CMS.resetOverrides(); toast('Restored <em>seed catalogue</em>.'); load(); } });
+
+    load();
+  })();
+</script>
+</body>
+</html>
