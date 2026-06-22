@@ -95,6 +95,18 @@
     .chip .chip-dot { width: 14px; height: 14px; border-radius: 50%; box-shadow: inset 0 1px 2px rgba(0,0,0,0.25); }
     .chip-code { font-weight: 600; color: var(--dark); }
     .chip.active .chip-code { color: var(--gold-dark); }
+    .chip .opt-cdetail { font-size: 10px; color: var(--text-muted); letter-spacing: 0; }
+    .chip.active .opt-cdetail { color: var(--gold-dark); }
+
+    .fabric-col { margin-bottom: 18px; }
+    .fabric-col:last-child { margin-bottom: 0; }
+    .fabric-col-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .fabric-col-head > span:first-child { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-secondary); font-weight: 500; }
+    .fc-badge { font-size: 8px; letter-spacing: 0.8px; text-transform: uppercase; color: var(--gold-dark); background: var(--gold-10); border: 1px solid var(--gold-20); border-radius: 100px; padding: 2px 8px; font-weight: 600; }
+
+    .opt-subrow { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+    .opt-subrow:last-child { margin-bottom: 0; }
+    .opt-sublabel { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); }
 
     .pd-ctas { display: flex; gap: 14px; margin: 34px 0 16px; flex-wrap: wrap; }
     .btn-primary { display: inline-flex; align-items: center; gap: 10px; background: var(--dark); color: #fff; font-size: 12px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; padding: 15px 30px; border: none; border-radius: 100px; transition: all 0.4s var(--ease-out); }
@@ -234,6 +246,13 @@
           <div class="chip-row" id="baseRow"></div>
         </div>
 
+        <div class="opt-group" id="optionsGroup" style="display:none;">
+          <div class="opt-head">
+            <span class="opt-title">Configuration</span>
+          </div>
+          <div id="optionsRows"></div>
+        </div>
+
         <div class="pd-ctas">
           <a class="btn-primary" id="configureBtn" href="#">
             Configure in 3D
@@ -328,15 +347,21 @@
 
   function renderProduct(p) {
     var isUph = p.materialType === 'upholstery';
-    var palette = isUph ? FABRICS : WOODS;
+    // Upholstered pieces only offer the fabric grades they're rated for.
+    var palette = isUph ? fabricsForModel(p.studioModel) : WOODS;
     var state = {
       material: palette[0].id,
       structure: 'matte-black',
-      base: p.bases.length ? p.bases[0] : null
+      base: p.bases.length ? p.bases[0] : null,
+      options: defaultOptions(p.studioModel)
     };
     // honour incoming config (e.g. shared link)
     if (qp('material') && palette.find(function(m){return m.id===qp('material');})) state.material = qp('material');
     if (qp('structure') && STRUCTURES.find(function(s){return s.id===qp('structure');})) state.structure = qp('structure');
+    optionGroups(p.studioModel).forEach(function(g) {
+      var v = qp('opt_' + g.id);
+      if (v && g.choices.some(function(c){ return c.id === v; })) state.options[g.id] = v;
+    });
 
     // ── Breadcrumb ──
     document.getElementById('breadcrumb').innerHTML =
@@ -393,15 +418,49 @@
     var materialRow = document.getElementById('materialRow');
     function paintMaterial() {
       var m = palette.find(function(x){ return x.id === state.material; });
-      materialRow.innerHTML = palette.map(function(x) {
-        return '<div class="swatch' + (x.id===state.material?' active':'') + '" title="' + x.name + '" data-id="' + x.id + '" style="background:' + x.value + ';"></div>';
-      }).join('');
-      document.getElementById('materialSelected').innerHTML = m.name + (m.type ? ' <span class="opt-grade">· ' + m.type + '</span>' : '');
+      if (isUph) {
+        // group by textile collection, highest grade first, with a grade badge
+        var groups = fabricGroupsForModel(p.studioModel);
+        materialRow.innerHTML = groups.map(function(g) {
+          var sw = g.swatches.map(function(x) {
+            return '<div class="swatch' + (x.id===state.material?' active':'') + '" title="' + x.name + '" data-id="' + x.id + '" style="background:' + x.value + ';"></div>';
+          }).join('');
+          return '<div class="fabric-col">' +
+              '<div class="fabric-col-head"><span>' + g.label + '</span><span class="fc-badge">' + GRADE_LABEL[g.grade] + '</span></div>' +
+              '<div class="swatch-row">' + sw + '</div>' +
+            '</div>';
+        }).join('');
+        document.getElementById('materialSelected').innerHTML = m.name + ' <span class="opt-grade">· ' + (FABRIC_COLLECTIONS[m.collection] ? FABRIC_COLLECTIONS[m.collection].label : m.type) + ' · ' + GRADE_LABEL[m.grade] + '</span>';
+      } else {
+        materialRow.innerHTML = palette.map(function(x) {
+          return '<div class="swatch' + (x.id===state.material?' active':'') + '" title="' + x.name + '" data-id="' + x.id + '" style="background:' + x.value + ';"></div>';
+        }).join('');
+        document.getElementById('materialSelected').innerHTML = m.name;
+      }
       // live preview tint on the hero
       tint.style.backgroundColor = m.value;
       galleryMain.classList.add('tinted');
       materialRow.querySelectorAll('.swatch').forEach(function(s) {
         s.addEventListener('click', function(){ state.material = s.dataset.id; paintMaterial(); updateConfigure(); });
+      });
+    }
+
+    // ── Variant options (carried into the 3D studio & spec) ──
+    var optionsGroupEl = document.getElementById('optionsGroup');
+    var optionsRowsEl = document.getElementById('optionsRows');
+    function paintOptions() {
+      var groups = optionGroups(p.studioModel);
+      if (!groups.length) { optionsGroupEl.style.display = 'none'; return; }
+      optionsGroupEl.style.display = '';
+      optionsRowsEl.innerHTML = groups.map(function(g) {
+        var chips = g.choices.map(function(c) {
+          var detail = c.detail ? ' <span class="opt-cdetail">' + c.detail + '</span>' : '';
+          return '<div class="chip' + (state.options[g.id]===c.id?' active':'') + '" data-g="' + g.id + '" data-c="' + c.id + '">' + c.label + detail + '</div>';
+        }).join('');
+        return '<div class="opt-subrow"><span class="opt-sublabel">' + g.label + '</span><div class="chip-row">' + chips + '</div></div>';
+      }).join('');
+      optionsRowsEl.querySelectorAll('.chip').forEach(function(c) {
+        c.addEventListener('click', function(){ state.options[c.dataset.g] = c.dataset.c; paintOptions(); updateConfigure(); });
       });
     }
 
@@ -437,6 +496,7 @@
       var params = 'model=' + p.studioModel + '&structure=' + state.structure;
       params += isUph ? ('&upholstery=' + state.material + '&topColor=' + state.material) : ('&wood=' + state.material);
       if (state.base) params += '&base=' + state.base;
+      optionGroups(p.studioModel).forEach(function(g) { params += '&opt_' + g.id + '=' + state.options[g.id]; });
       document.getElementById('configureBtn').href = '3d-studio.html?' + params;
       window._shareState = state;
     }
@@ -450,13 +510,14 @@
           upholstery: isUph ? state.material : 'charcoal',
           topColor: isUph ? state.material : 'charcoal',
           wood: isUph ? 'ash-oak' : state.material,
-          structure: state.structure
+          structure: state.structure,
+          options: state.options
         }));
       } catch(err) {}
       location.href = 'office-designer.html?fromStudio=1';
     };
 
-    paintMaterial(); paintStructure(); paintBase(); updateConfigure();
+    paintMaterial(); paintStructure(); paintBase(); paintOptions(); updateConfigure();
 
     // ── Features ──
     var ico = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';

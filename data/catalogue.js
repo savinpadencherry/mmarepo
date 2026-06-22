@@ -211,16 +211,121 @@ function facetSearch(opts) {
 }
 
 // ── Material palettes (ids match 3d-studio.html for seamless deep-linking) ──
+// Phase 4: every upholstery swatch belongs to a textile collection with a
+// specification grade (2 → 4). Products declare a grade ceiling, so only the
+// finishes a piece is actually rated for are offered (variant validation).
+const FABRIC_COLLECTIONS = {
+  'wool-felt':       { label:'Wool Felt',       grade:2, blurb:'Dense contract wool felt — the hard-wearing everyday workhorse.' },
+  'boucle':          { label:'Bouclé',          grade:3, blurb:'Textured wool bouclé with a soft, tactile loop.' },
+  'velvet':          { label:'Cotton Velvet',   grade:3, blurb:'Deep-pile cotton velvet with a quiet, directional sheen.' },
+  'aniline-leather': { label:'Aniline Leather', grade:4, blurb:'Full-grain aniline leather that patinas beautifully with age.' }
+};
+const GRADE_LABEL = { 1:'Grade 1', 2:'Grade 2 · Standard', 3:'Grade 3 · Premium', 4:'Grade 4 · Signature' };
+
 const FABRICS = [
-  { id:'charcoal',   name:'Charcoal',   value:'#1C1C19', type:'Aniline Leather' },
-  { id:'camel',      name:'Camel',      value:'#C19A6B', type:'Aniline Leather' },
-  { id:'cognac',     name:'Cognac',     value:'#9A4F2A', type:'Aniline Leather' },
-  { id:'emerald',    name:'Emerald',    value:'#123524', type:'Wool Felt' },
-  { id:'navy',       name:'Navy',       value:'#1B2838', type:'Wool Felt' },
-  { id:'ivory',      name:'Ivory',      value:'#FAF8F0', type:'Bouclé' },
-  { id:'terracotta', name:'Terracotta', value:'#C36241', type:'Wool Felt' },
-  { id:'oxblood',    name:'Oxblood',    value:'#7A1C1C', type:'Velvet' }
+  { id:'charcoal',   name:'Charcoal',   value:'#1C1C19', collection:'aniline-leather', grade:4, type:'Aniline Leather' },
+  { id:'camel',      name:'Camel',      value:'#C19A6B', collection:'aniline-leather', grade:4, type:'Aniline Leather' },
+  { id:'cognac',     name:'Cognac',     value:'#9A4F2A', collection:'aniline-leather', grade:4, type:'Aniline Leather' },
+  { id:'oxblood',    name:'Oxblood',    value:'#7A1C1C', collection:'velvet',          grade:3, type:'Cotton Velvet' },
+  { id:'ivory',      name:'Ivory',      value:'#FAF8F0', collection:'boucle',          grade:3, type:'Bouclé' },
+  { id:'emerald',    name:'Emerald',    value:'#123524', collection:'wool-felt',       grade:2, type:'Wool Felt' },
+  { id:'navy',       name:'Navy',       value:'#1B2838', collection:'wool-felt',       grade:2, type:'Wool Felt' },
+  { id:'terracotta', name:'Terracotta', value:'#C36241', collection:'wool-felt',       grade:2, type:'Wool Felt' }
 ];
+
+// Grade ceiling per studio model — drives which fabrics a product is rated for.
+const PRODUCT_GRADE_CEILING = {
+  'chair-executive': 4, 'chair-conference': 3, 'sofa-modular': 4,
+  'sofa-bench': 2, 'lounge-chair': 4
+};
+function gradeCeiling(studioModel) {
+  return PRODUCT_GRADE_CEILING[studioModel] != null ? PRODUCT_GRADE_CEILING[studioModel] : 4;
+}
+// Fabrics a product is rated for, grouped by collection (highest grade first).
+function fabricsForModel(studioModel) {
+  const max = gradeCeiling(studioModel);
+  return FABRICS.filter(f => f.grade <= max);
+}
+function fabricGroupsForModel(studioModel) {
+  const fabrics = fabricsForModel(studioModel);
+  const order = Object.keys(FABRIC_COLLECTIONS).sort((a, b) => FABRIC_COLLECTIONS[b].grade - FABRIC_COLLECTIONS[a].grade);
+  return order.map(col => ({
+    collection: col,
+    label: FABRIC_COLLECTIONS[col].label,
+    grade: FABRIC_COLLECTIONS[col].grade,
+    blurb: FABRIC_COLLECTIONS[col].blurb,
+    swatches: fabrics.filter(f => f.collection === col)
+  })).filter(g => g.swatches.length);
+}
+
+// ── Phase 4: configurable variant options (SKU expansion) ──
+// Keyed by studio model. `affects` tells the 3D studio how to apply the choice:
+//   'arms' / 'headrest' toggle geometry · 'scaleX' stretches the piece ·
+//   'spec' is specification-only (changes the SKU & spec sheet, not the mesh).
+const PRODUCT_OPTIONS = {
+  'chair-executive': [
+    { id:'arms', label:'Armrests', affects:'arms', choices:[
+      { id:'adjustable', label:'4D Adjustable', code:'A1' },
+      { id:'none',       label:'Armless',       code:'A0' } ] },
+    { id:'headrest', label:'Headrest', affects:'headrest', choices:[
+      { id:'yes', label:'With Headrest', code:'H1' },
+      { id:'no',  label:'No Headrest',   code:'H0' } ] }
+  ],
+  'chair-conference': [
+    { id:'arms', label:'Armrests', affects:'spec', choices:[
+      { id:'with', label:'With Arms', code:'A1' },
+      { id:'none', label:'Armless',   code:'A0' } ] },
+    { id:'link', label:'Linking', affects:'spec', choices:[
+      { id:'standalone', label:'Standalone', code:'L0' },
+      { id:'ganged',     label:'Ganged',     code:'L1' } ] }
+  ],
+  'sofa-modular': [
+    { id:'size', label:'Configuration', affects:'scaleX', choices:[
+      { id:'two',   label:'2-Seat', code:'S2', scaleX:0.78, detail:'Seats 2 · 1.5 m' },
+      { id:'three', label:'3-Seat', code:'S3', scaleX:1.00, detail:'Seats 3 · 1.9 m' },
+      { id:'four',  label:'4-Seat', code:'S4', scaleX:1.22, detail:'Seats 4 · 2.4 m' } ] }
+  ],
+  'sofa-bench': [
+    { id:'size', label:'Length', affects:'scaleX', choices:[
+      { id:'std',  label:'Standard',  code:'B0', scaleX:1.00, detail:'1.3 m run' },
+      { id:'long', label:'Long Run',  code:'B1', scaleX:1.38, detail:'1.8 m run' } ] }
+  ],
+  'table-boardroom': [
+    { id:'size', label:'Seats', affects:'scaleX', choices:[
+      { id:'eight',   label:'Seats 8',  code:'T08', scaleX:1.00, detail:'2.3 m' },
+      { id:'twelve',  label:'Seats 12', code:'T12', scaleX:1.26, detail:'2.9 m' },
+      { id:'sixteen', label:'Seats 16', code:'T16', scaleX:1.52, detail:'3.5 m' } ] }
+  ],
+  'table-standing': [
+    { id:'height', label:'Height', affects:'spec', choices:[
+      { id:'bar',    label:'Bar 105 cm',   code:'HB' },
+      { id:'poseur', label:'Poseur 110 cm', code:'HP' } ] }
+  ],
+  'lounge-chair': [
+    { id:'swivel', label:'Return', affects:'spec', choices:[
+      { id:'return', label:'Self-Return', code:'W1' },
+      { id:'fixed',  label:'Fixed',       code:'W0' } ] }
+  ]
+};
+function optionGroups(studioModel) { return PRODUCT_OPTIONS[studioModel] || []; }
+function defaultOptions(studioModel) {
+  const o = {};
+  optionGroups(studioModel).forEach(g => { o[g.id] = g.choices[0].id; });
+  return o;
+}
+function optionChoice(studioModel, groupId, choiceId) {
+  const g = optionGroups(studioModel).find(x => x.id === groupId);
+  if (!g) return null;
+  return g.choices.find(c => c.id === choiceId) || g.choices[0];
+}
+// Sanitise an options map against a model's option schema (variant validation).
+function sanitiseOptions(studioModel, opts) {
+  const clean = defaultOptions(studioModel);
+  optionGroups(studioModel).forEach(g => {
+    if (opts && opts[g.id] && g.choices.some(c => c.id === opts[g.id])) clean[g.id] = opts[g.id];
+  });
+  return clean;
+}
 
 const WOODS = [
   { id:'ash-oak',       name:'Natural Oak', value:'#E2D8C5' },
