@@ -1,6 +1,6 @@
 {
   "model": 5,
-  "generatedAt": "2026-06-22T11:07:29.966Z",
+  "generatedAt": "2026-06-22T12:02:55.097Z",
   "taxonomy": [
     {
       "group": "seating",
@@ -659,6 +659,1425 @@
         "wood",
         "metal"
       ]
+    },
+    {
+      "id": 13,
+      "name": "Meuse High-Back",
+      "group": "seating",
+      "sub": "executive-chairs",
+      "category": "chairs",
+      "cat": "Executive Seating",
+      "shape": "curved",
+      "isNew": true,
+      "bases": [
+        "D9",
+        "L30"
+      ],
+      "studioModel": "chair-executive",
+      "materialType": "upholstery",
+      "desc": "High-back executive chair with extended headrest and full-grain leather seat.",
+      "longDesc": "The Meuse High-Back extends the executive line with a sculpted headrest and full-grain leather upholstery. A continuous mesh-and-leather back cradles the full spine; the synchro-tilt mechanism locks in five positions.",
+      "dims": {
+        "w": 68,
+        "d": 65,
+        "h": "128–138"
+      },
+      "meta": "Seat height 46–56 cm",
+      "lead": "5–7 weeks",
+      "features": [
+        "Extended headrest",
+        "Full-grain leather seat",
+        "5-position synchro-tilt lock",
+        "4D adjustable armrests",
+        "Polished aluminium base"
+      ],
+      "tags": [
+        "D9 Base",
+        "Headrest",
+        "Leather",
+        "Mesh"
+      ],
+      "collection": "meuse",
+      "collectionLabel": "Meuse",
+      "application": [
+        "executive",
+        "workspace"
+      ],
+      "materials": [
+        "leather",
+        "mesh",
+        "metal"
+      ]
+    },
+    {
+      "id": 14,
+      "name": "Meuse Task",
+      "group": "seating",
+      "sub": "executive-chairs",
+      "category": "chairs",
+      "cat": "Task Seating",
+      "shape": "curved",
+      "isNew": false,
+      "bases": [
+        "D9"
+      ],
+      "studioModel": "chair-executive",
+      "materialType": "upholstery",
+      "desc": "Compact task chair for focused workstations. Mesh back, breathable seat, castor base.",
+      "longDesc": "A compact task variant of the Meuse line, engineered for dense workstation layouts. The mesh back keeps air moving through long sessions; a simpler mechanism trims weight and cost without sacrificing the synchro-tilt feel.",
+      "dims": {
+        "w": 64,
+        "d": 62,
+        "h": "110–120"
+      },
+      "meta": "Seat height 44–54 cm",
+      "lead": "3–4 weeks",
+      "features": [
+        "Breathable mesh back",
+        "Compact footprint",
+        "Synchro-tilt mechanism",
+        "Height-adjustable lumbar",
+        "Castor base standard"
+      ],
+      "tags": [
+        "D9 Base",
+        "Mesh",
+        "Task",
+        "Compact"
+      ],
+      "collection": "meuse",
+      "collectionLabel": "Meuse",
+      "application": [
+        "workspace"
+      ],
+      "materials": [
+        "mesh",
+        "fabric",
+        "metal"
+      ]
+    },
+    {
+      "id": 15,
+      "name": "Meuse Visitor",
+      "group": "seating",
+      "sub": "conference-chairs",
+      "category": "chairs",
+      "cat": "Visitor Seating",
+      "shape": "curved",
+      "isNew": false,
+      "bases": [
+        "S7",
+        "L14"
+      ],
+      "studioModel": "chair-conference",
+      "materialType": "upholstery",
+      "desc": "Visitor chair with padded seat and back, sled base. Stacks four-high.",
+      "longDesc": "A lighter visitor variant of the Meuse conference chair. The sled base flexes as you settle; upholstery wraps the seat and back in a single clean line. Stacks four-high for flexible room reconfiguration.",
+      "dims": {
+        "w": 56,
+        "d": 58,
+        "h": 92
+      },
+      "meta": "Stacks 4 high",
+      "lead": "3–4 weeks",
+      "features": [
+        "Padded seat & back",
+        "Sprung sled base",
+        "Stacks four-high",
+        "Linking brackets",
+        "Six upholstery grades"
+      ],
+      "tags": [
+        "S7 Base",
+        "Visitor",
+        "Stackable",
+        "Upholstered"
+      ],
+      "collection": "meuse",
+      "collectionLabel": "Meuse",
+      "application": [
+        "boardroom",
+        "huddle",
+        "workspace"
+      ],
+      "materials": [
+        "fabric",
+        "metal"
+      ]
+    },
+    {
+      "id": 16,
+      "name": "Aube Executive",
+      "group": "seating",
+      "sub": "executive-chairs",
+      "category": "chairs",
+      "cat": "Executive Seating",
+      "shape": "curved",
+      "isNew": true,
+      "bases": [
+        "D9",
+        "L30"
+      ],
+      "studioModel": "chair-executive",
+      "materialType": "upholstery",
+      "desc": "Executive chair with sculpted plywood shell, leather seat, and pedestal base.",
+      "longDesc": "The Aube Executive pairs a sculpted plywood shell with a deep leather seat and a sculpted pedestal base. A quieter, more residential executive language — specified in leadership suites and private offices.",
+      "dims": {
+        "w": 70,
+        "d": 66,
+        "h": "120–130"
+      },
+      "meta": "Seat height 46–56 cm",
+      "lead": "6–8 weeks",
+      "features": [
+        "Sculpted plywood shell",
+        "Full-grain leather seat",
+        "Pedestal or castor base",
+        "Synchro-tilt with lock",
+        "Walnut or oak shell"
+      ],
+      "tags": [
+        "D9 Base",
+        "Plywood",
+        "Leather",
+        "Pedestal"
+      ],
+      "collection": "aube",
+      "collectionLabel": "Aube",
+      "application": [
+        "executive"
+      ],
+      "materials": [
+        "leather",
+        "wood",
+        "metal"
+      ]
+    },
+    {
+      "id": 17,
+      "name": "Aube Task",
+      "group": "seating",
+      "sub": "executive-chairs",
+      "category": "chairs",
+      "cat": "Task Seating",
+      "shape": "curved",
+      "isNew": false,
+      "bases": [
+        "D9"
+      ],
+      "studioModel": "chair-executive",
+      "materialType": "upholstery",
+      "desc": "Agile task chair with mesh back and fabric seat. Lightweight and quick to adjust.",
+      "longDesc": "The Aube Task brings the collection’s clean lines to the open-plan floor. A single-lever mechanism controls height and tilt; the mesh back keeps the chair light enough to move between desks.",
+      "dims": {
+        "w": 62,
+        "d": 60,
+        "h": "108–118"
+      },
+      "meta": "Seat height 43–53 cm",
+      "lead": "3–4 weeks",
+      "features": [
+        "Single-lever control",
+        "Lightweight mesh back",
+        "Fabric or felt seat",
+        "Castor base",
+        "Optional armrests"
+      ],
+      "tags": [
+        "D9 Base",
+        "Mesh",
+        "Task",
+        "Lightweight"
+      ],
+      "collection": "aube",
+      "collectionLabel": "Aube",
+      "application": [
+        "workspace"
+      ],
+      "materials": [
+        "mesh",
+        "fabric",
+        "metal"
+      ]
+    },
+    {
+      "id": 18,
+      "name": "Aube Conference",
+      "group": "seating",
+      "sub": "conference-chairs",
+      "category": "chairs",
+      "cat": "Conference Seating",
+      "shape": "curved",
+      "isNew": false,
+      "bases": [
+        "S7",
+        "L14"
+      ],
+      "studioModel": "chair-conference",
+      "materialType": "upholstery",
+      "desc": "Conference chair with upholstered shell and four-leg base. Links in rows.",
+      "longDesc": "A conference chair with a fully upholstered shell and a powder-coated four-leg base. Chairs link in straight rows for boardrooms and auditoriums; the seat foam is tuned for two-hour meetings.",
+      "dims": {
+        "w": 58,
+        "d": 60,
+        "h": 94
+      },
+      "meta": "Linkable in rows",
+      "lead": "4–5 weeks",
+      "features": [
+        "Upholstered shell",
+        "Four-leg base",
+        "Row linking brackets",
+        "Two-hour seat foam",
+        "Stackable two-high"
+      ],
+      "tags": [
+        "S7 Base",
+        "Conference",
+        "Linkable",
+        "Upholstered"
+      ],
+      "collection": "aube",
+      "collectionLabel": "Aube",
+      "application": [
+        "boardroom",
+        "huddle"
+      ],
+      "materials": [
+        "fabric",
+        "metal"
+      ]
+    },
+    {
+      "id": 19,
+      "name": "Aube Stack",
+      "group": "seating",
+      "sub": "conference-chairs",
+      "category": "chairs",
+      "cat": "Stack Seating",
+      "shape": "curved",
+      "isNew": false,
+      "bases": [
+        "S7"
+      ],
+      "studioModel": "chair-conference",
+      "materialType": "upholstery",
+      "desc": "Stackable training chair with thin upholstery and sled base. Stacks eight-high.",
+      "longDesc": "A stackable training and event chair. The thin upholstered seat keeps weight down; the sled base stacks eight-high on a transport dolly. The first choice for flexible training and event spaces.",
+      "dims": {
+        "w": 54,
+        "d": 56,
+        "h": 88
+      },
+      "meta": "Stacks 8 high",
+      "lead": "2–3 weeks",
+      "features": [
+        "Stacks eight-high",
+        "Transport dolly available",
+        "Thin upholstered seat",
+        "Sled base",
+        "Linking brackets"
+      ],
+      "tags": [
+        "S7 Base",
+        "Stackable",
+        "Training",
+        "Sled"
+      ],
+      "collection": "aube",
+      "collectionLabel": "Aube",
+      "application": [
+        "huddle",
+        "workspace",
+        "cafeteria"
+      ],
+      "materials": [
+        "fabric",
+        "metal"
+      ]
+    },
+    {
+      "id": 20,
+      "name": "Aube High-Back",
+      "group": "seating",
+      "sub": "executive-chairs",
+      "category": "chairs",
+      "cat": "Executive Seating",
+      "shape": "curved",
+      "isNew": true,
+      "bases": [
+        "D9",
+        "L30"
+      ],
+      "studioModel": "chair-executive",
+      "materialType": "upholstery",
+      "desc": "High-back executive with integrated headrest and premium leather. For leadership suites.",
+      "longDesc": "The Aube High-Back brings a residential warmth to the executive floor. A wrapped leather back rises to an integrated headrest; the plywood shell is visible from behind, lending the chair a sculptural presence.",
+      "dims": {
+        "w": 70,
+        "d": 66,
+        "h": "130–140"
+      },
+      "meta": "Seat height 46–56 cm",
+      "lead": "6–8 weeks",
+      "features": [
+        "Integrated headrest",
+        "Wrapped leather back",
+        "Plywood shell visible",
+        "Pedestal or castor base",
+        "Walnut or oak shell"
+      ],
+      "tags": [
+        "D9 Base",
+        "Headrest",
+        "Leather",
+        "Plywood"
+      ],
+      "collection": "aube",
+      "collectionLabel": "Aube",
+      "application": [
+        "executive",
+        "lounge"
+      ],
+      "materials": [
+        "leather",
+        "wood"
+      ]
+    },
+    {
+      "id": 21,
+      "name": "Diablo Corner Sofa",
+      "group": "soft-seating",
+      "sub": "sofas",
+      "category": "sofas",
+      "cat": "Modular Lounge",
+      "shape": "rectangular",
+      "isNew": true,
+      "bases": [
+        "L31",
+        "L32"
+      ],
+      "studioModel": "sofa-modular",
+      "materialType": "upholstery",
+      "desc": "Corner module for the Diablo system. Builds L-shapes, U-shapes, and islands.",
+      "longDesc": "The Diablo Corner module extends the modular lounge system into L-shaped and U-shaped configurations. The same brass-tipped steel frame and high-resilience foam as the straight modules; specify with or without armrests.",
+      "dims": {
+        "w": 88,
+        "d": 88,
+        "h": 82
+      },
+      "meta": "Corner module",
+      "lead": "6–8 weeks",
+      "features": [
+        "L & U configuration",
+        "Brass-tipped steel frame",
+        "High-resilience foam",
+        "Removable covers",
+        "30+ fabric options"
+      ],
+      "tags": [
+        "L31 Base",
+        "Corner",
+        "Modular",
+        "Felt"
+      ],
+      "collection": "diablo",
+      "collectionLabel": "Diablo",
+      "application": [
+        "reception",
+        "lounge",
+        "breakout"
+      ],
+      "materials": [
+        "fabric",
+        "metal"
+      ]
+    },
+    {
+      "id": 22,
+      "name": "Diablo Ottoman",
+      "group": "soft-seating",
+      "sub": "benches",
+      "category": "sofas",
+      "cat": "Ottoman",
+      "shape": "rectangular",
+      "isNew": false,
+      "bases": [
+        "L32"
+      ],
+      "studioModel": "sofa-bench",
+      "materialType": "upholstery",
+      "desc": "Upholstered ottoman for the Diablo system. Coffee table, extra seat, or footrest.",
+      "longDesc": "A versatile upholstered ottoman that pairs with the Diablo sofa system. Use it as a coffee table surface, an extra seat, or a footrest. The same frame and foam as the bench modules.",
+      "dims": {
+        "w": 90,
+        "d": 60,
+        "h": 42
+      },
+      "meta": "Multi-purpose",
+      "lead": "4–5 weeks",
+      "features": [
+        "Multi-purpose ottoman",
+        "Matches Diablo frame",
+        "High-resilience foam",
+        "Removable cover",
+        "Optional tray top"
+      ],
+      "tags": [
+        "L32 Base",
+        "Ottoman",
+        "Fabric",
+        "Multi-purpose"
+      ],
+      "collection": "diablo",
+      "collectionLabel": "Diablo",
+      "application": [
+        "reception",
+        "lounge",
+        "breakout"
+      ],
+      "materials": [
+        "fabric",
+        "metal"
+      ]
+    },
+    {
+      "id": 23,
+      "name": "Flamingo Ottoman",
+      "group": "soft-seating",
+      "sub": "lounge-chairs",
+      "category": "lounge",
+      "cat": "Ottoman",
+      "shape": "curved",
+      "isNew": false,
+      "bases": [],
+      "studioModel": "lounge-chair",
+      "materialType": "upholstery",
+      "desc": "Matching ottoman for the Flamingo lounge chair. Sculptural plywood shell, leather cushion.",
+      "longDesc": "The Flamingo Ottoman completes the lounge chair setting. The same moulded-plywood shell cradles a leather or fabric cushion at footrest height. A quiet companion that doesn’t compete with the chair’s sculptural line.",
+      "dims": {
+        "w": 60,
+        "d": 50,
+        "h": 38
+      },
+      "meta": "Footrest height",
+      "lead": "6–8 weeks",
+      "features": [
+        "Matching plywood shell",
+        "Leather or fabric cushion",
+        "Footrest height",
+        "Walnut or oak veneer",
+        "Pairs with Flamingo Lounge"
+      ],
+      "tags": [
+        "Plywood",
+        "Ottoman",
+        "Leather",
+        "Footrest"
+      ],
+      "collection": "flamingo",
+      "collectionLabel": "Flamingo",
+      "application": [
+        "reception",
+        "lounge",
+        "executive"
+      ],
+      "materials": [
+        "leather",
+        "wood"
+      ]
+    },
+    {
+      "id": 24,
+      "name": "Somme Lounge Chair",
+      "group": "soft-seating",
+      "sub": "lounge-chairs",
+      "category": "lounge",
+      "cat": "Lounge Chair",
+      "shape": "curved",
+      "isNew": true,
+      "bases": [
+        "R13",
+        "R7"
+      ],
+      "studioModel": "lounge-chair",
+      "materialType": "upholstery",
+      "desc": "Deep lounge chair with wraparound back and swivel base. Bouclé or leather.",
+      "longDesc": "The Somme Lounge Chair wraps the body in a deep, enveloping back. A swivel base returns gently to centre; the seat is hand-upholstered in bouclé, leather, or velvet. A signature piece for executive lounges and quiet rooms.",
+      "dims": {
+        "w": 80,
+        "d": 78,
+        "h": 88
+      },
+      "meta": "Swivel return",
+      "lead": "6–8 weeks",
+      "features": [
+        "Enveloping wraparound back",
+        "Self-returning swivel base",
+        "Bouclé, leather or velvet",
+        "Hand-upholstered seat",
+        "Walnut or oak base option"
+      ],
+      "tags": [
+        "R13 Base",
+        "Bouclé",
+        "Swivel",
+        "Lounge"
+      ],
+      "collection": "somme",
+      "collectionLabel": "Somme",
+      "application": [
+        "lounge",
+        "executive",
+        "reception"
+      ],
+      "materials": [
+        "leather",
+        "fabric"
+      ]
+    },
+    {
+      "id": 25,
+      "name": "Somme Sofa",
+      "group": "soft-seating",
+      "sub": "sofas",
+      "category": "sofas",
+      "cat": "Lounge Sofa",
+      "shape": "rectangular",
+      "isNew": false,
+      "bases": [
+        "L31",
+        "L32"
+      ],
+      "studioModel": "sofa-modular",
+      "materialType": "upholstery",
+      "desc": "Three-seat lounge sofa with deep cushions and low profile. For reception and executive loungges.",
+      "longDesc": "The Somme Sofa brings the lounge chair’s deep comfort to a three-seat format. A low, architectural profile keeps sightlines open in reception spaces; the down-wrapped foam cushions hold their shape through years of use.",
+      "dims": {
+        "w": 210,
+        "d": 92,
+        "h": 78
+      },
+      "meta": "3-seat",
+      "lead": "7–9 weeks",
+      "features": [
+        "Deep down-wrapped cushions",
+        "Low architectural profile",
+        "Brass-tipped steel frame",
+        "Removable covers",
+        "30+ fabric options"
+      ],
+      "tags": [
+        "L31 Base",
+        "Deep Cushion",
+        "Lounge",
+        "Fabric"
+      ],
+      "collection": "somme",
+      "collectionLabel": "Somme",
+      "application": [
+        "reception",
+        "lounge"
+      ],
+      "materials": [
+        "fabric",
+        "metal"
+      ]
+    },
+    {
+      "id": 26,
+      "name": "Somme 2-Seat",
+      "group": "soft-seating",
+      "sub": "sofas",
+      "category": "sofas",
+      "cat": "Lounge Sofa",
+      "shape": "rectangular",
+      "isNew": false,
+      "bases": [
+        "L31"
+      ],
+      "studioModel": "sofa-modular",
+      "materialType": "upholstery",
+      "desc": "Compact two-seat sofa for private offices and small lounge corners.",
+      "longDesc": "A compact two-seat variant of the Somme lounge sofa. Sized for private offices, executive quiet rooms, and small reception corners where the three-seat would overwhelm. Same deep cushions, same low profile.",
+      "dims": {
+        "w": 150,
+        "d": 92,
+        "h": 78
+      },
+      "meta": "2-seat",
+      "lead": "7–9 weeks",
+      "features": [
+        "Compact 2-seat format",
+        "Deep down-wrapped cushions",
+        "Low architectural profile",
+        "Removable covers",
+        "30+ fabric options"
+      ],
+      "tags": [
+        "L31 Base",
+        "2-Seat",
+        "Lounge",
+        "Compact"
+      ],
+      "collection": "somme",
+      "collectionLabel": "Somme",
+      "application": [
+        "executive",
+        "lounge",
+        "huddle"
+      ],
+      "materials": [
+        "fabric",
+        "metal"
+      ]
+    },
+    {
+      "id": 27,
+      "name": "Durance Curve Module",
+      "group": "soft-seating",
+      "sub": "breakout",
+      "category": "sofas",
+      "cat": "Breakout",
+      "shape": "curved",
+      "isNew": false,
+      "bases": [
+        "L32",
+        "L31"
+      ],
+      "studioModel": "sofa-modular",
+      "materialType": "upholstery",
+      "desc": "Single curved arc module for the Durance breakout system. Builds circles and serpentines.",
+      "longDesc": "A single 30-degree arc module for the Durance breakout system. Combine twelve modules into a full circle, or serpentines through open-plan space. An acoustic-backed option helps tame open-plan noise.",
+      "dims": {
+        "w": 85,
+        "d": 80,
+        "h": 75
+      },
+      "meta": "30° arc module",
+      "lead": "6–8 weeks",
+      "features": [
+        "30° arc module",
+        "Builds circles & serpentines",
+        "Optional acoustic back",
+        "Powered modules available",
+        "30+ fabric options"
+      ],
+      "tags": [
+        "L32 Base",
+        "Arc Module",
+        "Breakout",
+        "Acoustic"
+      ],
+      "collection": "durance",
+      "collectionLabel": "Durance",
+      "application": [
+        "breakout",
+        "lounge",
+        "cafeteria"
+      ],
+      "materials": [
+        "fabric"
+      ]
+    },
+    {
+      "id": 28,
+      "name": "Vie Lounge Chair",
+      "group": "soft-seating",
+      "sub": "lounge-chairs",
+      "category": "lounge",
+      "cat": "Lounge Chair",
+      "shape": "curved",
+      "isNew": true,
+      "bases": [
+        "R13"
+      ],
+      "studioModel": "lounge-chair",
+      "materialType": "upholstery",
+      "desc": "Transitional lounge chair with moulded shell and leather seat. For lounge and dining.",
+      "longDesc": "The Vie Lounge Chair sits between lounge and dining. A moulded plywood shell is shaped for relaxed sitting but upright enough for a meal. The leather or fabric seat is hand-stitched; the base returns to centre on a swivel.",
+      "dims": {
+        "w": 72,
+        "d": 70,
+        "h": 84
+      },
+      "meta": "Swivel return",
+      "lead": "6–8 weeks",
+      "features": [
+        "Transitional lounge-dining",
+        "Moulded plywood shell",
+        "Leather or fabric seat",
+        "Self-returning swivel base",
+        "Walnut or oak veneer"
+      ],
+      "tags": [
+        "R13 Base",
+        "Transitional",
+        "Leather",
+        "Plywood"
+      ],
+      "collection": "vie",
+      "collectionLabel": "Vie",
+      "application": [
+        "lounge",
+        "cafeteria",
+        "huddle"
+      ],
+      "materials": [
+        "leather",
+        "wood"
+      ]
+    },
+    {
+      "id": 29,
+      "name": "Vie Dining Chair",
+      "group": "seating",
+      "sub": "conference-chairs",
+      "category": "chairs",
+      "cat": "Dining Seating",
+      "shape": "curved",
+      "isNew": false,
+      "bases": [
+        "S7",
+        "L14"
+      ],
+      "studioModel": "chair-conference",
+      "materialType": "upholstery",
+      "desc": "Dining chair with moulded plywood shell and upholstered seat. For cafeteria and boardroom.",
+      "longDesc": "A dining-height chair that brings the Vie collection’s transitional language to the cafeteria and boardroom table. The plywood shell is shaped for a meal’s duration; the upholstered seat is tuned for comfort through a long lunch.",
+      "dims": {
+        "w": 54,
+        "d": 56,
+        "h": 86
+      },
+      "meta": "Dining height",
+      "lead": "4–5 weeks",
+      "features": [
+        "Moulded plywood shell",
+        "Upholstered seat",
+        "Sled or four-leg base",
+        "Walnut or oak veneer",
+        "Stackable two-high"
+      ],
+      "tags": [
+        "S7 Base",
+        "Dining",
+        "Plywood",
+        "Upholstered"
+      ],
+      "collection": "vie",
+      "collectionLabel": "Vie",
+      "application": [
+        "cafeteria",
+        "huddle",
+        "boardroom"
+      ],
+      "materials": [
+        "fabric",
+        "wood"
+      ]
+    },
+    {
+      "id": 30,
+      "name": "Loire Boardroom XL",
+      "group": "tables",
+      "sub": "conference-tables",
+      "category": "tables",
+      "cat": "Conference Table",
+      "shape": "oval",
+      "isNew": false,
+      "bases": [
+        "R13",
+        "L30"
+      ],
+      "studioModel": "table-boardroom",
+      "materialType": "wood",
+      "desc": "Extended boardroom table for 16–20 seats. Boat-shape top with integrated power.",
+      "longDesc": "The Loire Boardroom XL extends the line for larger boards. A subtle boat-shape top keeps sightlines clear to the screen; integrated power and data grommets serve every seat. Made to order in walnut or oak.",
+      "dims": {
+        "w": 360,
+        "d": 120,
+        "h": 74
+      },
+      "meta": "Seats 16–20",
+      "lead": "10–12 weeks",
+      "features": [
+        "Boat-shape top",
+        "Seats 16–20",
+        "Integrated power & data",
+        "Concealed cable management",
+        "Bespoke lengths to order"
+      ],
+      "tags": [
+        "Boat Shape",
+        "Walnut",
+        "Power",
+        "Seats 16"
+      ],
+      "collection": "loire",
+      "collectionLabel": "Loire",
+      "application": [
+        "boardroom"
+      ],
+      "materials": [
+        "wood",
+        "metal"
+      ]
+    },
+    {
+      "id": 31,
+      "name": "Loire Square",
+      "group": "tables",
+      "sub": "meeting-tables",
+      "category": "tables",
+      "cat": "Meeting Table",
+      "shape": "rectangular",
+      "isNew": false,
+      "bases": [
+        "R7",
+        "L30"
+      ],
+      "studioModel": "table-round",
+      "materialType": "wood",
+      "desc": "Square meeting table for 4–8 person huddle and focus spaces.",
+      "longDesc": "A square meeting table on a sculpted central column, sized for four-to-eight person huddles. Available in solid oak or walnut with an optional flush power module. Pairs with Meuse or Aube conference chairs.",
+      "dims": {
+        "w": 120,
+        "d": 120,
+        "h": 75
+      },
+      "meta": "Seats 4–8",
+      "lead": "6–8 weeks",
+      "features": [
+        "Square solid-timber top",
+        "Sculpted central column",
+        "Optional flush power module",
+        "Self-levelling feet",
+        "Oak or walnut"
+      ],
+      "tags": [
+        "Square",
+        "Oak",
+        "Power",
+        "Huddle"
+      ],
+      "collection": "loire",
+      "collectionLabel": "Loire",
+      "application": [
+        "huddle",
+        "workspace"
+      ],
+      "materials": [
+        "wood",
+        "metal"
+      ]
+    },
+    {
+      "id": 32,
+      "name": "Loire Meeting",
+      "group": "tables",
+      "sub": "meeting-tables",
+      "category": "tables",
+      "cat": "Meeting Table",
+      "shape": "rectangular",
+      "isNew": false,
+      "bases": [
+        "R7",
+        "L30"
+      ],
+      "studioModel": "table-round",
+      "materialType": "wood",
+      "desc": "Rectangular meeting table for 6–10 person project spaces.",
+      "longDesc": "A rectangular meeting table sized for six-to-ten person project spaces. The solid-timber top sits on architectural legs; integrated cable management keeps the surface clear for laptops and whiteboards.",
+      "dims": {
+        "w": 180,
+        "d": 90,
+        "h": 75
+      },
+      "meta": "Seats 6–10",
+      "lead": "7–9 weeks",
+      "features": [
+        "Rectangular timber top",
+        "Architectural steel legs",
+        "Integrated cable management",
+        "Optional power module",
+        "Oak or walnut"
+      ],
+      "tags": [
+        "Rectangular",
+        "Walnut",
+        "Cable Mgmt",
+        "Project"
+      ],
+      "collection": "loire",
+      "collectionLabel": "Loire",
+      "application": [
+        "huddle",
+        "workspace"
+      ],
+      "materials": [
+        "wood",
+        "metal"
+      ]
+    },
+    {
+      "id": 33,
+      "name": "Loire Console",
+      "group": "tables",
+      "sub": "reception",
+      "category": "tables",
+      "cat": "Console",
+      "shape": "rectangular",
+      "isNew": false,
+      "bases": [],
+      "studioModel": "table-reception",
+      "materialType": "wood",
+      "desc": "Slim console table in solid timber. For lobby display and corridor galleries.",
+      "longDesc": "A slim console table in solid timber. The chamfered top sits on a architectural steel frame; the proportions are tuned for lobby display plinths and corridor gallery surfaces. Made to order in oak or walnut.",
+      "dims": {
+        "w": 140,
+        "d": 35,
+        "h": 75
+      },
+      "meta": "Console depth",
+      "lead": "6–8 weeks",
+      "features": [
+        "Slim console profile",
+        "Chamfered timber top",
+        "Architectural steel frame",
+        "Oak or walnut",
+        "Wall-anchor option"
+      ],
+      "tags": [
+        "Console",
+        "Slim",
+        "Timber",
+        "Display"
+      ],
+      "collection": "loire",
+      "collectionLabel": "Loire",
+      "application": [
+        "reception"
+      ],
+      "materials": [
+        "wood",
+        "metal"
+      ]
+    },
+    {
+      "id": 34,
+      "name": "Seine Console Table",
+      "group": "tables",
+      "sub": "reception",
+      "category": "tables",
+      "cat": "Reception",
+      "shape": "rectangular",
+      "isNew": false,
+      "bases": [],
+      "studioModel": "table-reception",
+      "materialType": "wood",
+      "desc": "Matching console for the Seine reception desk. Display plinth and visitor sign-in.",
+      "longDesc": "A matching console for the Seine reception desk. Use it as a display plinth, a visitor sign-in surface, or a waiting-area side table. The same veneer and LED light line as the main counter.",
+      "dims": {
+        "w": 120,
+        "d": 45,
+        "h": 75
+      },
+      "meta": "Matching console",
+      "lead": "7–9 weeks",
+      "features": [
+        "Matches Seine counter",
+        "Integrated LED light line",
+        "Veneer to lobby footprint",
+        "Display plinth or sign-in",
+        "Concealed cable route"
+      ],
+      "tags": [
+        "Console",
+        "LED",
+        "Veneer",
+        "Matching"
+      ],
+      "collection": "seine",
+      "collectionLabel": "Seine",
+      "application": [
+        "reception"
+      ],
+      "materials": [
+        "veneer",
+        "wood"
+      ]
+    },
+    {
+      "id": 35,
+      "name": "Seine Standing Counter",
+      "group": "tables",
+      "sub": "reception",
+      "category": "tables",
+      "cat": "Reception",
+      "shape": "rectangular",
+      "isNew": false,
+      "bases": [],
+      "studioModel": "table-reception",
+      "materialType": "wood",
+      "desc": "Standing-height reception counter for visitor check-in and badge printing.",
+      "longDesc": "A standing-height companion to the Seine reception desk. Visitors check in and print badges at counter height; the DDA-compliant lowered section is retained. The same veneer and integrated LED line as the main counter.",
+      "dims": {
+        "w": 100,
+        "d": 60,
+        "h": 105
+      },
+      "meta": "Standing height",
+      "lead": "8–10 weeks",
+      "features": [
+        "Standing-height check-in",
+        "DDA-compliant section",
+        "Integrated LED line",
+        "Badge printer recess",
+        "Veneer to lobby footprint"
+      ],
+      "tags": [
+        "Standing Counter",
+        "LED",
+        "DDA",
+        "Check-in"
+      ],
+      "collection": "seine",
+      "collectionLabel": "Seine",
+      "application": [
+        "reception"
+      ],
+      "materials": [
+        "veneer",
+        "wood"
+      ]
+    },
+    {
+      "id": 36,
+      "name": "Rhone Bench Desk",
+      "group": "collaborative",
+      "sub": "hot-desking",
+      "category": "collaborative",
+      "cat": "Hot Desking",
+      "shape": "oval",
+      "isNew": false,
+      "bases": [
+        "L14",
+        "R7"
+      ],
+      "studioModel": "table-standing",
+      "materialType": "wood",
+      "desc": "Double-sided bench desk for hot-desking teams. Central power spine, shared cable route.",
+      "longDesc": "A double-sided bench desk for hot-desking teams. A central powered spine routes power to every seat; the timber top is writable on request. Pairs with Meuse or Aube task chairs for a complete agile workstation.",
+      "dims": {
+        "w": 240,
+        "d": 90,
+        "h": 74
+      },
+      "meta": "6–8 person bench",
+      "lead": "7–9 weeks",
+      "features": [
+        "Double-sided bench",
+        "Central powered spine",
+        "Optional writable top",
+        "Shared cable route",
+        "Hot-desking & project teams"
+      ],
+      "tags": [
+        "Bench Desk",
+        "Power",
+        "Writable",
+        "Hot Desk"
+      ],
+      "collection": "rhone",
+      "collectionLabel": "Rhone",
+      "application": [
+        "workspace",
+        "breakout"
+      ],
+      "materials": [
+        "wood",
+        "metal"
+      ]
+    },
+    {
+      "id": 37,
+      "name": "Garonne Poseur",
+      "group": "collaborative",
+      "sub": "bar-tables",
+      "category": "collaborative",
+      "cat": "Standing Desk",
+      "shape": "circular",
+      "isNew": false,
+      "bases": [
+        "R7"
+      ],
+      "studioModel": "table-standing",
+      "materialType": "wood",
+      "desc": "Poseur-height round table for informal meetings and café spaces.",
+      "longDesc": "A poseur-height round table for informal stand-up meetings and social café spaces. The weighted column keeps it stable at height; an optional footrest ring and flush power make it laptop-friendly.",
+      "dims": {
+        "w": 80,
+        "d": 80,
+        "h": 110
+      },
+      "meta": "Poseur height",
+      "lead": "5–6 weeks",
+      "features": [
+        "Poseur-height round top",
+        "Weighted stable column",
+        "Optional footrest ring",
+        "Flush power option",
+        "Café & social spaces"
+      ],
+      "tags": [
+        "R7 Base",
+        "Poseur",
+        "Round",
+        "Footrest"
+      ],
+      "collection": "garonne",
+      "collectionLabel": "Garonne",
+      "application": [
+        "cafeteria",
+        "breakout"
+      ],
+      "materials": [
+        "wood",
+        "metal"
+      ]
+    },
+    {
+      "id": 38,
+      "name": "Isere Stand-Up Desk",
+      "group": "collaborative",
+      "sub": "hot-desking",
+      "category": "collaborative",
+      "cat": "Standing Desk",
+      "shape": "oval",
+      "isNew": true,
+      "bases": [
+        "R7",
+        "R13"
+      ],
+      "studioModel": "table-standing",
+      "materialType": "wood",
+      "desc": "Height-adjustable stand-up desk with round top and weighted column.",
+      "longDesc": "The Isere Stand-Up Desk brings a clean, architectural form to the standing-meeting category. A round timber top on a weighted column; an optional footrest ring and flush power for laptop sessions.",
+      "dims": {
+        "w": 85,
+        "d": 85,
+        "h": "95–115"
+      },
+      "meta": "Height adjustable",
+      "lead": "5–6 weeks",
+      "features": [
+        "Height-adjustable column",
+        "Round timber top",
+        "Optional footrest ring",
+        "Flush power option",
+        "Stand-up & agile meetings"
+      ],
+      "tags": [
+        "R7 Base",
+        "Height Adj",
+        "Standing",
+        "Round"
+      ],
+      "collection": "isere",
+      "collectionLabel": "Isere",
+      "application": [
+        "workspace",
+        "huddle"
+      ],
+      "materials": [
+        "wood",
+        "metal"
+      ]
+    },
+    {
+      "id": 39,
+      "name": "Isere Café Table",
+      "group": "collaborative",
+      "sub": "bar-tables",
+      "category": "collaborative",
+      "cat": "Café Table",
+      "shape": "circular",
+      "isNew": false,
+      "bases": [
+        "R7"
+      ],
+      "studioModel": "table-standing",
+      "materialType": "wood",
+      "desc": "Café-height round table for dining and social spaces. Solid timber top.",
+      "longDesc": "A café-height round table for staff dining and social spaces. The solid timber top is warm and durable; the weighted column is stable in high-traffic cafeterias. Pairs with Vie dining chairs or Garonne stools.",
+      "dims": {
+        "w": 75,
+        "d": 75,
+        "h": 74
+      },
+      "meta": "Café height",
+      "lead": "4–5 weeks",
+      "features": [
+        "Café-height round top",
+        "Solid timber surface",
+        "Weighted stable column",
+        "High-traffic rated",
+        "Oak or walnut"
+      ],
+      "tags": [
+        "R7 Base",
+        "Café",
+        "Timber",
+        "Round"
+      ],
+      "collection": "isere",
+      "collectionLabel": "Isere",
+      "application": [
+        "cafeteria",
+        "breakout"
+      ],
+      "materials": [
+        "wood",
+        "metal"
+      ]
+    },
+    {
+      "id": 40,
+      "name": "Marne Credenza",
+      "group": "storage",
+      "sub": "storage-systems",
+      "category": "storage",
+      "cat": "Credenza",
+      "shape": "rectangular",
+      "isNew": false,
+      "bases": [],
+      "studioModel": "storage-wall",
+      "materialType": "wood",
+      "desc": "Low credenza with push-to-open doors and optional lit display niche.",
+      "longDesc": "A low credenza from the Marne storage family. Push-to-open doors keep the front clean; an optional lit display niche runs the length of the unit. Sized for behind-sofa and under-window placement.",
+      "dims": {
+        "w": 160,
+        "d": 42,
+        "h": 65
+      },
+      "meta": "Low credenza",
+      "lead": "7–9 weeks",
+      "features": [
+        "Push-to-open doors",
+        "Optional lit display niche",
+        "Adjustable internal shelves",
+        "Oak or walnut veneer",
+        "Soft-close hinges"
+      ],
+      "tags": [
+        "Credenza",
+        "Push-to-Open",
+        "Low",
+        "Display"
+      ],
+      "collection": "marne",
+      "collectionLabel": "Marne",
+      "application": [
+        "workspace",
+        "executive",
+        "boardroom"
+      ],
+      "materials": [
+        "wood",
+        "veneer"
+      ]
+    },
+    {
+      "id": 41,
+      "name": "Marne Bookshelf",
+      "group": "storage",
+      "sub": "storage-systems",
+      "category": "storage",
+      "cat": "Bookshelf",
+      "shape": "rectangular",
+      "isNew": false,
+      "bases": [],
+      "studioModel": "storage-wall",
+      "materialType": "wood",
+      "desc": "Open-back bookshelf with adjustable shelves. For library and resource areas.",
+      "longDesc": "An open-back bookshelf from the Marne family. Adjustable shelves hold books and resources; the open back keeps the piece light in plan. Wall-anchor standard for stability in library and resource areas.",
+      "dims": {
+        "w": 90,
+        "d": 36,
+        "h": 180
+      },
+      "meta": "Open-back",
+      "lead": "6–8 weeks",
+      "features": [
+        "Adjustable shelves",
+        "Open-back construction",
+        "Wall-anchor included",
+        "Oak or walnut veneer",
+        "Modular — stack side by side"
+      ],
+      "tags": [
+        "Bookshelf",
+        "Open-back",
+        "Adjustable",
+        "Tall"
+      ],
+      "collection": "marne",
+      "collectionLabel": "Marne",
+      "application": [
+        "workspace",
+        "executive"
+      ],
+      "materials": [
+        "wood",
+        "veneer"
+      ]
+    },
+    {
+      "id": 42,
+      "name": "Marne Sideboard",
+      "group": "storage",
+      "sub": "storage-systems",
+      "category": "storage",
+      "cat": "Sideboard",
+      "shape": "rectangular",
+      "isNew": true,
+      "bases": [],
+      "studioModel": "storage-wall",
+      "materialType": "wood",
+      "desc": "Mid-height sideboard with mixed open shelving and closed cabinets.",
+      "longDesc": "A mid-height sideboard from the Marne family that combines open display shelving with closed storage. The asymmetric layout is designed for executive offices and meeting-room credenzas. Made to order in oak or walnut.",
+      "dims": {
+        "w": 180,
+        "d": 42,
+        "h": 120
+      },
+      "meta": "Mixed storage",
+      "lead": "8–10 weeks",
+      "features": [
+        "Mixed open & closed storage",
+        "Asymmetric layout",
+        "Push-to-open doors",
+        "Adjustable shelves",
+        "Oak or walnut veneer"
+      ],
+      "tags": [
+        "Sideboard",
+        "Mixed Storage",
+        "Asymmetric",
+        "Walnut"
+      ],
+      "collection": "marne",
+      "collectionLabel": "Marne",
+      "application": [
+        "workspace",
+        "executive",
+        "boardroom"
+      ],
+      "materials": [
+        "wood",
+        "veneer"
+      ]
     }
   ],
   "fabrics": [
@@ -958,6 +2377,22 @@
     {
       "id": "garonne",
       "label": "Garonne"
+    },
+    {
+      "id": "aube",
+      "label": "Aube"
+    },
+    {
+      "id": "somme",
+      "label": "Somme"
+    },
+    {
+      "id": "vie",
+      "label": "Vie"
+    },
+    {
+      "id": "isere",
+      "label": "Isere"
     }
   ]
 }

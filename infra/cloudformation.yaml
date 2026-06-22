@@ -1,0 +1,245 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'MMA Design — premium digital platform hosting (S3 + CloudFront + Lambda lead capture)'
+Parameters:
+  DomainName:
+    Type: String
+    Default: mmadesign.in
+    Description: The apex domain for the website.
+  Subdomain:
+    Type: String
+    Default: www
+    Description: The www subdomain (set empty to skip).
+  NotifyEmail:
+    Type: String
+    Default: enquiries@mmadesign.in
+    Description: Email address that receives enquiry notifications.
+  CertificateArn:
+    Type: String
+    Default: ''
+    Description: ARN of an existing ACM certificate for the domain (must be in us-east-1 for CloudFront). Leave empty to use HTTP only (not for production).
+Conditions:
+  HasCert: !Not [!Equals [!Ref CertificateArn, '']]
+  HasSubdomain: !Not [!Equals [!Ref Subdomain, '']]
+
+Resources:
+  # ── S3 bucket for static site content ──
+  SiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${AWS::StackName}-site'
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+
+  SiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref SiteBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Sub '${SiteBucket}/*'
+
+  # ── CloudFront distribution ──
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        DefaultRootObject: index.html
+        PriceClass: PriceClass_100
+        HttpVersion: http2
+        Origins:
+          - DomainName: !GetAtt SiteBucket.RegionalDomainName
+            Id: S3Origin
+            S3OriginConfig: {}
+        DefaultCacheBehavior:
+          TargetOriginId: S3Origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: ['GET', 'HEAD', 'OPTIONS']
+          CachedMethods: ['GET', 'HEAD']
+          ForwardedValues:
+            QueryString: false
+            Cookies: { Forward: none }
+          Compress: true
+          DefaultTTL: 3600
+          MaxTTL: 86400
+          MinTTL: 60
+        CustomErrorResponses:
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+            ErrorCachingMinTTL: 60
+        ViewerCertificate:
+          !If
+            - HasCert
+            - AcmCertificateArn: !Ref CertificateArn
+              SslSupportMethod: sni-only
+              MinimumProtocolVersion: TLSv1.2_2021
+            - CloudFrontDefaultCertificate: true
+        Aliases:
+          !If
+            - HasSubdomain
+            - - !Sub '${Subdomain}.${DomainName}'
+              - !Ref DomainName
+            - - !Ref DomainName
+
+  # ── DynamoDB table for lead storage ──
+  LeadsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${AWS::StackName}-leads'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+
+  # ── IAM role for the Lambda function ──
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: { Service: lambda.amazonaws.com }
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: SESSendEmail
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: 'ses:SendEmail'
+                Resource: '*'
+        - PolicyName: DynamoDBLeads
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'dynamodb:PutItem'
+                  - 'dynamodb:Query'
+                Resource: !GetAtt LeadsTable.Arn
+
+  # ── Lambda function for lead capture ──
+  LeadCaptureFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-lead-capture'
+      Runtime: nodejs20.x
+      Handler: index.handler
+      MemorySize: 256
+      Timeout: 10
+      Role: !GetAtt LambdaRole.Arn
+      Environment:
+        Variables:
+          NOTIFY_EMAIL: !Ref NotifyEmail
+          FROM_EMAIL: !Ref NotifyEmail
+          LEADS_TABLE: !Ref LeadsTable
+          REGION: !Ref AWS::Region
+      Code:
+        ZipFile: |
+          // Placeholder — deploy the real handler from infra/lambda/lead-capture.js
+          // See infra/README.md for the deploy command.
+          exports.handler = async (event) => ({
+            statusCode: 200,
+            headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ok: true, message: 'Deploy the real handler from infra/lambda/lead-capture.js' })
+          });
+
+  # ── API Gateway REST API ──
+  LeadApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: !Sub '${AWS::StackName}-lead-api'
+      Description: 'Lead capture API for MMA Design website'
+
+  LeadResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref LeadApi
+      ParentId: !GetAtt LeadApi.RootResourceId
+      PathPart: 'enquiry'
+
+  LeadMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref LeadApi
+      ResourceId: !Ref LeadResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LeadCaptureFunction.Arn}/invocations'
+
+  OptionsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref LeadApi
+      ResourceId: !Ref LeadResource
+      HttpMethod: OPTIONS
+      AuthorizationType: NONE
+      Integration:
+        Type: MOCK
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type'"
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+      MethodResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: false
+            method.response.header.Access-Control-Allow-Methods: false
+            method.response.header.Access-Control-Allow-Origin: false
+
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref LeadCaptureFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${LeadApi}/*'
+
+  ApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn: [LeadMethod, OptionsMethod]
+    Properties:
+      RestApiId: !Ref LeadApi
+  ApiStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      RestApiId: !Ref LeadApi
+      DeploymentId: !Ref ApiDeployment
+      StageName: prod
+
+Outputs:
+  WebsiteURL:
+    Value: !Sub 'https://${CloudFrontDistribution.DomainName}'
+    Description: CloudFront URL for the website (use a CNAME to your domain).
+  S3BucketURL:
+    Value: !Sub 'https://${SiteBucket}.s3.${AWS::Region}.amazonaws.com'
+    Description: Direct S3 website URL (fallback).
+  ApiEndpoint:
+    Value: !Sub 'https://${LeadApi}.execute-api.${AWS::Region}.amazonaws.com/${ApiStage}/enquiry'
+    Description: POST endpoint for enquiry form submissions. Put this in data/site-config.js as API_ENDPOINT.
+  LeadsTableName:
+    Value: !Ref LeadsTable
+    Description: DynamoDB table where leads are stored.

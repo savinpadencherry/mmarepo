@@ -99,7 +99,187 @@ const productData = [
     desc: 'Height-adjustable round bar table for standing meetings and informal exchanges.',
     longDesc: 'A round bar-height table for stand-up meetings and informal exchanges. A weighted column keeps it stable, with an optional footrest ring and flush power for laptops.',
     dims: { w: 90, d: 90, h: 105 }, meta: 'Bar height', lead: '5–6 weeks',
-    features: ['Bar-height round top', 'Weighted stable column', 'Optional footrest ring', 'Flush power option', 'Stand-up meeting spaces'] }
+    features: ['Bar-height round top', 'Weighted stable column', 'Optional footrest ring', 'Flush power option', 'Stand-up meeting spaces'] },
+
+  // ── Catalogue expansion (40–50 SKU target): variants within existing
+  //    collections + four new river-named families. Each maps to one of the
+  //    ten procedural 3D studio models, so every SKU is configurable in 3D. ──
+
+  // Meuse family — executive & conference seating variants
+  { id: 13, name: 'Meuse High-Back', group: 'seating', sub: 'executive-chairs', category: 'chairs', cat: 'Executive Seating', shape: 'curved', isNew: true, bases: ['D9','L30'], studioModel: 'chair-executive', materialType: 'upholstery',
+    desc: 'High-back executive chair with extended headrest and full-grain leather seat.',
+    longDesc: 'The Meuse High-Back extends the executive line with a sculpted headrest and full-grain leather upholstery. A continuous mesh-and-leather back cradles the full spine; the synchro-tilt mechanism locks in five positions.',
+    dims: { w: 68, d: 65, h: '128–138' }, meta: 'Seat height 46–56 cm', lead: '5–7 weeks',
+    features: ['Extended headrest', 'Full-grain leather seat', '5-position synchro-tilt lock', '4D adjustable armrests', 'Polished aluminium base'] },
+  { id: 14, name: 'Meuse Task', group: 'seating', sub: 'executive-chairs', category: 'chairs', cat: 'Task Seating', shape: 'curved', isNew: false, bases: ['D9'], studioModel: 'chair-executive', materialType: 'upholstery',
+    desc: 'Compact task chair for focused workstations. Mesh back, breathable seat, castor base.',
+    longDesc: 'A compact task variant of the Meuse line, engineered for dense workstation layouts. The mesh back keeps air moving through long sessions; a simpler mechanism trims weight and cost without sacrificing the synchro-tilt feel.',
+    dims: { w: 64, d: 62, h: '110–120' }, meta: 'Seat height 44–54 cm', lead: '3–4 weeks',
+    features: ['Breathable mesh back', 'Compact footprint', 'Synchro-tilt mechanism', 'Height-adjustable lumbar', 'Castor base standard'] },
+  { id: 15, name: 'Meuse Visitor', group: 'seating', sub: 'conference-chairs', category: 'chairs', cat: 'Visitor Seating', shape: 'curved', isNew: false, bases: ['S7','L14'], studioModel: 'chair-conference', materialType: 'upholstery',
+    desc: 'Visitor chair with padded seat and back, sled base. Stacks four-high.',
+    longDesc: 'A lighter visitor variant of the Meuse conference chair. The sled base flexes as you settle; upholstery wraps the seat and back in a single clean line. Stacks four-high for flexible room reconfiguration.',
+    dims: { w: 56, d: 58, h: 92 }, meta: 'Stacks 4 high', lead: '3–4 weeks',
+    features: ['Padded seat & back', 'Sprung sled base', 'Stacks four-high', 'Linking brackets', 'Six upholstery grades'] },
+
+  // Aube family — new collection: agile task & conference seating
+  { id: 16, name: 'Aube Executive', group: 'seating', sub: 'executive-chairs', category: 'chairs', cat: 'Executive Seating', shape: 'curved', isNew: true, bases: ['D9','L30'], studioModel: 'chair-executive', materialType: 'upholstery',
+    desc: 'Executive chair with sculpted plywood shell, leather seat, and pedestal base.',
+    longDesc: 'The Aube Executive pairs a sculpted plywood shell with a deep leather seat and a sculpted pedestal base. A quieter, more residential executive language — specified in leadership suites and private offices.',
+    dims: { w: 70, d: 66, h: '120–130' }, meta: 'Seat height 46–56 cm', lead: '6–8 weeks',
+    features: ['Sculpted plywood shell', 'Full-grain leather seat', 'Pedestal or castor base', 'Synchro-tilt with lock', 'Walnut or oak shell'] },
+  { id: 17, name: 'Aube Task', group: 'seating', sub: 'executive-chairs', category: 'chairs', cat: 'Task Seating', shape: 'curved', isNew: false, bases: ['D9'], studioModel: 'chair-executive', materialType: 'upholstery',
+    desc: 'Agile task chair with mesh back and fabric seat. Lightweight and quick to adjust.',
+    longDesc: 'The Aube Task brings the collection’s clean lines to the open-plan floor. A single-lever mechanism controls height and tilt; the mesh back keeps the chair light enough to move between desks.',
+    dims: { w: 62, d: 60, h: '108–118' }, meta: 'Seat height 43–53 cm', lead: '3–4 weeks',
+    features: ['Single-lever control', 'Lightweight mesh back', 'Fabric or felt seat', 'Castor base', 'Optional armrests'] },
+  { id: 18, name: 'Aube Conference', group: 'seating', sub: 'conference-chairs', category: 'chairs', cat: 'Conference Seating', shape: 'curved', isNew: false, bases: ['S7','L14'], studioModel: 'chair-conference', materialType: 'upholstery',
+    desc: 'Conference chair with upholstered shell and four-leg base. Links in rows.',
+    longDesc: 'A conference chair with a fully upholstered shell and a powder-coated four-leg base. Chairs link in straight rows for boardrooms and auditoriums; the seat foam is tuned for two-hour meetings.',
+    dims: { w: 58, d: 60, h: 94 }, meta: 'Linkable in rows', lead: '4–5 weeks',
+    features: ['Upholstered shell', 'Four-leg base', 'Row linking brackets', 'Two-hour seat foam', 'Stackable two-high'] },
+  { id: 19, name: 'Aube Stack', group: 'seating', sub: 'conference-chairs', category: 'chairs', cat: 'Stack Seating', shape: 'curved', isNew: false, bases: ['S7'], studioModel: 'chair-conference', materialType: 'upholstery',
+    desc: 'Stackable training chair with thin upholstery and sled base. Stacks eight-high.',
+    longDesc: 'A stackable training and event chair. The thin upholstered seat keeps weight down; the sled base stacks eight-high on a transport dolly. The first choice for flexible training and event spaces.',
+    dims: { w: 54, d: 56, h: 88 }, meta: 'Stacks 8 high', lead: '2–3 weeks',
+    features: ['Stacks eight-high', 'Transport dolly available', 'Thin upholstered seat', 'Sled base', 'Linking brackets'] },
+  { id: 20, name: 'Aube High-Back', group: 'seating', sub: 'executive-chairs', category: 'chairs', cat: 'Executive Seating', shape: 'curved', isNew: true, bases: ['D9','L30'], studioModel: 'chair-executive', materialType: 'upholstery',
+    desc: 'High-back executive with integrated headrest and premium leather. For leadership suites.',
+    longDesc: 'The Aube High-Back brings a residential warmth to the executive floor. A wrapped leather back rises to an integrated headrest; the plywood shell is visible from behind, lending the chair a sculptural presence.',
+    dims: { w: 70, d: 66, h: '130–140' }, meta: 'Seat height 46–56 cm', lead: '6–8 weeks',
+    features: ['Integrated headrest', 'Wrapped leather back', 'Plywood shell visible', 'Pedestal or castor base', 'Walnut or oak shell'] },
+
+  // Diablo family — sofa & bench variants
+  { id: 21, name: 'Diablo Corner Sofa', group: 'soft-seating', sub: 'sofas', category: 'sofas', cat: 'Modular Lounge', shape: 'rectangular', isNew: true, bases: ['L31','L32'], studioModel: 'sofa-modular', materialType: 'upholstery',
+    desc: 'Corner module for the Diablo system. Builds L-shapes, U-shapes, and islands.',
+    longDesc: 'The Diablo Corner module extends the modular lounge system into L-shaped and U-shaped configurations. The same brass-tipped steel frame and high-resilience foam as the straight modules; specify with or without armrests.',
+    dims: { w: 88, d: 88, h: 82 }, meta: 'Corner module', lead: '6–8 weeks',
+    features: ['L & U configuration', 'Brass-tipped steel frame', 'High-resilience foam', 'Removable covers', '30+ fabric options'] },
+  { id: 22, name: 'Diablo Ottoman', group: 'soft-seating', sub: 'benches', category: 'sofas', cat: 'Ottoman', shape: 'rectangular', isNew: false, bases: ['L32'], studioModel: 'sofa-bench', materialType: 'upholstery',
+    desc: 'Upholstered ottoman for the Diablo system. Coffee table, extra seat, or footrest.',
+    longDesc: 'A versatile upholstered ottoman that pairs with the Diablo sofa system. Use it as a coffee table surface, an extra seat, or a footrest. The same frame and foam as the bench modules.',
+    dims: { w: 90, d: 60, h: 42 }, meta: 'Multi-purpose', lead: '4–5 weeks',
+    features: ['Multi-purpose ottoman', 'Matches Diablo frame', 'High-resilience foam', 'Removable cover', 'Optional tray top'] },
+
+  // Flamingo family — lounge variants
+  { id: 23, name: 'Flamingo Ottoman', group: 'soft-seating', sub: 'lounge-chairs', category: 'lounge', cat: 'Ottoman', shape: 'curved', isNew: false, bases: [], studioModel: 'lounge-chair', materialType: 'upholstery',
+    desc: 'Matching ottoman for the Flamingo lounge chair. Sculptural plywood shell, leather cushion.',
+    longDesc: 'The Flamingo Ottoman completes the lounge chair setting. The same moulded-plywood shell cradles a leather or fabric cushion at footrest height. A quiet companion that doesn’t compete with the chair’s sculptural line.',
+    dims: { w: 60, d: 50, h: 38 }, meta: 'Footrest height', lead: '6–8 weeks',
+    features: ['Matching plywood shell', 'Leather or fabric cushion', 'Footrest height', 'Walnut or oak veneer', 'Pairs with Flamingo Lounge'] },
+
+  // Somme family — new collection: soft lounge seating
+  { id: 24, name: 'Somme Lounge Chair', group: 'soft-seating', sub: 'lounge-chairs', category: 'lounge', cat: 'Lounge Chair', shape: 'curved', isNew: true, bases: ['R13','R7'], studioModel: 'lounge-chair', materialType: 'upholstery',
+    desc: 'Deep lounge chair with wraparound back and swivel base. Bouclé or leather.',
+    longDesc: 'The Somme Lounge Chair wraps the body in a deep, enveloping back. A swivel base returns gently to centre; the seat is hand-upholstered in bouclé, leather, or velvet. A signature piece for executive lounges and quiet rooms.',
+    dims: { w: 80, d: 78, h: 88 }, meta: 'Swivel return', lead: '6–8 weeks',
+    features: ['Enveloping wraparound back', 'Self-returning swivel base', 'Bouclé, leather or velvet', 'Hand-upholstered seat', 'Walnut or oak base option'] },
+  { id: 25, name: 'Somme Sofa', group: 'soft-seating', sub: 'sofas', category: 'sofas', cat: 'Lounge Sofa', shape: 'rectangular', isNew: false, bases: ['L31','L32'], studioModel: 'sofa-modular', materialType: 'upholstery',
+    desc: 'Three-seat lounge sofa with deep cushions and low profile. For reception and executive loungges.',
+    longDesc: 'The Somme Sofa brings the lounge chair’s deep comfort to a three-seat format. A low, architectural profile keeps sightlines open in reception spaces; the down-wrapped foam cushions hold their shape through years of use.',
+    dims: { w: 210, d: 92, h: 78 }, meta: '3-seat', lead: '7–9 weeks',
+    features: ['Deep down-wrapped cushions', 'Low architectural profile', 'Brass-tipped steel frame', 'Removable covers', '30+ fabric options'] },
+  { id: 26, name: 'Somme 2-Seat', group: 'soft-seating', sub: 'sofas', category: 'sofas', cat: 'Lounge Sofa', shape: 'rectangular', isNew: false, bases: ['L31'], studioModel: 'sofa-modular', materialType: 'upholstery',
+    desc: 'Compact two-seat sofa for private offices and small lounge corners.',
+    longDesc: 'A compact two-seat variant of the Somme lounge sofa. Sized for private offices, executive quiet rooms, and small reception corners where the three-seat would overwhelm. Same deep cushions, same low profile.',
+    dims: { w: 150, d: 92, h: 78 }, meta: '2-seat', lead: '7–9 weeks',
+    features: ['Compact 2-seat format', 'Deep down-wrapped cushions', 'Low architectural profile', 'Removable covers', '30+ fabric options'] },
+
+  // Durance family — breakout variant
+  { id: 27, name: 'Durance Curve Module', group: 'soft-seating', sub: 'breakout', category: 'sofas', cat: 'Breakout', shape: 'curved', isNew: false, bases: ['L32','L31'], studioModel: 'sofa-modular', materialType: 'upholstery',
+    desc: 'Single curved arc module for the Durance breakout system. Builds circles and serpentines.',
+    longDesc: 'A single 30-degree arc module for the Durance breakout system. Combine twelve modules into a full circle, or serpentines through open-plan space. An acoustic-backed option helps tame open-plan noise.',
+    dims: { w: 85, d: 80, h: 75 }, meta: '30° arc module', lead: '6–8 weeks',
+    features: ['30° arc module', 'Builds circles & serpentines', 'Optional acoustic back', 'Powered modules available', '30+ fabric options'] },
+
+  // Vie family — new collection: transitional dining/lounge
+  { id: 28, name: 'Vie Lounge Chair', group: 'soft-seating', sub: 'lounge-chairs', category: 'lounge', cat: 'Lounge Chair', shape: 'curved', isNew: true, bases: ['R13'], studioModel: 'lounge-chair', materialType: 'upholstery',
+    desc: 'Transitional lounge chair with moulded shell and leather seat. For lounge and dining.',
+    longDesc: 'The Vie Lounge Chair sits between lounge and dining. A moulded plywood shell is shaped for relaxed sitting but upright enough for a meal. The leather or fabric seat is hand-stitched; the base returns to centre on a swivel.',
+    dims: { w: 72, d: 70, h: 84 }, meta: 'Swivel return', lead: '6–8 weeks',
+    features: ['Transitional lounge-dining', 'Moulded plywood shell', 'Leather or fabric seat', 'Self-returning swivel base', 'Walnut or oak veneer'] },
+  { id: 29, name: 'Vie Dining Chair', group: 'seating', sub: 'conference-chairs', category: 'chairs', cat: 'Dining Seating', shape: 'curved', isNew: false, bases: ['S7','L14'], studioModel: 'chair-conference', materialType: 'upholstery',
+    desc: 'Dining chair with moulded plywood shell and upholstered seat. For cafeteria and boardroom.',
+    longDesc: 'A dining-height chair that brings the Vie collection’s transitional language to the cafeteria and boardroom table. The plywood shell is shaped for a meal’s duration; the upholstered seat is tuned for comfort through a long lunch.',
+    dims: { w: 54, d: 56, h: 86 }, meta: 'Dining height', lead: '4–5 weeks',
+    features: ['Moulded plywood shell', 'Upholstered seat', 'Sled or four-leg base', 'Walnut or oak veneer', 'Stackable two-high'] },
+
+  // Loire family — table variants
+  { id: 30, name: 'Loire Boardroom XL', group: 'tables', sub: 'conference-tables', category: 'tables', cat: 'Conference Table', shape: 'oval', isNew: false, bases: ['R13','L30'], studioModel: 'table-boardroom', materialType: 'wood',
+    desc: 'Extended boardroom table for 16–20 seats. Boat-shape top with integrated power.',
+    longDesc: 'The Loire Boardroom XL extends the line for larger boards. A subtle boat-shape top keeps sightlines clear to the screen; integrated power and data grommets serve every seat. Made to order in walnut or oak.',
+    dims: { w: 360, d: 120, h: 74 }, meta: 'Seats 16–20', lead: '10–12 weeks',
+    features: ['Boat-shape top', 'Seats 16–20', 'Integrated power & data', 'Concealed cable management', 'Bespoke lengths to order'] },
+  { id: 31, name: 'Loire Square', group: 'tables', sub: 'meeting-tables', category: 'tables', cat: 'Meeting Table', shape: 'rectangular', isNew: false, bases: ['R7','L30'], studioModel: 'table-round', materialType: 'wood',
+    desc: 'Square meeting table for 4–8 person huddle and focus spaces.',
+    longDesc: 'A square meeting table on a sculpted central column, sized for four-to-eight person huddles. Available in solid oak or walnut with an optional flush power module. Pairs with Meuse or Aube conference chairs.',
+    dims: { w: 120, d: 120, h: 75 }, meta: 'Seats 4–8', lead: '6–8 weeks',
+    features: ['Square solid-timber top', 'Sculpted central column', 'Optional flush power module', 'Self-levelling feet', 'Oak or walnut'] },
+  { id: 32, name: 'Loire Meeting', group: 'tables', sub: 'meeting-tables', category: 'tables', cat: 'Meeting Table', shape: 'rectangular', isNew: false, bases: ['R7','L30'], studioModel: 'table-round', materialType: 'wood',
+    desc: 'Rectangular meeting table for 6–10 person project spaces.',
+    longDesc: 'A rectangular meeting table sized for six-to-ten person project spaces. The solid-timber top sits on architectural legs; integrated cable management keeps the surface clear for laptops and whiteboards.',
+    dims: { w: 180, d: 90, h: 75 }, meta: 'Seats 6–10', lead: '7–9 weeks',
+    features: ['Rectangular timber top', 'Architectural steel legs', 'Integrated cable management', 'Optional power module', 'Oak or walnut'] },
+  { id: 33, name: 'Loire Console', group: 'tables', sub: 'reception', category: 'tables', cat: 'Console', shape: 'rectangular', isNew: false, bases: [], studioModel: 'table-reception', materialType: 'wood',
+    desc: 'Slim console table in solid timber. For lobby display and corridor galleries.',
+    longDesc: 'A slim console table in solid timber. The chamfered top sits on a architectural steel frame; the proportions are tuned for lobby display plinths and corridor gallery surfaces. Made to order in oak or walnut.',
+    dims: { w: 140, d: 35, h: 75 }, meta: 'Console depth', lead: '6–8 weeks',
+    features: ['Slim console profile', 'Chamfered timber top', 'Architectural steel frame', 'Oak or walnut', 'Wall-anchor option'] },
+
+  // Seine family — reception variants
+  { id: 34, name: 'Seine Console Table', group: 'tables', sub: 'reception', category: 'tables', cat: 'Reception', shape: 'rectangular', isNew: false, bases: [], studioModel: 'table-reception', materialType: 'wood',
+    desc: 'Matching console for the Seine reception desk. Display plinth and visitor sign-in.',
+    longDesc: 'A matching console for the Seine reception desk. Use it as a display plinth, a visitor sign-in surface, or a waiting-area side table. The same veneer and LED light line as the main counter.',
+    dims: { w: 120, d: 45, h: 75 }, meta: 'Matching console', lead: '7–9 weeks',
+    features: ['Matches Seine counter', 'Integrated LED light line', 'Veneer to lobby footprint', 'Display plinth or sign-in', 'Concealed cable route'] },
+  { id: 35, name: 'Seine Standing Counter', group: 'tables', sub: 'reception', category: 'tables', cat: 'Reception', shape: 'rectangular', isNew: false, bases: [], studioModel: 'table-reception', materialType: 'wood',
+    desc: 'Standing-height reception counter for visitor check-in and badge printing.',
+    longDesc: 'A standing-height companion to the Seine reception desk. Visitors check in and print badges at counter height; the DDA-compliant lowered section is retained. The same veneer and integrated LED line as the main counter.',
+    dims: { w: 100, d: 60, h: 105 }, meta: 'Standing height', lead: '8–10 weeks',
+    features: ['Standing-height check-in', 'DDA-compliant section', 'Integrated LED line', 'Badge printer recess', 'Veneer to lobby footprint'] },
+
+  // Rhone family — collaborative variant
+  { id: 36, name: 'Rhone Bench Desk', group: 'collaborative', sub: 'hot-desking', category: 'collaborative', cat: 'Hot Desking', shape: 'oval', isNew: false, bases: ['L14','R7'], studioModel: 'table-standing', materialType: 'wood',
+    desc: 'Double-sided bench desk for hot-desking teams. Central power spine, shared cable route.',
+    longDesc: 'A double-sided bench desk for hot-desking teams. A central powered spine routes power to every seat; the timber top is writable on request. Pairs with Meuse or Aube task chairs for a complete agile workstation.',
+    dims: { w: 240, d: 90, h: 74 }, meta: '6–8 person bench', lead: '7–9 weeks',
+    features: ['Double-sided bench', 'Central powered spine', 'Optional writable top', 'Shared cable route', 'Hot-desking & project teams'] },
+
+  // Garonne family — bar table variant
+  { id: 37, name: 'Garonne Poseur', group: 'collaborative', sub: 'bar-tables', category: 'collaborative', cat: 'Standing Desk', shape: 'circular', isNew: false, bases: ['R7'], studioModel: 'table-standing', materialType: 'wood',
+    desc: 'Poseur-height round table for informal meetings and café spaces.',
+    longDesc: 'A poseur-height round table for informal stand-up meetings and social café spaces. The weighted column keeps it stable at height; an optional footrest ring and flush power make it laptop-friendly.',
+    dims: { w: 80, d: 80, h: 110 }, meta: 'Poseur height', lead: '5–6 weeks',
+    features: ['Poseur-height round top', 'Weighted stable column', 'Optional footrest ring', 'Flush power option', 'Café & social spaces'] },
+
+  // Isere family — new collection: standing & café tables
+  { id: 38, name: 'Isere Stand-Up Desk', group: 'collaborative', sub: 'hot-desking', category: 'collaborative', cat: 'Standing Desk', shape: 'oval', isNew: true, bases: ['R7','R13'], studioModel: 'table-standing', materialType: 'wood',
+    desc: 'Height-adjustable stand-up desk with round top and weighted column.',
+    longDesc: 'The Isere Stand-Up Desk brings a clean, architectural form to the standing-meeting category. A round timber top on a weighted column; an optional footrest ring and flush power for laptop sessions.',
+    dims: { w: 85, d: 85, h: '95–115' }, meta: 'Height adjustable', lead: '5–6 weeks',
+    features: ['Height-adjustable column', 'Round timber top', 'Optional footrest ring', 'Flush power option', 'Stand-up & agile meetings'] },
+  { id: 39, name: 'Isere Café Table', group: 'collaborative', sub: 'bar-tables', category: 'collaborative', cat: 'Café Table', shape: 'circular', isNew: false, bases: ['R7'], studioModel: 'table-standing', materialType: 'wood',
+    desc: 'Café-height round table for dining and social spaces. Solid timber top.',
+    longDesc: 'A café-height round table for staff dining and social spaces. The solid timber top is warm and durable; the weighted column is stable in high-traffic cafeterias. Pairs with Vie dining chairs or Garonne stools.',
+    dims: { w: 75, d: 75, h: 74 }, meta: 'Café height', lead: '4–5 weeks',
+    features: ['Café-height round top', 'Solid timber surface', 'Weighted stable column', 'High-traffic rated', 'Oak or walnut'] },
+
+  // Marne family — storage variants
+  { id: 40, name: 'Marne Credenza', group: 'storage', sub: 'storage-systems', category: 'storage', cat: 'Credenza', shape: 'rectangular', isNew: false, bases: [], studioModel: 'storage-wall', materialType: 'wood',
+    desc: 'Low credenza with push-to-open doors and optional lit display niche.',
+    longDesc: 'A low credenza from the Marne storage family. Push-to-open doors keep the front clean; an optional lit display niche runs the length of the unit. Sized for behind-sofa and under-window placement.',
+    dims: { w: 160, d: 42, h: 65 }, meta: 'Low credenza', lead: '7–9 weeks',
+    features: ['Push-to-open doors', 'Optional lit display niche', 'Adjustable internal shelves', 'Oak or walnut veneer', 'Soft-close hinges'] },
+  { id: 41, name: 'Marne Bookshelf', group: 'storage', sub: 'storage-systems', category: 'storage', cat: 'Bookshelf', shape: 'rectangular', isNew: false, bases: [], studioModel: 'storage-wall', materialType: 'wood',
+    desc: 'Open-back bookshelf with adjustable shelves. For library and resource areas.',
+    longDesc: 'An open-back bookshelf from the Marne family. Adjustable shelves hold books and resources; the open back keeps the piece light in plan. Wall-anchor standard for stability in library and resource areas.',
+    dims: { w: 90, d: 36, h: 180 }, meta: 'Open-back', lead: '6–8 weeks',
+    features: ['Adjustable shelves', 'Open-back construction', 'Wall-anchor included', 'Oak or walnut veneer', 'Modular — stack side by side'] },
+  { id: 42, name: 'Marne Sideboard', group: 'storage', sub: 'storage-systems', category: 'storage', cat: 'Sideboard', shape: 'rectangular', isNew: true, bases: [], studioModel: 'storage-wall', materialType: 'wood',
+    desc: 'Mid-height sideboard with mixed open shelving and closed cabinets.',
+    longDesc: 'A mid-height sideboard from the Marne family that combines open display shelving with closed storage. The asymmetric layout is designed for executive offices and meeting-room credenzas. Made to order in oak or walnut.',
+    dims: { w: 180, d: 42, h: 120 }, meta: 'Mixed storage', lead: '8–10 weeks',
+    features: ['Mixed open & closed storage', 'Asymmetric layout', 'Push-to-open doors', 'Adjustable shelves', 'Oak or walnut veneer'] }
 ];
 
 // Curated search/marketing tags (kept beside the data so index search + cards reuse them)
@@ -115,7 +295,37 @@ const productTags = {
   9: ['Oval','Power','Whiteboard','Hot Desk'],
   10: ['Modular','Shelving','Cabinets','Display'],
   11: ['Curved','Modular','Fabric','Breakout'],
-  12: ['Circular','Height Adj','Standing','Power']
+  12: ['Circular','Height Adj','Standing','Power'],
+  13: ['D9 Base','Headrest','Leather','Mesh'],
+  14: ['D9 Base','Mesh','Task','Compact'],
+  15: ['S7 Base','Visitor','Stackable','Upholstered'],
+  16: ['D9 Base','Plywood','Leather','Pedestal'],
+  17: ['D9 Base','Mesh','Task','Lightweight'],
+  18: ['S7 Base','Conference','Linkable','Upholstered'],
+  19: ['S7 Base','Stackable','Training','Sled'],
+  20: ['D9 Base','Headrest','Leather','Plywood'],
+  21: ['L31 Base','Corner','Modular','Felt'],
+  22: ['L32 Base','Ottoman','Fabric','Multi-purpose'],
+  23: ['Plywood','Ottoman','Leather','Footrest'],
+  24: ['R13 Base','Bouclé','Swivel','Lounge'],
+  25: ['L31 Base','Deep Cushion','Lounge','Fabric'],
+  26: ['L31 Base','2-Seat','Lounge','Compact'],
+  27: ['L32 Base','Arc Module','Breakout','Acoustic'],
+  28: ['R13 Base','Transitional','Leather','Plywood'],
+  29: ['S7 Base','Dining','Plywood','Upholstered'],
+  30: ['Boat Shape','Walnut','Power','Seats 16'],
+  31: ['Square','Oak','Power','Huddle'],
+  32: ['Rectangular','Walnut','Cable Mgmt','Project'],
+  33: ['Console','Slim','Timber','Display'],
+  34: ['Console','LED','Veneer','Matching'],
+  35: ['Standing Counter','LED','DDA','Check-in'],
+  36: ['Bench Desk','Power','Writable','Hot Desk'],
+  37: ['R7 Base','Poseur','Round','Footrest'],
+  38: ['R7 Base','Height Adj','Standing','Round'],
+  39: ['R7 Base','Café','Timber','Round'],
+  40: ['Credenza','Push-to-Open','Low','Display'],
+  41: ['Bookshelf','Open-back','Adjustable','Tall'],
+  42: ['Sideboard','Mixed Storage','Asymmetric','Walnut']
 };
 productData.forEach(p => { p.tags = productTags[p.id] || []; });
 
@@ -125,7 +335,7 @@ const productById = id => productData.find(p => String(p.id) === String(id));
    application = the spaces a piece is specified for (maps to the office presets)
    materials   = material facets for faceted search
    collection  = named design family (drives "more from the collection") */
-const COLLECTIONS = { meuse:'Meuse', diablo:'Diablo', loire:'Loire', flamingo:'Flamingo', seine:'Seine', rhone:'Rhone', marne:'Marne', durance:'Durance', garonne:'Garonne' };
+const COLLECTIONS = { meuse:'Meuse', diablo:'Diablo', loire:'Loire', flamingo:'Flamingo', seine:'Seine', rhone:'Rhone', marne:'Marne', durance:'Durance', garonne:'Garonne', aube:'Aube', somme:'Somme', vie:'Vie', isere:'Isere' };
 
 const APPLICATIONS = [
   { id:'executive', label:'Executive', blurb:'Commanding desks, lounge seating and storage for leadership floors.' },
@@ -168,7 +378,37 @@ const PRODUCT_FACETS = {
   9:  { collection:'rhone',    application:['workspace','breakout'],           materials:['wood','metal'] },
   10: { collection:'marne',    application:['workspace','executive'],          materials:['wood','veneer'] },
   11: { collection:'durance',  application:['breakout','lounge','cafeteria'],  materials:['fabric'] },
-  12: { collection:'garonne',  application:['cafeteria','breakout'],           materials:['wood','metal'] }
+  12: { collection:'garonne',  application:['cafeteria','breakout'],           materials:['wood','metal'] },
+  13: { collection:'meuse',    application:['executive','workspace'],          materials:['leather','mesh','metal'] },
+  14: { collection:'meuse',    application:['workspace'],                      materials:['mesh','fabric','metal'] },
+  15: { collection:'meuse',    application:['boardroom','huddle','workspace'], materials:['fabric','metal'] },
+  16: { collection:'aube',     application:['executive'],                      materials:['leather','wood','metal'] },
+  17: { collection:'aube',     application:['workspace'],                      materials:['mesh','fabric','metal'] },
+  18: { collection:'aube',     application:['boardroom','huddle'],             materials:['fabric','metal'] },
+  19: { collection:'aube',     application:['huddle','workspace','cafeteria'], materials:['fabric','metal'] },
+  20: { collection:'aube',     application:['executive','lounge'],             materials:['leather','wood'] },
+  21: { collection:'diablo',   application:['reception','lounge','breakout'],  materials:['fabric','metal'] },
+  22: { collection:'diablo',   application:['reception','lounge','breakout'],  materials:['fabric','metal'] },
+  23: { collection:'flamingo', application:['reception','lounge','executive'], materials:['leather','wood'] },
+  24: { collection:'somme',    application:['lounge','executive','reception'], materials:['leather','fabric'] },
+  25: { collection:'somme',    application:['reception','lounge'],             materials:['fabric','metal'] },
+  26: { collection:'somme',    application:['executive','lounge','huddle'],    materials:['fabric','metal'] },
+  27: { collection:'durance',  application:['breakout','lounge','cafeteria'],  materials:['fabric'] },
+  28: { collection:'vie',      application:['lounge','cafeteria','huddle'],    materials:['leather','wood'] },
+  29: { collection:'vie',      application:['cafeteria','huddle','boardroom'], materials:['fabric','wood'] },
+  30: { collection:'loire',    application:['boardroom'],                      materials:['wood','metal'] },
+  31: { collection:'loire',    application:['huddle','workspace'],             materials:['wood','metal'] },
+  32: { collection:'loire',    application:['huddle','workspace'],             materials:['wood','metal'] },
+  33: { collection:'loire',    application:['reception'],                      materials:['wood','metal'] },
+  34: { collection:'seine',    application:['reception'],                      materials:['veneer','wood'] },
+  35: { collection:'seine',    application:['reception'],                      materials:['veneer','wood'] },
+  36: { collection:'rhone',    application:['workspace','breakout'],           materials:['wood','metal'] },
+  37: { collection:'garonne',  application:['cafeteria','breakout'],           materials:['wood','metal'] },
+  38: { collection:'isere',    application:['workspace','huddle'],             materials:['wood','metal'] },
+  39: { collection:'isere',    application:['cafeteria','breakout'],           materials:['wood','metal'] },
+  40: { collection:'marne',    application:['workspace','executive','boardroom'], materials:['wood','veneer'] },
+  41: { collection:'marne',    application:['workspace','executive'],          materials:['wood','veneer'] },
+  42: { collection:'marne',    application:['workspace','executive','boardroom'], materials:['wood','veneer'] }
 };
 productData.forEach(p => {
   const f = PRODUCT_FACETS[p.id] || {};
@@ -392,6 +632,38 @@ const productSVGs = {
   'Durance Breakout Sofa': `<svg viewBox="0 0 200 200" fill="none"><g stroke="#B8952F" stroke-width="1.2" opacity="0.32" stroke-linecap="round" stroke-linejoin="round"><path d="M30 100 Q30 75 50 70 L150 70 Q170 75 170 100 L170 130 Q170 140 160 140 L40 140 Q30 140 30 130 Z"/><rect x="40" y="100" width="50" height="30" rx="4" opacity="0.5"/><rect x="95" y="100" width="50" height="30" rx="4" opacity="0.5"/></g></svg>`,
   'Garonne Bar Table': `<svg viewBox="0 0 200 200" fill="none"><g stroke="#B8952F" stroke-width="1.2" opacity="0.32" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="100" cy="60" rx="45" ry="12"/><ellipse cx="100" cy="57" rx="42" ry="10" opacity="0.6"/><line x1="100" y1="72" x2="100" y2="155"/><ellipse cx="100" cy="158" rx="25" ry="5"/></g></svg>`
 };
+
+// ── Catalogue expansion: inherit imagery & schematics ──
+// New SKUs (13–42) reuse their collection's hero photo and their studio
+// model's line schematic, so every product renders fully without 30 unique
+// photo shoots. When MMA supplies real photography, drop entries into the
+// maps above and the fallbacks step aside automatically.
+(function () {
+  // Build a per-collection hero image from the first product that has one.
+  const colImg = {}, colImgAlt = {};
+  productData.forEach(p => {
+    if (!colImg[p.collection] && productImages[p.name]) colImg[p.collection] = productImages[p.name];
+    if (!colImgAlt[p.collection] && productImagesAlt[p.name]) colImgAlt[p.collection] = productImagesAlt[p.name];
+  });
+  // Build a per-studio-model schematic from the first product that has one.
+  const modelSvg = {};
+  productData.forEach(p => {
+    if (!modelSvg[p.studioModel] && productSVGs[p.name]) modelSvg[p.studioModel] = productSVGs[p.name];
+  });
+  // Fill gaps: any product missing an image/svg inherits from its collection/model.
+  productData.forEach(p => {
+    if (!productImages[p.name]) {
+      // Fallback: same studio model's hero, then collection hero, then a neutral.
+      const sibling = productData.find(x => x.studioModel === p.studioModel && productImages[x.name]);
+      productImages[p.name] = (sibling && productImages[sibling.name]) || colImg[p.collection] || 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=900&h=900&fit=crop';
+    }
+    if (!productImagesAlt[p.name]) {
+      const sibling = productData.find(x => x.studioModel === p.studioModel && productImagesAlt[x.name]);
+      productImagesAlt[p.name] = (sibling && productImagesAlt[sibling.name]) || colImgAlt[p.collection] || productImages[p.name];
+    }
+    if (!productSVGs[p.name] && modelSvg[p.studioModel]) productSVGs[p.name] = modelSvg[p.studioModel];
+  });
+})();
 
 /* ════════════════════════════════════════════════════════════════════════
    PHASE 5 — CMS-READY CONTENT MODEL

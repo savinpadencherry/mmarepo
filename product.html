@@ -331,6 +331,7 @@
 <div id="toast"></div>
 
 <script src="data/catalogue.js"></script>
+<script src="assets/textures.js"></script>
 <script>
   function qp(k) { return new URLSearchParams(location.search).get(k); }
   function toast(html) {
@@ -432,7 +433,9 @@
         var groups = fabricGroupsForModel(p.studioModel);
         materialRow.innerHTML = groups.map(function(g) {
           var sw = g.swatches.map(function(x) {
-            return '<div class="swatch' + (x.id===state.material?' active':'') + '" title="' + x.name + '" data-id="' + x.id + '" style="background:' + x.value + ';"></div>';
+            var tex = window.fabricTexture ? window.fabricTexture(x) : null;
+            var bg = tex ? 'background-image:url(' + tex + ');background-size:cover;' : 'background:' + x.value + ';';
+            return '<div class="swatch' + (x.id===state.material?' active':'') + '" title="' + x.name + '" data-id="' + x.id + '" style="' + bg + '"></div>';
           }).join('');
           return '<div class="fabric-col">' +
               '<div class="fabric-col-head"><span>' + g.label + '</span><span class="fc-badge">' + GRADE_LABEL[g.grade] + '</span></div>' +
@@ -442,7 +445,9 @@
         document.getElementById('materialSelected').innerHTML = m.name + ' <span class="opt-grade">· ' + (FABRIC_COLLECTIONS[m.collection] ? FABRIC_COLLECTIONS[m.collection].label : m.type) + ' · ' + GRADE_LABEL[m.grade] + '</span>';
       } else {
         materialRow.innerHTML = palette.map(function(x) {
-          return '<div class="swatch' + (x.id===state.material?' active':'') + '" title="' + x.name + '" data-id="' + x.id + '" style="background:' + x.value + ';"></div>';
+          var tex = window.woodTexture ? window.woodTexture(x) : null;
+          var bg = tex ? 'background-image:url(' + tex + ');background-size:cover;' : 'background:' + x.value + ';';
+          return '<div class="swatch' + (x.id===state.material?' active':'') + '" title="' + x.name + '" data-id="' + x.id + '" style="' + bg + '"></div>';
         }).join('');
         document.getElementById('materialSelected').innerHTML = m.name;
       }
@@ -478,7 +483,9 @@
     function paintStructure() {
       var s = STRUCTURES.find(function(x){ return x.id === state.structure; });
       structureRow.innerHTML = STRUCTURES.map(function(x) {
-        return '<div class="chip' + (x.id===state.structure?' active':'') + '" data-id="' + x.id + '"><span class="chip-dot" style="background:' + x.value + ';"></span>' + x.name + '</div>';
+        var tex = window.structureTexture ? window.structureTexture(x) : null;
+        var bg = tex ? 'background-image:url(' + tex + ');background-size:cover;' : 'background:' + x.value + ';';
+        return '<div class="chip' + (x.id===state.structure?' active':'') + '" data-id="' + x.id + '"><span class="chip-dot" style="' + bg + '"></span>' + x.name + '</div>';
       }).join('');
       document.getElementById('structureSelected').textContent = s.name;
       structureRow.querySelectorAll('.chip').forEach(function(c) {
