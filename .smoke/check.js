@@ -233,9 +233,26 @@ console.log('PHASE4 STUDIO DEEP-LINK OK (grade snap + option carry + SKU)');
     const html = fs.readFileSync(path.join(root, f), 'utf8');
     if (html.indexOf('assets/brand.css') < 0) throw new Error(f + ' does not link assets/brand.css');
     if (html.indexOf('mma-mark') < 0) throw new Error(f + ' missing inline SVG mma-mark logo');
-    if (html.indexOf('mmadesign.in') >= 0) throw new Error(f + ' still depends on the fragile external logo host');
+    if (html.indexOf('www.mmadesign.in/assets/images/logo') >= 0) throw new Error(f + ' still depends on the fragile external logo host');
   });
   console.log('PHASE5 BRAND OK (brand.css tokens + logo + reduced-motion + cv-auto, linked on 7 pages, no external logo)');
+}
+
+// ── 9b. Procedural material textures (catalogue expansion) ──
+{
+  const tex = fs.readFileSync(path.join(root, 'assets', 'textures.js'), 'utf8');
+  new Function('window', 'document', tex + ';return window.materialTexture;')({}, { createElement: function(){ return { width:0, height:0, getContext: function(){ return { fillRect:function(){},beginPath:function(){},arc:function(){},fill:function(){},stroke:function(){},moveTo:function(){},lineTo:function(){},createLinearGradient:function(){ return { addColorStop:function(){} }; },createRadialGradient:function(){ return { addColorStop:function(){} }; },fillStyle:'',strokeStyle:'',globalAlpha:1,lineWidth:1 }; }, toDataURL: function(){ return 'data:'; } }; } });
+  // syntax + API presence
+  const api = new Function('window', 'document', tex + ';return { materialTexture: window.materialTexture, fabricTexture: window.fabricTexture, woodTexture: window.woodTexture, structureTexture: window.structureTexture };')({}, { createElement: function(){ return { width:0, height:0, getContext: function(){ return { fillRect:function(){},beginPath:function(){},arc:function(){},fill:function(){},stroke:function(){},moveTo:function(){},lineTo:function(){},createLinearGradient:function(){ return { addColorStop:function(){} }; },createRadialGradient:function(){ return { addColorStop:function(){} }; },fillStyle:'',strokeStyle:'',globalAlpha:1,lineWidth:1 }; }, toDataURL: function(){ return 'data:'; } }; } });
+  if (typeof api.materialTexture !== 'function') throw new Error('textures.js: materialTexture not exposed');
+  if (typeof api.fabricTexture !== 'function') throw new Error('textures.js: fabricTexture not exposed');
+  if (typeof api.woodTexture !== 'function') throw new Error('textures.js: woodTexture not exposed');
+  ['3d-studio.html','product.html'].forEach(f => {
+    const html = fs.readFileSync(path.join(root, f), 'utf8');
+    if (html.indexOf('assets/textures.js') < 0) throw new Error(f + ' does not load assets/textures.js');
+    if (!/materialTexture|fabricTexture|woodTexture|structureTexture/.test(html)) throw new Error(f + ' does not use procedural texture API');
+  });
+  console.log('TEXTURES OK (procedural weave/grain/sheen, loaded by studio + product page)');
 }
 
 // ── 10. Phase 5: CMS-ready content model ──
@@ -246,7 +263,7 @@ console.log('PHASE4 STUDIO DEEP-LINK OK (grade snap + option carry + SKU)');
   if (!api.CONTENT_MODEL.product.fields.id) throw new Error('content model missing product schema');
   if (typeof api.CMS.fetchProducts !== 'function') throw new Error('CMS.fetchProducts missing');
   if (typeof api.CMS.fetchProducts().then !== 'function') throw new Error('fetchProducts is not promise-returning');
-  if (api.CMS.loadProducts().length !== 12) throw new Error('seed product count drifted');
+  if (api.CMS.loadProducts().length < 40) throw new Error('seed product count below the 40-SKU target');
   const all = api.validateAll();
   if (!all.valid) throw new Error('seed products fail validation: ' + JSON.stringify(all.products));
   const bad = api.validateProduct({ id: 1 });
@@ -259,9 +276,32 @@ console.log('PHASE4 STUDIO DEEP-LINK OK (grade snap + option carry + SKU)');
   if (api.imgFor('https://images.unsplash.com/x?w=900&h=900', 700).indexOf('w=') < 0) throw new Error('imgFor did not rewrite an unsplash url');
   if (api.imgFor('assets/foo.png', 700) !== 'assets/foo.png') throw new Error('imgFor should pass through local urls');
   const json = JSON.parse(fs.readFileSync(path.join(root, 'data', 'products.json'), 'utf8'));
-  if (json.products.length !== 12) throw new Error('products.json product count mismatch');
+  if (json.products.length < 40) throw new Error('products.json product count below the 40-SKU target');
   if (json.model !== 5) throw new Error('products.json model version mismatch');
   console.log('PHASE5 CMS OK (schema v5, adapter, validation, upsert, imgFor, products.json)');
+}
+
+// ── 10b. Catalogue expansion: 40-50 SKUs, every product validates, has image + SVG ──
+{
+  const src = fs.readFileSync(path.join(root, 'data', 'catalogue.js'), 'utf8');
+  const api = new Function(src + ';return {productData,validateAll,productImages,productSVGs,productImagesAlt,COLLECTIONS};')();
+  if (api.productData.length < 40 || api.productData.length > 50) throw new Error('catalogue should have 40-50 SKUs, has ' + api.productData.length);
+  const report = api.validateAll();
+  if (!report.valid) throw new Error('expanded catalogue validation failed: ' + JSON.stringify(report.products.slice(0,3)));
+  // unique ids
+  const ids = api.productData.map(p => p.id);
+  if (new Set(ids).size !== ids.length) throw new Error('duplicate product ids in catalogue');
+  // every product has an image, alt image, and SVG (via fallback logic)
+  const noImg = api.productData.filter(p => !api.productImages[p.name]);
+  const noAlt = api.productData.filter(p => !api.productImagesAlt[p.name]);
+  const noSvg = api.productData.filter(p => !api.productSVGs[p.name]);
+  if (noImg.length) throw new Error(noImg.length + ' products missing hero image');
+  if (noAlt.length) throw new Error(noAlt.length + ' products missing alt image');
+  if (noSvg.length) throw new Error(noSvg.length + ' products missing schematic SVG');
+  // every product maps to a real collection
+  const noCol = api.productData.filter(p => !p.collection || !api.COLLECTIONS[p.collection]);
+  if (noCol.length) throw new Error(noCol.length + ' products missing or invalid collection');
+  console.log('CATALOGUE EXPANSION OK (' + api.productData.length + ' SKUs, all validated, images + SVGs + collections resolved)');
 }
 
 // ── 11. Phase 5: adaptive 3D quality + reduced-motion ──
@@ -297,6 +337,43 @@ console.log('PHASE4 STUDIO DEEP-LINK OK (grade snap + option carry + SKU)');
   if (!/decoding="async"/.test(html)) throw new Error('index.html missing async image decoding');
   if (!/touchend/.test(html)) throw new Error('index.html missing touch-swipe interaction');
   console.log('PHASE5 INDEX PERF OK (cv-auto, reduced-motion, adaptive images, async decoding, touch swipe)');
+}
+
+// ── 13. AWS hosting + lead capture infrastructure ──
+{
+  // site-config.js
+  const cfg = fs.readFileSync(path.join(root, 'data', 'site-config.js'), 'utf8');
+  new Function(cfg); // syntax check
+  if (cfg.indexOf('API_ENDPOINT') < 0) throw new Error('site-config.js missing API_ENDPOINT');
+  if (cfg.indexOf('NOTIFY_EMAIL') < 0) throw new Error('site-config.js missing NOTIFY_EMAIL');
+  if (cfg.indexOf('offices') < 0) throw new Error('site-config.js missing offices array');
+
+  // Lambda handler
+  const lambda = fs.readFileSync(path.join(root, 'infra', 'lambda', 'lead-capture.js'), 'utf8');
+  new Function('require', 'exports', lambda); // syntax check
+  if (lambda.indexOf('exports.handler') < 0) throw new Error('lead-capture.js missing handler export');
+  if (lambda.indexOf('SES') < 0) throw new Error('lead-capture.js missing SES email');
+  if (lambda.indexOf('DynamoDB') < 0) throw new Error('lead-capture.js missing DynamoDB storage');
+
+  // CloudFormation template
+  const cf = fs.readFileSync(path.join(root, 'infra', 'cloudformation.yaml'), 'utf8');
+  if (cf.indexOf('AWS::S3::Bucket') < 0) throw new Error('cloudformation.yaml missing S3 bucket');
+  if (cf.indexOf('AWS::CloudFront::Distribution') < 0) throw new Error('cloudformation.yaml missing CloudFront');
+  if (cf.indexOf('AWS::Lambda::Function') < 0) throw new Error('cloudformation.yaml missing Lambda');
+  if (cf.indexOf('AWS::ApiGateway::RestApi') < 0) throw new Error('cloudformation.yaml missing API Gateway');
+  if (cf.indexOf('AWS::DynamoDB::Table') < 0) throw new Error('cloudformation.yaml missing DynamoDB');
+
+  // Deploy script
+  if (!fs.existsSync(path.join(root, 'infra', 'deploy.ps1'))) throw new Error('deploy.ps1 missing');
+
+  // index.html: form wired to API, loads site-config.js
+  const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  if (html.indexOf('site-config.js') < 0) throw new Error('index.html does not load site-config.js');
+  if (!/enquirySubmit/.test(html)) throw new Error('index.html enquiry form not wired');
+  if (!/SITE_CONFIG\.API_ENDPOINT/.test(html)) throw new Error('index.html form does not read API_ENDPOINT');
+  if (!/fetch\(endpoint/.test(html)) throw new Error('index.html form does not POST to the API');
+
+  console.log('INFRASTRUCTURE OK (site-config, Lambda+SES+DynamoDB, CloudFormation, deploy script, form wired)');
 }
 
 console.log('ALL CHECKS PASSED');

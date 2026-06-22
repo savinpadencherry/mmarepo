@@ -1257,9 +1257,10 @@
         <label class="form-label" for="fmessage">Tell us about your project</label>
         <div class="form-underline"></div>
       </div>
-      <button class="btn-submit" style="margin-top:12px;">Send Enquiry</button>
+      <button class="btn-submit" id="enquirySubmit" style="margin-top:12px;">Send Enquiry</button>
+      <div id="enquiryStatus" style="margin-top:16px;font-size:13px;line-height:1.5;min-height:20px;"></div>
     </div>
-    <div class="office-cards">
+    <div class="office-cards" id="officeCards">
       <div class="office-card">
         <div class="office-city">NCR</div>
         <div class="office-address">MMA Design Pvt. Ltd.<br>New Delhi, NCR Region</div>
@@ -1343,6 +1344,7 @@
 </footer>
 
 <script src="data/catalogue.js"></script>
+<script src="data/site-config.js"></script>
 <script>
 // Catalogue data (taxonomy, productData, productImages, productSVGs, material
 // palettes, helper maps) lives in data/catalogue.js and is shared with
@@ -1546,6 +1548,87 @@ function pinToPinterest(productName) {
   const desc = encodeURIComponent(productName + ' by MMA Design — Premium architectural workspace solutions');
   window.open('https://www.pinterest.com/pin/create/button/?url=' + url + '&media=' + media + '&description=' + desc, '_blank', 'width=600,height=400');
 }
+
+// ── Enquiry form → lead capture backend ──
+// Posts to SITE_CONFIG.API_ENDPOINT (Lambda via API Gateway). If no endpoint
+// is configured, the form runs in demo mode (validates + shows a mock success).
+const enquirySubmit = document.getElementById('enquirySubmit');
+const enquiryStatus = document.getElementById('enquiryStatus');
+if (enquirySubmit) {
+  enquirySubmit.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('fname').value.trim();
+    const email = document.getElementById('femail').value.trim();
+    const company = document.getElementById('fcompany').value.trim();
+    const projectType = document.getElementById('fproject').value.trim();
+    const message = document.getElementById('fmessage').value.trim();
+
+    if (!name || !email) {
+      enquiryStatus.innerHTML = '<span style="color:#C36241;">Please enter your name and email.</span>';
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      enquiryStatus.innerHTML = '<span style="color:#C36241;">Please enter a valid email address.</span>';
+      return;
+    }
+
+    enquirySubmit.disabled = true;
+    enquirySubmit.textContent = 'Sending…';
+    enquiryStatus.innerHTML = '<span style="color:var(--text-muted);">Submitting your enquiry…</span>';
+
+    const payload = { name, email, company, projectType, message, source: 'website-enquiry' };
+    const endpoint = (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG.API_ENDPOINT) ? SITE_CONFIG.API_ENDPOINT : '';
+
+    try {
+      if (!endpoint) {
+        // Demo mode — no backend configured yet
+        await new Promise(r => setTimeout(r, 600));
+        enquiryStatus.innerHTML = '<span style="color:#3E6B47;">Thank you, ' + name + '. Your enquiry has been received — our team will be in touch within 48 hours.</span><br><span style="font-size:11px;color:var(--text-muted);">(Demo mode — set API_ENDPOINT in data/site-config.js after AWS deploy to enable email notifications.)</span>';
+      } else {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.ok) {
+          enquiryStatus.innerHTML = '<span style="color:#3E6B47;">Thank you, ' + name + '. Your enquiry has been received — our team will be in touch within 48 hours.</span>';
+        } else {
+          throw new Error(data.error || data.errors?.join(', ') || 'Submission failed');
+        }
+      }
+      ['fname','femail','fcompany','fproject','fmessage'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    } catch (err) {
+      enquiryStatus.innerHTML = '<span style="color:#C36241;">Sorry, something went wrong. Please email us directly at ' + ((typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG.NOTIFY_EMAIL) || 'enquiries@mmadesign.in') + '</span>';
+    } finally {
+      enquirySubmit.disabled = false;
+      enquirySubmit.textContent = 'Send Enquiry';
+    }
+  });
+}
+
+// ── Populate office cards & social links from SITE_CONFIG ──
+// MMA edits data/site-config.js — the HTML below is a progressive-enhancement
+// fallback. If SITE_CONFIG is present, the cards/links refresh from it.
+(function () {
+  if (typeof SITE_CONFIG === 'undefined') return;
+  var oc = document.getElementById('officeCards');
+  if (oc && SITE_CONFIG.offices) {
+    oc.innerHTML = SITE_CONFIG.offices.map(function (o) {
+      var addr = o.address.replace(/\n/g, '<br>');
+      var phone = o.phone ? '<div style="font-size:11px;color:var(--text-muted);margin-top:8px;letter-spacing:0.5px;">' + o.phone + '</div>' : '';
+      return '<div class="office-card"><div class="office-city">' + o.city + '</div><div class="office-address">' + addr + '</div>' + phone + '</div>';
+    }).join('');
+  }
+  if (SITE_CONFIG.social) {
+    var links = document.querySelectorAll('.footer-social');
+    var map = { instagram: SITE_CONFIG.social.instagram, linkedin: SITE_CONFIG.social.linkedin, pinterest: SITE_CONFIG.social.pinterest };
+    links.forEach(function (a) {
+      var type = a.getAttribute('aria-label');
+      if (type && map[type.toLowerCase()] && map[type.toLowerCase()] !== '#') a.href = map[type.toLowerCase()];
+    });
+  }
+})();
 
 const navbar = document.getElementById('navbar');
 window.addEventListener('scroll', () => {

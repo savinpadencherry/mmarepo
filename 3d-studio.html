@@ -228,6 +228,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="assets/textures.js"></script>
 </head>
 <body>
 
@@ -621,8 +622,10 @@
       var groups = swatchGroupsFor(state.model);
       document.getElementById(targetId).innerHTML = groups.map(function(g) {
         var chips = g.swatches.map(function(c) {
+          var tex = window.materialTexture ? window.materialTexture(c.collection, c.value) : null;
+          var bg = tex ? 'background-image:url(' + tex + ');background-size:cover;' : 'background-color:' + c.value + ';';
           return '<div class="swatch-cell' + (selectedId === c.id ? ' active' : '') + '" onclick="' + handler + '(\'' + c.id + '\')">' +
-            '<div class="swatch-item' + (selectedId === c.id ? ' active' : '') + '" style="background-color:' + c.value + ';"></div>' +
+            '<div class="swatch-item' + (selectedId === c.id ? ' active' : '') + '" style="' + bg + '"></div>' +
             '<div class="swatch-name">' + c.name + '</div>' +
           '</div>';
         }).join('');
@@ -660,16 +663,20 @@
 
       var woodGrid = document.getElementById('woodGrid');
       woodGrid.innerHTML = woodFinishes.map(function(w) {
+        var tex = window.materialTexture ? window.materialTexture('wood', w.value) : null;
+        var bg = tex ? 'background-image:url(' + tex + ');background-size:cover;' : 'background-color:' + w.value + ';';
         return '<div class="wood-item' + (state.wood === w.id ? ' active' : '') + '" onclick="selectWood(\'' + w.id + '\')">' +
-          '<div class="wood-swatch" style="background-color:' + w.value + ';"></div>' +
+          '<div class="wood-swatch" style="' + bg + '"></div>' +
           '<div class="wood-name">' + w.name.split(' ').slice(-1)[0] + '</div>' +
         '</div>';
       }).join('');
 
       var structGrid = document.getElementById('structureGrid');
       structGrid.innerHTML = structureFinishes.map(function(s) {
+        var tex = window.materialTexture ? window.materialTexture('metal', s.value) : null;
+        var bg = tex ? 'background-image:url(' + tex + ');background-size:cover;' : 'background-color:' + s.value + ';';
         return '<div class="structure-item' + (state.structure === s.id ? ' active' : '') + '" onclick="selectStructure(\'' + s.id + '\')">' +
-          '<div class="structure-swatch" style="background-color:' + s.value + ';"></div>' +
+          '<div class="structure-swatch" style="' + bg + '"></div>' +
           '<div class="structure-name">' + s.name.split(' ')[0] + '</div>' +
         '</div>';
       }).join('');
