@@ -88,7 +88,32 @@
     .swatch-item.active { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold), inset 0 2px 4px rgba(0,0,0,0.15); }
     .swatch-label { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 8px; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 10; }
     .swatch-item:hover .swatch-label { opacity: 1; }
-    .swatch-fabric-tag { position: absolute; top: -4px; right: -4px; background: var(--gold); color: #fff; font-size: 6px; font-weight: 700; padding: 1px 3px; border-radius: 3px; letter-spacing: 0.5px; text-transform: uppercase; }
+    .fabric-collection { margin-bottom: 22px; }
+    .fabric-collection:last-child { margin-bottom: 6px; }
+    .fc-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .fc-name { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-secondary); font-weight: 500; }
+    .fc-grade { font-size: 7px; letter-spacing: 0.8px; text-transform: uppercase; color: var(--gold-dark); background: rgba(184, 149, 47, 0.12); border: 1px solid var(--gold-20); border-radius: 100px; padding: 2px 7px; font-weight: 600; }
+
+    .options-grid { display: flex; flex-direction: column; gap: 12px; }
+    .option-row { display: flex; flex-direction: column; gap: 6px; }
+    .option-label { font-size: 8px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); }
+    .option-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .option-chip { flex: 1; min-width: 64px; background: rgba(255, 255, 255, 0.4); border: 1px solid rgba(0, 0, 0, 0.05); border-radius: 6px; padding: 8px 6px; text-align: center; cursor: pointer; font-size: 9px; letter-spacing: 0.5px; color: var(--text-secondary); transition: all 0.3s; display: flex; flex-direction: column; gap: 2px; }
+    .option-chip:hover { border-color: var(--gold-20); background: rgba(184, 149, 47, 0.06); }
+    .option-chip.active { background: rgba(184, 149, 47, 0.1); border-color: var(--gold); color: var(--gold-dark); font-weight: 500; box-shadow: 0 0 10px rgba(184, 149, 47, 0.12); }
+    .option-chip .opt-detail { font-size: 7px; letter-spacing: 0.3px; text-transform: uppercase; color: var(--text-muted); }
+
+    .spec-sheet { background: rgba(255, 255, 255, 0.45); border: 1px solid var(--gold-20); border-radius: 10px; padding: 12px 14px; }
+    .spec-body { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+    .spec-line { display: flex; justify-content: space-between; gap: 10px; font-size: 10px; line-height: 1.4; }
+    .spec-k { color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; font-size: 8px; padding-top: 1px; white-space: nowrap; }
+    .spec-v { color: var(--dark); text-align: right; font-weight: 500; }
+    .spec-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 10px; border-top: 1px solid var(--border); }
+    .spec-sku-wrap { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .spec-sku-label { font-size: 7px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); }
+    .spec-sku { font-family: var(--font-body); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; color: var(--gold-dark); word-break: break-all; }
+    .spec-copy { flex-shrink: 0; background: transparent; border: 1px solid var(--gold-20); border-radius: 6px; padding: 7px 12px; font-family: var(--font-body); font-size: 8px; letter-spacing: 1px; text-transform: uppercase; color: var(--gold-dark); cursor: pointer; transition: all 0.3s; }
+    .spec-copy:hover { background: var(--gold); border-color: var(--gold); color: #fff; }
 
     .wood-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
     .wood-item { background: rgba(255, 255, 255, 0.4); border: 1px solid rgba(0, 0, 0, 0.05); border-radius: 8px; padding: 8px 2px; text-align: center; cursor: pointer; transition: all 0.3s; }
@@ -269,6 +294,20 @@
         <div class="config-group-title">Structure Finish</div>
         <div class="structure-grid" id="structureGrid"></div>
       </div>
+      <div class="config-group" id="group-options">
+        <div class="config-group-title">Configuration</div>
+        <div class="options-grid" id="optionsGrid"></div>
+      </div>
+      <div class="config-group" id="group-spec">
+        <div class="config-group-title">Specification</div>
+        <div class="spec-sheet">
+          <div class="spec-body" id="specBody"></div>
+          <div class="spec-foot">
+            <div class="spec-sku-wrap"><span class="spec-sku-label">SKU</span><span class="spec-sku" id="specSku"></span></div>
+            <button class="spec-copy" onclick="copySpec()">Copy spec</button>
+          </div>
+        </div>
+      </div>
       <div class="config-group">
         <div class="config-group-title">Environment</div>
         <div class="env-presets" id="envPresets">
@@ -367,7 +406,8 @@
       upholstery: 'charcoal',
       topColor: 'charcoal',
       wood: 'ash-oak',
-      structure: 'chrome'
+      structure: 'chrome',
+      options: {}
     };
 
     var baseTypes = [
@@ -385,15 +425,24 @@
     // top surface height of each base — bodies sit on this so every combination aligns
     var baseTopY = { D9:0.63, L14:0.44, L21:0.72, L30:0.69, L31:0.38, L32:0.32, R13:0.375, R7:0.63, S7:0.44 };
 
+    // Phase 4 — textile collections carry a specification grade (2 → 4).
+    var fabricCollections = {
+      'wool-felt':       { label:'Wool Felt',       grade:2 },
+      'boucle':          { label:'Bouclé',          grade:3 },
+      'velvet':          { label:'Cotton Velvet',   grade:3 },
+      'aniline-leather': { label:'Aniline Leather', grade:4 }
+    };
+    var gradeLabel = { 1:'Grade 1', 2:'Grade 2', 3:'Grade 3', 4:'Grade 4' };
+
     var colourSwatches = [
-      { id:'charcoal', name:'Charcoal', value:'#1C1C19', fabric:false },
-      { id:'camel', name:'Camel', value:'#C19A6B', fabric:false },
-      { id:'cognac', name:'Cognac', value:'#9A4F2A', fabric:false },
-      { id:'emerald', name:'Emerald', value:'#123524', fabric:true },
-      { id:'navy', name:'Navy', value:'#1B2838', fabric:true },
-      { id:'ivory', name:'Ivory', value:'#FAF8F0', fabric:true },
-      { id:'terracotta', name:'Terracotta', value:'#C36241', fabric:true },
-      { id:'oxblood', name:'Oxblood', value:'#7A1C1C', fabric:true }
+      { id:'charcoal', name:'Charcoal', value:'#1C1C19', collection:'aniline-leather', grade:4 },
+      { id:'camel', name:'Camel', value:'#C19A6B', collection:'aniline-leather', grade:4 },
+      { id:'cognac', name:'Cognac', value:'#9A4F2A', collection:'aniline-leather', grade:4 },
+      { id:'oxblood', name:'Oxblood', value:'#7A1C1C', collection:'velvet', grade:3 },
+      { id:'ivory', name:'Ivory', value:'#FAF8F0', collection:'boucle', grade:3 },
+      { id:'emerald', name:'Emerald', value:'#123524', collection:'wool-felt', grade:2 },
+      { id:'navy', name:'Navy', value:'#1B2838', collection:'wool-felt', grade:2 },
+      { id:'terracotta', name:'Terracotta', value:'#C36241', collection:'wool-felt', grade:2 }
     ];
 
     var woodFinishes = [
@@ -424,6 +473,119 @@
       { id:'table-standing', name:'Garonne Standing', cat:'Standing Desk', bases:['R7','R13'], hasUpholstery:false, hasTop:false, hasWood:true }
     ];
 
+    // Highest fabric grade each product is rated for (variant validation).
+    var productGradeCeiling = {
+      'chair-executive': 4, 'chair-conference': 3, 'sofa-modular': 4,
+      'sofa-bench': 2, 'lounge-chair': 4
+    };
+    function gradeCeilingFor(model) {
+      return productGradeCeiling[model] != null ? productGradeCeiling[model] : 4;
+    }
+    // Swatches a product is rated for, grouped by collection (top grade first).
+    function swatchGroupsFor(model) {
+      var max = gradeCeilingFor(model);
+      var order = Object.keys(fabricCollections).sort(function(a, b) { return fabricCollections[b].grade - fabricCollections[a].grade; });
+      return order.map(function(col) {
+        return {
+          collection: col, label: fabricCollections[col].label, grade: fabricCollections[col].grade,
+          swatches: colourSwatches.filter(function(s) { return s.collection === col && s.grade <= max; })
+        };
+      }).filter(function(g) { return g.swatches.length; });
+    }
+    function swatchAllowed(model, id) {
+      var s = colourSwatches.find(function(x) { return x.id === id; });
+      return !!(s && s.grade <= gradeCeilingFor(model));
+    }
+    function firstAllowedSwatch(model) {
+      var max = gradeCeilingFor(model);
+      var s = colourSwatches.filter(function(x) { return x.grade <= max; }).sort(function(a, b) { return b.grade - a.grade; })[0];
+      return s ? s.id : 'charcoal';
+    }
+
+    // ── Configurable variant options (SKU expansion) ──
+    var productOptions = {
+      'chair-executive': [
+        { id:'arms', label:'Armrests', affects:'arms', choices:[
+          { id:'adjustable', label:'4D Adjustable', code:'A1' }, { id:'none', label:'Armless', code:'A0' } ] },
+        { id:'headrest', label:'Headrest', affects:'headrest', choices:[
+          { id:'yes', label:'With Headrest', code:'H1' }, { id:'no', label:'No Headrest', code:'H0' } ] }
+      ],
+      'chair-conference': [
+        { id:'arms', label:'Armrests', affects:'spec', choices:[
+          { id:'with', label:'With Arms', code:'A1' }, { id:'none', label:'Armless', code:'A0' } ] },
+        { id:'link', label:'Linking', affects:'spec', choices:[
+          { id:'standalone', label:'Standalone', code:'L0' }, { id:'ganged', label:'Ganged', code:'L1' } ] }
+      ],
+      'sofa-modular': [
+        { id:'size', label:'Configuration', affects:'scaleX', choices:[
+          { id:'two', label:'2-Seat', code:'S2', scaleX:0.78, detail:'Seats 2' },
+          { id:'three', label:'3-Seat', code:'S3', scaleX:1.00, detail:'Seats 3' },
+          { id:'four', label:'4-Seat', code:'S4', scaleX:1.22, detail:'Seats 4' } ] }
+      ],
+      'sofa-bench': [
+        { id:'size', label:'Length', affects:'scaleX', choices:[
+          { id:'std', label:'Standard', code:'B0', scaleX:1.00, detail:'1.3 m' },
+          { id:'long', label:'Long Run', code:'B1', scaleX:1.38, detail:'1.8 m' } ] }
+      ],
+      'table-boardroom': [
+        { id:'size', label:'Seats', affects:'scaleX', choices:[
+          { id:'eight', label:'Seats 8', code:'T08', scaleX:1.00, detail:'2.3 m' },
+          { id:'twelve', label:'Seats 12', code:'T12', scaleX:1.26, detail:'2.9 m' },
+          { id:'sixteen', label:'Seats 16', code:'T16', scaleX:1.52, detail:'3.5 m' } ] }
+      ],
+      'table-standing': [
+        { id:'height', label:'Height', affects:'spec', choices:[
+          { id:'bar', label:'Bar 105 cm', code:'HB' }, { id:'poseur', label:'Poseur 110 cm', code:'HP' } ] }
+      ],
+      'lounge-chair': [
+        { id:'swivel', label:'Return', affects:'spec', choices:[
+          { id:'return', label:'Self-Return', code:'W1' }, { id:'fixed', label:'Fixed', code:'W0' } ] }
+      ]
+    };
+    function optionGroupsFor(model) { return productOptions[model] || []; }
+    function defaultOptionsFor(model) {
+      var o = {}; optionGroupsFor(model).forEach(function(g) { o[g.id] = g.choices[0].id; }); return o;
+    }
+    function optionChoiceFor(model, groupId, choiceId) {
+      var g = optionGroupsFor(model).find(function(x) { return x.id === groupId; });
+      if (!g) return null;
+      return g.choices.find(function(c) { return c.id === choiceId; }) || g.choices[0];
+    }
+    function currentChoice(groupId) { return optionChoiceFor(state.model, groupId, state.options[groupId]); }
+    // Reconcile every part of state against the active product (variant validation).
+    function normaliseState() {
+      var p = products.find(function(x) { return x.id === state.model; });
+      if (!p) { state.model = 'chair-executive'; p = products[0]; }
+      if (p.bases.length && p.bases.indexOf(state.base) < 0) state.base = p.bases[0];
+      if (p.hasUpholstery && !swatchAllowed(state.model, state.upholstery)) state.upholstery = firstAllowedSwatch(state.model);
+      if (p.hasTop && !swatchAllowed(state.model, state.topColor)) state.topColor = firstAllowedSwatch(state.model);
+      if (!woodFinishes.some(function(w) { return w.id === state.wood; })) state.wood = woodFinishes[0].id;
+      if (!structureFinishes.some(function(s) { return s.id === state.structure; })) state.structure = structureFinishes[0].id;
+      var clean = defaultOptionsFor(state.model);
+      optionGroupsFor(state.model).forEach(function(g) {
+        if (state.options[g.id] && g.choices.some(function(c) { return c.id === state.options[g.id]; })) clean[g.id] = state.options[g.id];
+      });
+      state.options = clean;
+    }
+    // Deterministic SKU from the live configuration, e.g. MEU-EX·D9·CHA-G4·CHR·A1·H1
+    function buildSKU() {
+      var p = products.find(function(x) { return x.id === state.model; });
+      if (!p) return '';
+      var parts = [state.model.toUpperCase().replace(/[^A-Z]+/g, '').slice(0, 5)];
+      if (p.bases.length) parts.push(state.base);
+      if (p.hasUpholstery) {
+        var sw = colourSwatches.find(function(s) { return s.id === state.upholstery; });
+        if (sw) parts.push(sw.id.slice(0, 3).toUpperCase() + 'G' + sw.grade);
+      }
+      if (p.hasWood) parts.push(state.wood.slice(0, 3).toUpperCase());
+      parts.push(state.structure.slice(0, 3).toUpperCase());
+      optionGroupsFor(state.model).forEach(function(g) {
+        var c = optionChoiceFor(state.model, g.id, state.options[g.id]);
+        if (c && c.code) parts.push(c.code);
+      });
+      return parts.join('-');
+    }
+
     function renderProductList() {
       var list = document.getElementById('productList');
       list.innerHTML = products.map(function(p) {
@@ -437,6 +599,8 @@
 
     function selectProduct(id) {
       state.model = id;
+      state.options = defaultOptionsFor(id);
+      normaliseState();
       renderProductList();
       updateConfigUI();
       buildFurniture();
@@ -446,9 +610,26 @@
       }
     }
 
+    // Render graded swatches grouped under a collection header with a grade badge.
+    function renderSwatchGroups(targetId, selectedId, handler) {
+      var groups = swatchGroupsFor(state.model);
+      document.getElementById(targetId).innerHTML = groups.map(function(g) {
+        var chips = g.swatches.map(function(c) {
+          return '<div class="swatch-item' + (selectedId === c.id ? ' active' : '') + '" style="background-color:' + c.value + ';" onclick="' + handler + '(\'' + c.id + '\')">' +
+            '<div class="swatch-label">' + c.name + '</div>' +
+          '</div>';
+        }).join('');
+        return '<div class="fabric-collection">' +
+            '<div class="fc-head"><span class="fc-name">' + g.label + '</span><span class="fc-grade">' + gradeLabel[g.grade] + '</span></div>' +
+            '<div class="swatches-grid">' + chips + '</div>' +
+          '</div>';
+      }).join('');
+    }
+
     function updateConfigUI() {
       var p = products.find(function(x) { return x.id === state.model; });
       if (!p) return;
+      normaliseState();
       document.getElementById('configTitle').textContent = p.name;
       document.getElementById('group-upholstery').style.display = p.hasUpholstery ? '' : 'none';
       document.getElementById('group-top-color').style.display = p.hasTop ? '' : 'none';
@@ -456,9 +637,6 @@
       document.getElementById('group-base').style.display = p.bases.length > 0 ? '' : 'none';
 
       var availBases = baseTypes.filter(function(b) { return p.bases.indexOf(b.code) >= 0; });
-      if (p.bases.length > 0 && availBases.indexOf(baseTypes.find(function(b){ return b.code === state.base; })) < 0) {
-        state.base = p.bases[0];
-      }
       var baseGrid = document.getElementById('baseGrid');
       baseGrid.innerHTML = availBases.map(function(b) {
         return '<div class="base-item' + (state.base === b.code ? ' active' : '') + '" onclick="selectBase(\'' + b.code + '\')">' +
@@ -467,23 +645,11 @@
         '</div>';
       }).join('');
 
-      var uphGrid = document.getElementById('upholsteryGrid');
-      uphGrid.innerHTML = colourSwatches.map(function(c) {
-        var fabricTag = c.fabric ? '<span class="swatch-fabric-tag">Fab</span>' : '';
-        return '<div class="swatch-item' + (state.upholstery === c.id ? ' active' : '') + '" style="background-color:' + c.value + ';" onclick="selectUpholstery(\'' + c.id + '\')">' +
-          fabricTag +
-          '<div class="swatch-label">' + c.name + '</div>' +
-        '</div>';
-      }).join('');
+      if (p.hasUpholstery) renderSwatchGroups('upholsteryGrid', state.upholstery, 'selectUpholstery');
+      if (p.hasTop) renderSwatchGroups('topColorGrid', state.topColor, 'selectTopColor');
 
-      var topGrid = document.getElementById('topColorGrid');
-      topGrid.innerHTML = colourSwatches.map(function(c) {
-        var fabricTag = c.fabric ? '<span class="swatch-fabric-tag">Fab</span>' : '';
-        return '<div class="swatch-item' + (state.topColor === c.id ? ' active' : '') + '" style="background-color:' + c.value + ';" onclick="selectTopColor(\'' + c.id + '\')">' +
-          fabricTag +
-          '<div class="swatch-label">' + c.name + '</div>' +
-        '</div>';
-      }).join('');
+      renderOptions();
+      renderSpec();
 
       var woodGrid = document.getElementById('woodGrid');
       woodGrid.innerHTML = woodFinishes.map(function(w) {
@@ -503,10 +669,76 @@
     }
 
     function selectBase(code) { state.base = code; updateConfigUI(); buildFurniture(); playSound('click'); }
-    function selectUpholstery(id) { state.upholstery = id; updateConfigUI(); buildFurniture(); playSound('click'); }
-    function selectTopColor(id) { state.topColor = id; updateConfigUI(); buildFurniture(); playSound('click'); }
+    function selectUpholstery(id) { if (!swatchAllowed(state.model, id)) return; state.upholstery = id; updateConfigUI(); buildFurniture(); playSound('click'); }
+    function selectTopColor(id) { if (!swatchAllowed(state.model, id)) return; state.topColor = id; updateConfigUI(); buildFurniture(); playSound('click'); }
     function selectWood(id) { state.wood = id; updateConfigUI(); buildFurniture(); playSound('click'); }
     function selectStructure(id) { state.structure = id; updateConfigUI(); buildFurniture(); playSound('click'); }
+    function selectOption(groupId, choiceId) {
+      if (!optionChoiceFor(state.model, groupId, choiceId)) return;
+      state.options[groupId] = choiceId;
+      updateConfigUI(); buildFurniture(); playSound('click');
+    }
+
+    // Configurable variant options for the active product.
+    function renderOptions() {
+      var groups = optionGroupsFor(state.model);
+      var wrap = document.getElementById('group-options');
+      if (!wrap) return;
+      wrap.style.display = groups.length ? '' : 'none';
+      document.getElementById('optionsGrid').innerHTML = groups.map(function(g) {
+        var chips = g.choices.map(function(c) {
+          var detail = c.detail ? '<span class="opt-detail">' + c.detail + '</span>' : '';
+          return '<div class="option-chip' + (state.options[g.id] === c.id ? ' active' : '') + '" onclick="selectOption(\'' + g.id + '\',\'' + c.id + '\')">' +
+            c.label + detail + '</div>';
+        }).join('');
+        return '<div class="option-row"><div class="option-label">' + g.label + '</div><div class="option-chips">' + chips + '</div></div>';
+      }).join('');
+    }
+
+    // Live specification readout + deterministic SKU.
+    function renderSpec() {
+      var box = document.getElementById('specBody');
+      if (!box) return;
+      var p = products.find(function(x) { return x.id === state.model; });
+      var rows = [];
+      rows.push(['Model', p.name]);
+      if (p.bases.length) {
+        var b = baseTypes.find(function(x) { return x.code === state.base; });
+        rows.push(['Base', state.base + ' · ' + (b ? b.name : '')]);
+      }
+      if (p.hasUpholstery) {
+        var sw = colourSwatches.find(function(x) { return x.id === state.upholstery; });
+        if (sw) rows.push(['Upholstery', sw.name + ' · ' + fabricCollections[sw.collection].label + ' · ' + gradeLabel[sw.grade]]);
+      }
+      if (p.hasTop && state.model === 'lounge-chair') {
+        var tc = colourSwatches.find(function(x) { return x.id === state.topColor; });
+        if (tc) rows.push(['Seat', tc.name + ' · ' + gradeLabel[tc.grade]]);
+      }
+      if (p.hasWood) {
+        var w = woodFinishes.find(function(x) { return x.id === state.wood; });
+        if (w) rows.push(['Wood', w.name]);
+      }
+      var st = structureFinishes.find(function(x) { return x.id === state.structure; });
+      if (st) rows.push(['Structure', st.name]);
+      optionGroupsFor(state.model).forEach(function(g) {
+        var c = optionChoiceFor(state.model, g.id, state.options[g.id]);
+        if (c) rows.push([g.label, c.label]);
+      });
+      box.innerHTML = rows.map(function(r) {
+        return '<div class="spec-line"><span class="spec-k">' + r[0] + '</span><span class="spec-v">' + r[1] + '</span></div>';
+      }).join('');
+      var skuEl = document.getElementById('specSku');
+      if (skuEl) skuEl.textContent = buildSKU();
+    }
+
+    function copySpec() {
+      var p = products.find(function(x) { return x.id === state.model; });
+      var lines = ['MMA Design — Specification', p.name, 'SKU: ' + buildSKU()];
+      document.querySelectorAll('#specBody .spec-line').forEach(function(l) {
+        lines.push(l.querySelector('.spec-k').textContent + ': ' + l.querySelector('.spec-v').textContent);
+      });
+      if (navigator.clipboard) navigator.clipboard.writeText(lines.join('\n')).then(function() { playSound('success'); }).catch(function() {});
+    }
 
     // ═══════════════════════════════════════
     // PROCEDURAL TEXTURES
@@ -885,11 +1117,14 @@
       return m;
     }
 
+    // Aniline leather renders as leather; every textile collection as fabric.
+    function isFabricSwatch(c) { return !!c && c.collection !== 'aniline-leather'; }
+
     function getUpholsteryMat() {
       var c = colourSwatches.find(function(x) { return x.id === state.upholstery; });
       if (!c) c = colourSwatches[0];
       var hex = c.value;
-      if (c.fabric) {
+      if (isFabricSwatch(c)) {
         // Enhanced fabric material; bump-only relief (a colour texture is
         // not a valid normal map, and numeric sheen is not supported in r128)
         var tex = getTexture('fabric', hex);
@@ -924,7 +1159,7 @@
       var c = colourSwatches.find(function(x) { return x.id === state.topColor; });
       if (!c) c = colourSwatches[0];
       var hex = c.value;
-      if (c.fabric) {
+      if (isFabricSwatch(c)) {
         var fm = new THREE.MeshPhysicalMaterial({ roughness: 0.85, metalness: 0.01, map: getTexture('fabric', hex), bumpMap: getTexture('fabric', hex), bumpScale: 0.01, envMapIntensity: 0.35 });
         return fm;
       }
@@ -1153,6 +1388,7 @@
       explodedTweens.forEach(function(t) { t.kill(); });
       explodedTweens.length = 0;
       while (mainGroup.children.length > 0) { mainGroup.remove(mainGroup.children[0]); }
+      mainGroup.scale.set(1, 1, 1);
       clearDimensions();
       state.exploded = false;
       state.dimensions = false;
@@ -1222,34 +1458,38 @@
         backGroup.rotation.x = -0.12;
         parts.push({ mesh: backGroup, offset: new THREE.Vector3(0, 0.3, -0.28) });
 
-        var armLGroup = new THREE.Group();
-        var armLPost = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.014, 0.28, 16), metalMat);
-        armLGroup.add(armLPost);
-        var armLJoint = new THREE.Mesh(new THREE.SphereGeometry(0.015, 12, 12), metalMat);
-        armLJoint.position.y = 0.14; armLGroup.add(armLJoint);
-        var armLPad = new THREE.Mesh(roundedBoxGeo(0.065, 0.26, 0.028, 0.012, 0.008), uphMat);
-        armLPad.position.set(0, 0.15, 0.06); armLGroup.add(armLPad);
-        armLGroup.position.set(-0.3, exSeatY + 0.18, -0.02);
-        parts.push({ mesh: armLGroup, offset: new THREE.Vector3(-0.22, 0.1, 0) });
+        if (state.options.arms !== 'none') {
+          var armLGroup = new THREE.Group();
+          var armLPost = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.014, 0.28, 16), metalMat);
+          armLGroup.add(armLPost);
+          var armLJoint = new THREE.Mesh(new THREE.SphereGeometry(0.015, 12, 12), metalMat);
+          armLJoint.position.y = 0.14; armLGroup.add(armLJoint);
+          var armLPad = new THREE.Mesh(roundedBoxGeo(0.065, 0.26, 0.028, 0.012, 0.008), uphMat);
+          armLPad.position.set(0, 0.15, 0.06); armLGroup.add(armLPad);
+          armLGroup.position.set(-0.3, exSeatY + 0.18, -0.02);
+          parts.push({ mesh: armLGroup, offset: new THREE.Vector3(-0.22, 0.1, 0) });
 
-        var armRGroup = new THREE.Group();
-        var armRPost = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.014, 0.28, 16), metalMat);
-        armRGroup.add(armRPost);
-        var armRJoint = new THREE.Mesh(new THREE.SphereGeometry(0.015, 12, 12), metalMat);
-        armRJoint.position.y = 0.14; armRGroup.add(armRJoint);
-        var armRPad = new THREE.Mesh(roundedBoxGeo(0.065, 0.26, 0.028, 0.012, 0.008), uphMat);
-        armRPad.position.set(0, 0.15, 0.06); armRGroup.add(armRPad);
-        armRGroup.position.set(0.3, exSeatY + 0.18, -0.02);
-        parts.push({ mesh: armRGroup, offset: new THREE.Vector3(0.22, 0.1, 0) });
+          var armRGroup = new THREE.Group();
+          var armRPost = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.014, 0.28, 16), metalMat);
+          armRGroup.add(armRPost);
+          var armRJoint = new THREE.Mesh(new THREE.SphereGeometry(0.015, 12, 12), metalMat);
+          armRJoint.position.y = 0.14; armRGroup.add(armRJoint);
+          var armRPad = new THREE.Mesh(roundedBoxGeo(0.065, 0.26, 0.028, 0.012, 0.008), uphMat);
+          armRPad.position.set(0, 0.15, 0.06); armRGroup.add(armRPad);
+          armRGroup.position.set(0.3, exSeatY + 0.18, -0.02);
+          parts.push({ mesh: armRGroup, offset: new THREE.Vector3(0.22, 0.1, 0) });
+        }
 
-        var hrGroup = new THREE.Group();
-        var hrPost = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.007, 0.14, 12), metalMat);
-        hrPost.position.y = -0.07; hrGroup.add(hrPost);
-        var hrCush = new THREE.Mesh(roundedBoxGeo(0.24, 0.07, 0.10, 0.02, 0.014), uphMat);
-        hrCush.castShadow = true; hrGroup.add(hrCush);
-        hrGroup.position.set(0, exSeatY + 0.8, -0.26);
-        hrGroup.rotation.x = -0.15;
-        parts.push({ mesh: hrGroup, offset: new THREE.Vector3(0, 0.35, -0.15) });
+        if (state.options.headrest !== 'no') {
+          var hrGroup = new THREE.Group();
+          var hrPost = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.007, 0.14, 12), metalMat);
+          hrPost.position.y = -0.07; hrGroup.add(hrPost);
+          var hrCush = new THREE.Mesh(roundedBoxGeo(0.24, 0.07, 0.10, 0.02, 0.014), uphMat);
+          hrCush.castShadow = true; hrGroup.add(hrCush);
+          hrGroup.position.set(0, exSeatY + 0.8, -0.26);
+          hrGroup.rotation.x = -0.15;
+          parts.push({ mesh: hrGroup, offset: new THREE.Vector3(0, 0.35, -0.15) });
+        }
 
       } else if (mid === 'chair-conference') {
         var cTopY = baseTopY[state.base] || 0.42;
@@ -1664,11 +1904,16 @@
         parts.push({ mesh: stRing, offset: new THREE.Vector3(0, 0.08, 0) });
       }
 
+      // Width variant — stretch the piece (and its contact shadow) along X.
+      var widthChoice = currentChoice('size');
+      var sx = (widthChoice && widthChoice.scaleX) ? widthChoice.scaleX : 1;
+      mainGroup.scale.x = sx;
+
       if (contactShadow) {
         if (mid.indexOf('sofa') >= 0) {
-          contactShadow.scale.set(2.2, 1.2, 1);
+          contactShadow.scale.set(2.2 * sx, 1.2, 1);
         } else if (mid === 'table-boardroom') {
-          contactShadow.scale.set(3.0, 1.5, 1);
+          contactShadow.scale.set(3.0 * sx, 1.5, 1);
         } else if (mid === 'storage-wall') {
           contactShadow.scale.set(2.0, 0.8, 1);
         } else if (mid === 'table-reception') {
@@ -1789,13 +2034,15 @@
       try {
         localStorage.setItem('mmaStudioConfig', JSON.stringify({
           model: state.model, base: state.base, upholstery: state.upholstery,
-          topColor: state.topColor, wood: state.wood, structure: state.structure
+          topColor: state.topColor, wood: state.wood, structure: state.structure,
+          options: state.options
         }));
       } catch(e) {}
     }
 
     function shareConfig() {
       var url = window.location.href.split('?')[0] + '?model=' + state.model + '&base=' + state.base + '&upholstery=' + state.upholstery + '&topColor=' + state.topColor + '&wood=' + state.wood + '&structure=' + state.structure;
+      optionGroupsFor(state.model).forEach(function(g) { url += '&opt_' + g.id + '=' + state.options[g.id]; });
       navigator.clipboard.writeText(url).then(function() {
         playSound('success');
       }).catch(function() {});
@@ -1850,12 +2097,26 @@
     // ═══════════════════════════════════════
     (function() {
       var params = new URLSearchParams(window.location.search);
-      if (params.get('model')) state.model = params.get('model');
-      if (params.get('base')) state.base = params.get('base');
-      if (params.get('upholstery')) state.upholstery = params.get('upholstery');
-      if (params.get('topColor')) state.topColor = params.get('topColor');
-      if (params.get('wood')) state.wood = params.get('wood');
-      if (params.get('structure')) state.structure = params.get('structure');
+      // Only accept params that map to a known value (variant validation on entry).
+      var model = params.get('model');
+      if (model && products.some(function(p) { return p.id === model; })) state.model = model;
+      var base = params.get('base');
+      if (base && baseTypes.some(function(b) { return b.code === base; })) state.base = base;
+      var uph = params.get('upholstery');
+      if (uph && colourSwatches.some(function(c) { return c.id === uph; })) state.upholstery = uph;
+      var top = params.get('topColor');
+      if (top && colourSwatches.some(function(c) { return c.id === top; })) state.topColor = top;
+      var wood = params.get('wood');
+      if (wood && woodFinishes.some(function(w) { return w.id === wood; })) state.wood = wood;
+      var struct = params.get('structure');
+      if (struct && structureFinishes.some(function(s) { return s.id === struct; })) state.structure = struct;
+      // Variant options arrive as opt_<group>=<choice>.
+      state.options = defaultOptionsFor(state.model);
+      optionGroupsFor(state.model).forEach(function(g) {
+        var v = params.get('opt_' + g.id);
+        if (v && g.choices.some(function(c) { return c.id === v; })) state.options[g.id] = v;
+      });
+      normaliseState();
     })();
 
     // ═══════════════════════════════════════
