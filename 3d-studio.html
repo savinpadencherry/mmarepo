@@ -227,6 +227,11 @@
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <!-- Real-asset GLB pipeline (matched to three r128) -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
+  <!-- Inlined base64 GLBs so real-asset chairs load even on file:// (regen: tools/pack_inline.py) -->
+  <script src="assets/models/inline-meshes.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="assets/textures.js"></script>
 </head>
@@ -477,7 +482,12 @@
       { id:'lounge-chair', name:'Flamingo Lounge', cat:'Lounge Chair', bases:['R13'], hasUpholstery:true, hasTop:true, hasWood:true },
       { id:'storage-wall', name:'Marne Storage Wall', cat:'Storage', bases:[], hasUpholstery:false, hasTop:false, hasWood:true },
       { id:'table-reception', name:'Seine Reception', cat:'Reception Desk', bases:[], hasUpholstery:false, hasTop:false, hasWood:true },
-      { id:'table-standing', name:'Garonne Standing', cat:'Standing Desk', bases:['R7','R13'], hasUpholstery:false, hasTop:false, hasWood:true }
+      { id:'table-standing', name:'Garonne Standing', cat:'Standing Desk', bases:['R7','R13'], hasUpholstery:false, hasTop:false, hasWood:true },
+      // ── Real catalogue assets (GLB) — image-to-3D via TRELLIS / Hunyuan3D ──
+      { id:'real-volga', name:'Volga', cat:'Real Asset · Lounge', bases:[], hasUpholstery:true, hasTop:false, hasWood:true, modelFile:'assets/models/volga.glb' },
+      { id:'real-meuse', name:'Meuse', cat:'Real Asset · Executive', bases:[], hasUpholstery:true, hasTop:false, hasWood:true, modelFile:'assets/models/meuse.glb' },
+      { id:'real-kaathi', name:'Kaathi', cat:'Real Asset · Dining', bases:[], hasUpholstery:true, hasTop:false, hasWood:true, modelFile:'assets/models/kaathi.glb' },
+      { id:'real-rhine', name:'Rhine', cat:'Real Asset · Side Chair', bases:[], hasUpholstery:true, hasTop:false, hasWood:true, modelFile:'assets/models/rhine.glb' }
     ];
 
     // Highest fabric grade each product is rated for (variant validation).
@@ -1213,6 +1223,19 @@
       return lm;
     }
 
+    // For AI meshes with no UV coordinates — solid swatch colour, no texture maps needed.
+    // The scene's envMap still provides shading depth and reflections.
+    function getUpholsteryMatNoUV() {
+      var c = colourSwatches.find(function(x) { return x.id === state.upholstery; });
+      if (!c) c = colourSwatches[0];
+      return new THREE.MeshStandardMaterial({
+        color: new THREE.Color(c.value),
+        roughness: 0.88,
+        metalness: 0.0,
+        envMapIntensity: 0.45,
+        side: THREE.DoubleSide
+      });
+    }
     function getTopMat() {
       var c = colourSwatches.find(function(x) { return x.id === state.topColor; });
       if (!c) c = colourSwatches[0];
@@ -1442,6 +1465,117 @@
     // ═══════════════════════════════════════
     // BUILD 3D MODELS
     // ═══════════════════════════════════════
+    // ═══════════════════════════════════════
+    // REAL-ASSET GLB PIPELINE (image-to-3D output)
+    // ═══════════════════════════════════════
+    var _gltfLoader = null, _glbCache = {};
+    function getGLTFLoader() {
+      if (_gltfLoader) return _gltfLoader;
+      _gltfLoader = new THREE.GLTFLoader();
+      try {
+        var draco = new THREE.DRACOLoader();
+        draco.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+        _gltfLoader.setDRACOLoader(draco);
+      } catch (e) { /* draco optional: uncompressed GLBs still load */ }
+      return _gltfLoader;
+    }
+    // Prepare geometry and materials on a freshly-loaded GLB scene.
+    function prepareGLBMaterials(root) {
+      root.traverse(function(o) {
+        if (!o.isMesh) return;
+        // ── Geometry: compute normals if missing ──────────────────────────────
+        // EmbodiedGen and many other AI exporters omit the NORMAL attribute.
+        // Without normals Three.js PBR lighting outputs zero → solid black.
+        if (o.geometry && !o.geometry.attributes.normal) {
+          o.geometry.computeVertexNormals();
+        }
+        // ── Material: fix encoding on any baked textures ──────────────────────
+        if (!o.material) return;
+        var mats = Array.isArray(o.material) ? o.material : [o.material];
+        mats.forEach(function(m) {
+          if (m.map)         { m.map.encoding = THREE.sRGBEncoding; m.map.needsUpdate = true; }
+          if (m.emissiveMap) { m.emissiveMap.encoding = THREE.sRGBEncoding; }
+          m.side = THREE.DoubleSide; // guard against flipped winding order in AI meshes
+          m.needsUpdate = true;
+        });
+      });
+    }
+    function bindGLBMaterials(root) {
+      // Always replace materials so swatch selection drives the colour.
+      // buildFurniture() is called on every swatch change, so colours stay live.
+      root.traverse(function(o) {
+        if (!o.isMesh) return;
+        o.castShadow = true; o.receiveShadow = true;
+        var n = ((o.name || '') + ' ' + ((o.parent && o.parent.name) || '')).toLowerCase();
+        // Named multi-part GLBs: bind by part name
+        if (/(frame|metal|steel|structure|tube)/.test(n)) { o.material = getMetalMat(); return; }
+        if (/(wood|leg|timber|oak|ash)/.test(n))           { o.material = getWoodMat();  return; }
+        // Use UV-aware upholstery: texture version if UVs exist, solid colour if not.
+        // AI meshes from EmbodiedGen typically have no UVs; texture maps on UV-less
+        // geometry render black in WebGL.
+        var hasUV = !!(o.geometry && o.geometry.attributes.uv);
+        o.material = hasUV ? getUpholsteryMat() : getUpholsteryMatNoUV();
+      });
+    }
+    // Center on the floor and scale to the configurator's ~0.85 m chair height.
+    // AI meshes often arrive with the wrong axis as "up", so use the largest extent.
+    function fitGLBToScene(root, targetHeight) {
+      var box = new THREE.Box3().setFromObject(root);
+      if (box.isEmpty()) return;
+      var size = box.getSize(new THREE.Vector3());
+      var h = size.y;
+      if (!isFinite(h) || h <= 1e-4) h = Math.max(size.x, size.y, size.z) || 1;
+      var s = (targetHeight || 0.85) / h;
+      if (!isFinite(s) || s <= 0) s = 1;
+      root.scale.setScalar(s);
+      box.setFromObject(root);
+      var center = box.getCenter(new THREE.Vector3());
+      root.position.set(-center.x, -box.min.y, -center.z);
+    }
+    function addGLBToGroup(root) {
+      prepareGLBMaterials(root);
+      bindGLBMaterials(root);
+      fitGLBToScene(root, 0.85);
+      var holder = new THREE.Group();
+      holder.add(root);
+      mainGroup.add(holder);
+      holder.userData.origin = holder.position.clone();
+      holder.userData.offset = new THREE.Vector3(0, 0.3, 0);
+      holder.position.y += 1.4;
+      holder.scale.set(0.01, 0.01, 0.01);
+      gsap.to(holder.position, { y: holder.userData.origin.y, duration: 0.9, ease: 'power3.out' });
+      gsap.to(holder.scale, { x: 1, y: 1, z: 1, duration: 0.7, ease: 'back.out(1.4)' });
+    }
+    function b64ToArrayBuffer(b64) {
+      var bin = atob(b64);
+      var buf = new ArrayBuffer(bin.length);
+      var view = new Uint8Array(buf);
+      for (var i = 0; i < bin.length; i++) view[i] = bin.charCodeAt(i);
+      return buf;
+    }
+    function parseGLBBuffer(buf, onDone, onErr) {
+      getGLTFLoader().parse(buf, '', onDone, onErr);
+    }
+    function loadGLBModel(p) {
+      var stem = p.modelFile.split('/').pop().replace(/\.glb$/i, '');
+      var token = state.model;
+      if (_glbCache[p.id]) { addGLBToGroup(_glbCache[p.id].clone(true)); return; }
+      function onLoaded(gltf) {
+        _glbCache[p.id] = gltf.scene;
+        if (state.model !== token) return;
+        addGLBToGroup(gltf.scene.clone(true));
+      }
+      function onErr(err) { console.error('GLB load failed:', p.modelFile, err); }
+      // 1) Inlined base64 GLB — only on file:// (avoids parsing a huge bundle over HTTP)
+      var b64 = (window.location.protocol === 'file:') && window.MMA_INLINE_GLB && window.MMA_INLINE_GLB[stem];
+      if (b64) {
+        parseGLBBuffer(b64ToArrayBuffer(b64), onLoaded, onErr);
+        return;
+      }
+      // 2) Fetch over http:// when served locally
+      getGLTFLoader().load(p.modelFile, onLoaded, undefined, onErr);
+    }
+
     function buildFurniture() {
       explodedTweens.forEach(function(t) { t.kill(); });
       explodedTweens.length = 0;
@@ -1452,6 +1586,10 @@
       state.dimensions = false;
       document.getElementById('btnExplode').classList.remove('active');
       document.getElementById('btnDimensions').classList.remove('active');
+
+      // Real catalogue assets: load the GLB instead of building procedurally.
+      var prodForModel = products.find(function(x) { return x.id === state.model; });
+      if (prodForModel && prodForModel.modelFile) { loadGLBModel(prodForModel); return; }
 
       var metalMat = getMetalMat();
       var uphMat = getUpholsteryMat();
